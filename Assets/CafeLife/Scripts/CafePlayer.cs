@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
 
@@ -76,7 +76,7 @@ namespace CafeLife
         }
         public void RefreshTarget()
         {
-            target=null; Hint="";var basketball=game.GetComponent<CafeBasketball>();if(basketball&&basketball.Held){Hint="Potaya nişan al · E / ETKİLEŞ: at · Basket +50 coin";return;}
+            target=null; Hint="";var basketball=game.GetComponent<CafeBasketball>();if(basketball&&basketball.Held){Hint="Çembere nişan al · E / ETKİLEŞ: at · Basket +50 coin";return;}
             // Aim at generous interaction volumes instead of the tiny mesh colliders.
             // This avoids the counter or decorative meshes stealing the E prompt.
             var hits=Physics.SphereCastAll(view.transform.position,.075f,view.transform.forward,3.4f,1<<8,QueryTriggerInteraction.Collide);

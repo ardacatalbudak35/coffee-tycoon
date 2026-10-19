@@ -46,6 +46,21 @@ namespace CafeLife {
    for(int i=0;i<24;i++)yield return null;
    yield return new WaitForEndOfFrame();Capture("Interior.png");
 
+   var reticle=FindFirstObjectByType<CafeReticle>();
+   Require(reticle&&reticle.canvasRenderer.GetAlpha()>.9f,"Reticle is visible in standalone gameplay");
+   Vector2 centre=RectTransformUtility.WorldToScreenPoint(null,reticle.rectTransform.position);
+   Require(Vector2.Distance(centre,game.player.view.pixelRect.center)<1&&!game.player.OverInterface(centre),"Reticle is camera-centred and does not block input");
+   CafeTarget machine=null;
+   foreach(var target in FindObjectsByType<CafeTarget>(FindObjectsSortMode.None))if(target.kind=="machine"){machine=target;break;}
+   Require(machine,"Espresso interaction target exists");
+   Vector3 aim=machine.transform.position; foreach(var volume in machine.GetComponentsInChildren<Collider>())if(volume.enabled&&volume.isTrigger&&volume.gameObject.layer==8){aim=volume.bounds.center;break;}
+   At(new Vector3(aim.x,.1f,aim.z+1.8f),180);
+   game.player.pitch=Mathf.Atan2(game.player.view.transform.position.y-aim.y,1.8f)*Mathf.Rad2Deg;
+   game.player.view.transform.localRotation=Quaternion.Euler(game.player.pitch,0,0);
+   for(int i=0;i<24;i++)yield return null;
+   Require(game.player.target==machine,"Reticle highlights the actual espresso interaction target");
+   yield return new WaitForEndOfFrame();Capture("Reticle-interaction.png");
+
    var ink=Resources.Load<Material>("CafeMaterials/CardInk");
    Require(ink&&ink.shader&&ink.shader.isSupported&&ink.shader.name=="Universal Render Pipeline/Unlit","Bundled CardInk material retains the supported URP Unlit shader");
    At(new Vector3(15,4.25f,-29),180);game.OpenCasino();game.StartBlackjack(50);
@@ -66,6 +81,9 @@ namespace CafeLife {
    Require(game.GetComponent<CafeCasino>().player.Count==2,"Blackjack dealt two player cards using isolated test coins");
    game.OpenOperations();game.ui.ShowMenu("home");
    Require(game.Paused,"Verification ends at the paused home menu");
+   yield return null;
+   yield return new WaitForEndOfFrame();
+   Require(reticle.canvasRenderer.GetAlpha()==0,"Reticle hides on the standalone home menu");
   }
 
   void At(Vector3 position,float yaw){

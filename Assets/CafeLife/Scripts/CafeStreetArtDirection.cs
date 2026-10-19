@@ -19,15 +19,34 @@ namespace CafeLife {
    var crossing=Surface("Cadde · yaya çizgileri",new Color(.79f,.79f,.72f),.04f);
    var diffuser=Surface("Cadde · armatür camı",new Color(.84f,.79f,.65f),.2f);
    diffuser.EnableKeyword("_EMISSION");diffuser.SetColor("_EmissionColor",new Color(.55f,.44f,.28f));
+   var cafeWalk=game.world.transform.Find("Kaldırım");var cafeWalkRenderer=cafeWalk?cafeWalk.GetComponent<Renderer>():null;
 
    foreach(var renderer in game.world.GetComponentsInChildren<MeshRenderer>()){
     string name=renderer.name;
-    if(name=="Tek cadde · asfalt"||name=="Şehir asfaltı"){renderer.sharedMaterial=asphalt;StreetWorldUV(renderer);}
+    if(name=="Şehir asfaltı"||name=="Yol kesikli çizgi"){
+     // The original street sits below the active boulevard. Its vertical sides
+     // coincide with the active road sides; keep its collision, hide only the copy.
+     renderer.enabled=false;
+    }
+    else if(name=="Tek cadde · asfalt"){renderer.sharedMaterial=asphalt;StreetWorldUV(renderer);}
     else if(name=="Karşı kaldırım"||name=="Kaldırım"){renderer.sharedMaterial=paving;StreetWorldUV(renderer);}
-    else if(name=="Karşı kaldırım derzi"||name=="Kafe kaldırım derzi")renderer.sharedMaterial=joint;
-    else if(name=="Cadde bordür hattı"||name=="Market vitrin çerçevesi")renderer.sharedMaterial=trim;
-    else if(name=="Cadde şerit çizgisi"||name=="Yol kesikli çizgi")renderer.sharedMaterial=paint;
-    else if(name=="Yaya geçidi")renderer.sharedMaterial=crossing;
+    else if(name=="Karşı kaldırım derzi"||name=="Kafe kaldırım derzi"){
+     renderer.sharedMaterial=joint;
+     // This old grid spans the whole street, but the cafe pavement is only 40 m
+     // wide. Its outer eight strips otherwise float above the lower ground.
+     bool outside=name=="Kafe kaldırım derzi"&&cafeWalkRenderer&&(renderer.bounds.min.x<cafeWalkRenderer.bounds.min.x||renderer.bounds.max.x>cafeWalkRenderer.bounds.max.x);
+     if(outside)renderer.enabled=false;else FlatStreetOverlay(renderer,.012f);
+    }
+    else if(name=="Cadde bordür hattı"){
+     renderer.sharedMaterial=trim;
+     // Both sidewalk and road top faces are y=0. The old curb cap was also y=0,
+     // overlapping those faces by 6 cm. Lift only its render mesh out of that plane.
+     SeparateStreetCurb(renderer,.025f);
+    }
+    else if(name=="Market vitrin çerçevesi")renderer.sharedMaterial=trim;
+    else if(name=="Cadde şerit çizgisi"){renderer.sharedMaterial=paint;FlatStreetOverlay(renderer,.018f);}
+    else if(name=="Yaya geçidi"){renderer.sharedMaterial=crossing;FlatStreetOverlay(renderer,.018f);}
+    else if(name=="Basket saha yan çizgisi"){renderer.sharedMaterial=crossing;FlatStreetOverlay(renderer,.036f);}
     else if(name.StartsWith("Cadde marketi")&&(name.Contains("duvar")||name.EndsWith("ön cephe")||name.EndsWith("kapı üstü")))renderer.sharedMaterial=market;
     else if(name=="Market saçak")renderer.sharedMaterial=canopy;
     else if(name=="Market vitrin")renderer.sharedMaterial=glazing;
@@ -67,17 +86,43 @@ namespace CafeLife {
   }
 
   Texture2D StreetSurfaceTexture(bool paving){
-   const int size=128;
+   int size=paving?256:128;
    var texture=new Texture2D(size,size,TextureFormat.RGB24,true){name=paving?"Metre ölçekli kaldırım taşı":"İnce asfalt agregası",wrapMode=TextureWrapMode.Repeat,filterMode=FilterMode.Trilinear,anisoLevel=8};
    var pixels=new Color[size*size];
    for(int y=0;y<size;y++)for(int x=0;x<size;x++){
     uint seed=(uint)x*73856093u^(uint)y*19349663u;seed^=seed>>13;
     float grain=(seed&255)/255f;
     float value=.94f+grain*.06f;
-    if(paving){int offset=(y/64%2)*32;bool seam=(x+offset)%64==0||y%64==0;value=seam?.83f:.96f+grain*.04f;}
+    if(paving){
+     int cell=size/2,offset=(y/cell%2)*(cell/2),px=(x+offset)%cell,py=y%cell;
+     float distance=Mathf.Min(Mathf.Min(px,cell-px),Mathf.Min(py,cell-py));
+     float edge=Mathf.SmoothStep(0,1,Mathf.Clamp01(distance/1.5f));
+     value=Mathf.Lerp(.87f,.97f+grain*.025f,edge);
+    }
     pixels[y*size+x]=new Color(value,value,value);
    }
    texture.SetPixels(pixels);texture.Apply();textures.Add(texture);return texture;
+  }
+
+  void FlatStreetOverlay(MeshRenderer renderer,float height){
+   var filter=renderer.GetComponent<MeshFilter>();if(!filter)return;
+   var bounds=renderer.bounds;
+   var vertices=new[]{new Vector3(bounds.min.x,height,bounds.min.z),new Vector3(bounds.min.x,height,bounds.max.z),new Vector3(bounds.max.x,height,bounds.max.z),new Vector3(bounds.max.x,height,bounds.min.z)};
+   for(int i=0;i<vertices.Length;i++)vertices[i]=renderer.transform.InverseTransformPoint(vertices[i]);
+   var mesh=new Mesh{name=renderer.name+" · düz yüzey",vertices=vertices,triangles=new[]{0,1,2,0,2,3},uv=new[]{Vector2.zero,Vector2.up,Vector2.one,Vector2.right}};
+   mesh.RecalculateNormals();mesh.RecalculateBounds();filter.sharedMesh=mesh;combinedMeshes.Add(mesh);
+   // Paint and expansion joints must not cast a tiny stair-step shadow along
+   // their own edges. Building and character shadows still fall onto them.
+   renderer.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;renderer.receiveShadows=true;
+  }
+
+  void SeparateStreetCurb(MeshRenderer renderer,float clearance){
+   var filter=renderer.GetComponent<MeshFilter>();if(!filter||!filter.sharedMesh||!filter.sharedMesh.isReadable)return;
+   var mesh=Instantiate(filter.sharedMesh);mesh.name=renderer.name+" · ayrık üst yüzey";
+   var vertices=mesh.vertices;Vector3 lift=renderer.transform.InverseTransformVector(Vector3.up*clearance);
+   for(int i=0;i<vertices.Length;i++)vertices[i]+=lift;
+   mesh.vertices=vertices;mesh.RecalculateBounds();filter.sharedMesh=mesh;combinedMeshes.Add(mesh);
+   renderer.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;
   }
 
   void StreetWorldUV(MeshRenderer renderer){

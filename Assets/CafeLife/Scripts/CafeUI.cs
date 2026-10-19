@@ -27,7 +27,7 @@ namespace CafeLife
             top.name="Hidden legacy status header";top.gameObject.SetActive(false); stats=Text(top,"",22,TextAnchor.MiddleLeft); stats.rectTransform.offsetMin=new Vector2(22,0);
             var hc=Panel(safe,new Vector2(.2f,0),new Vector2(.8f,0),new Vector2(0,86),new Vector2(0,150),new Color(.035f,.08f,.075f,.96f)); hintCard=hc.GetComponent<Image>(); hint=Text(hc,"",21,TextAnchor.MiddleCenter); hint.rectTransform.offsetMin=new Vector2(18,8); hint.rectTransform.offsetMax=new Vector2(-18,-8);
             toast=Label(safe,new Vector2(.2f,0),new Vector2(.8f,0),new Vector2(0,135),new Vector2(0,225),21,TextAnchor.MiddleCenter);
-            var dot=Label(safe,new Vector2(.5f,.5f),new Vector2(.5f,.5f),new Vector2(-10,-10),new Vector2(10,10),26,TextAnchor.MiddleCenter); dot.text="·";
+            var aim=Rect("Aim reticle",canvas,new Vector2(.5f,.5f),new Vector2(.5f,.5f),new Vector2(-12,-12),new Vector2(12,12)); aim.gameObject.AddComponent<CafeReticle>().game=game;
             Button(safe,"MENÜ",new Vector2(1,1),new Vector2(-452,-73),new Vector2(100,45),()=>game.TogglePause());worldMenuButton=safe.GetChild(safe.childCount-1).gameObject;
             joystick=Panel(safe,Vector2.zero,Vector2.zero,new Vector2(25,25),new Vector2(185,185),new Color(.1f,.15f,.15f,.6f)).gameObject;
             var move=joystick.AddComponent<TouchPad>(); var knob=Panel(joystick.transform as RectTransform,new Vector2(.5f,.5f),new Vector2(.5f,.5f),new Vector2(-25,-25),new Vector2(25,25),new Color(.85f,.8f,.65f,.8f)); move.knob=knob; game.player.movePad=move;
