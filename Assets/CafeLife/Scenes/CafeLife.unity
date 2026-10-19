@@ -204,9 +204,10 @@ MonoBehaviour:
   - {fileID: 8509081606571834462, guid: 7d8c1c77edd33ae47b3d487ee28b7b8d, type: 3}
   customerAnimator: {fileID: 9100000, guid: 88fde266c5c8e0f46af70a10036e9375, type: 2}
   data:
+    interiorStyle: 1
     version: 3
-    money: 10787
-    xp: 145
+    money: 8212
+    xp: 710
     machine: 5
     tables: 12
     decor: 6
@@ -244,35 +245,35 @@ MonoBehaviour:
       espressoLevel: 1
       paintLevel: 0
       capacity: 80
-    beans: 14
-    milk: 6
-    ice: 12
-    cupsHot: 6
-    cupsCold: 11
-    lidsHot: 6
-    lidsCold: 12
-    caramel: 10
-    vanilla: 10
-    depotBeans: 308
-    depotMilk: 318
+    beans: 1
+    milk: 0
+    ice: 5
+    cupsHot: 0
+    cupsCold: 5
+    lidsHot: 0
+    lidsCold: 6
+    caramel: 6
+    vanilla: 8
+    depotBeans: 284
+    depotMilk: 302
     depotIce: 200
-    depotCupsHot: 368
-    depotCupsCold: 370
-    depotLidsHot: 369
+    depotCupsHot: 344
+    depotCupsCold: 369
+    depotLidsHot: 345
     depotLidsCold: 370
-    depotCaramel: 85
-    depotVanilla: 85
+    depotCaramel: 84
+    depotVanilla: 82
     unlocked: 1023
-    served: 7
-    missed: 1
-    day: 2
-    earned: 79
+    served: 35
+    missed: 5
+    day: 5
+    earned: 158
     tutorial: 0
     quest: 0
     staff: 1
     outfit: 0
-    reputation: 75
-    dayTime: 72.33327
+    reputation: 48
+    dayTime: 128.35193
     volume: 0.55
     sensitivity: 0.1
     hundred:
@@ -282,22 +283,22 @@ MonoBehaviour:
       walkSpeed: 3.4
       drawDistance: 140
       roast: 1
-      combo: 1
-      bestCombo: 4
-      wasted: 1
-      materialCost: 15
-      challengeDay: 2
-      challengeSales: 3
+      combo: 0
+      bestCombo: 8
+      wasted: 2
+      materialCost: 22
+      challengeDay: 5
+      challengeSales: 5
       challengeArt: 0
       challengeClean: 0
       challengeRewardDay: 0
-      qualitySum: 525
-      qualityCount: 7
-      preferencesMet: 2
+      qualitySum: 2685
+      qualityCount: 35
+      preferencesMet: 14
       basketBest: 0
       streetRewardDay: 0
-      mastery: 000000003c0000000000000000000000000000000000000000000000000000000000000000000000i
-      sales: 00000000070000000000000000000000000000000000000000000000000000000000000000000000i
+      mastery: 230000007300000019000000190000002d0000002800000000000000000000001900000000000000i
+      sales: 030000000d0000000400000004000000060000000300000000000000000000000200000000000000i
       minimap: 1
       autoSupply: 0
       reduceMotion: 0
@@ -307,42 +308,58 @@ MonoBehaviour:
     expansion:
       schema: 1
       price: 100
-      dayIncome: 79
-      dayExpenses: 3
-      dayServed: 3
+      dayIncome: 158
+      dayExpenses: 9
+      dayServed: 5
       debt: 0
       dailyRewardDay: 0
       achievements: 0
-      visits: 15
+      visits: 56
       cleaned: 1
       tutorial: 31
-      cleanliness: 80.091515
-      machineDirt: 9
-      stamina: 100
+      cleanliness: 0
+      machineDirt: 51
+      stamina: 4.310189
       fov: 72
       music: 0.5
-      effects: 0.6
+      effects: 1
       open: 1
       staffOn: 1
       theme: 0
       wall: 0
       layout: 0
       light: 1
-      loyalty: 020000000100000000000000000000000000000000000000000000000100000001000000010000000000000001000000i
+      loyalty: 070000000200000002000000030000000200000001000000020000000300000005000000050000000100000002000000i
       history:
+      - day: 4
+        income: 3505
+        expenses: 3284
+        served: 9
+        debt: 0
+      - day: 3
+        income: 8484
+        expenses: 11538
+        served: 6
+        debt: 0
+      - day: 2
+        income: 266
+        expenses: 81
+        served: 11
+        debt: 0
       - day: 1
         income: 13389
         expenses: 32838
         served: 4
         debt: 0
       reviews:
+      - "Mert: Kahve beklemi\u015Fti; daha taze servis et. \u2605\u2605"
+      - "\u0130pek: Tam istedi\u011Fim gibi! Dengeli espresso ister \xB7 tercih bonusu +3 \u2605\u2605\u2605\u2605\u2605"
+      - "Can: Tarif g\xFCzeldi. Bir dahakine: G\xFC\xE7l\xFC kahve \xB7 en az 20 g. \u2605\u2605\u2605\u2605\u2605"
+      - "Ada: Tam istedi\u011Fim gibi! Taze servis \xB7 30 sn alt\u0131nda \xB7 tercih bonusu +3 \u2605\u2605\u2605\u2605\u2605"
+      - "Ada: Kahve beklemi\u015Fti; daha taze servis et. \u2605\u2605"
+      - "Bora: Tarif g\xFCzeldi. Bir dahakine: G\xFC\xE7l\xFC kahve \xB7 en az 20 g. \u2605\u2605\u2605\u2605\u2605"
+      - "Duru: Tam istedi\u011Fim gibi! Dengeli espresso ister \xB7 tercih bonusu +3 \u2605\u2605\u2605\u2605\u2605"
       - "Deniz: Tarif g\xFCzeldi. Bir dahakine: Latte art ister. \u2605\u2605\u2605\u2605\u2605"
-      - "Bora: Malzeme veya haz\u0131rl\u0131k s\u0131ras\u0131 yanl\u0131\u015Ft\u0131. \u2605\u2605"
-      - "Eren: Tam istedi\u011Fim gibi! Taze servis \xB7 30 sn alt\u0131nda \xB7 tercih bonusu +3 \u2605\u2605\u2605\u2605\u2605"
-      - "Ada: Tarif g\xFCzeldi. Bir dahakine: Latte art ister. \u2605\u2605\u2605\u2605\u2605"
-      - "Ali: Tam istedi\u011Fim gibi! Taze servis \xB7 30 sn alt\u0131nda \xB7 tercih bonusu +3 \u2605\u2605\u2605\u2605\u2605"
-      - "Deniz: Tarif g\xFCzeldi. Bir dahakine: Latte art ister. \u2605\u2605\u2605\u2605\u2605"
-      - "Ece: Malzeme veya haz\u0131rl\u0131k s\u0131ras\u0131 yanl\u0131\u015Ft\u0131. \u2605\u2605"
     quality: 1
     districtContract: -1
     contractStart: 0

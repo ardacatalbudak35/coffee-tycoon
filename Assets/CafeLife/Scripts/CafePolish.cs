@@ -21,7 +21,7 @@ namespace CafeLife
             oak.SetFloat("_ReceiveShadows",0);oak.EnableKeyword("_RECEIVE_SHADOWS_OFF");
             foreach(var text in game.world.GetComponentsInChildren<TextMesh>())if(text.text=="TESLİM"||text.text.StartsWith("BARDAK  •")||text.text=="COFFEE • FRESH BAKERY")text.gameObject.SetActive(false);
             foreach(var r in game.world.GetComponentsInChildren<MeshRenderer>()){string n=r.name;if(n=="NOIR gece kulübü zemin"||n.StartsWith("Casino üst kat")||n=="Merdiven üst sahanlık")r.sharedMaterial=walnut;else if(n.StartsWith("NOIR gece kulübü")||n.StartsWith("Cadde marketi"))r.sharedMaterial=wall;else if(n=="Karşı kaldırım"||n=="Kaldırım")r.sharedMaterial=stone;}
-            bevel=Lathe();Floor();Furniture();Bar();Decor();InteriorRevamp();RearFloorPlan();FinishBarEquipment();FinishNightInteriors();NaturalCafeDetails();Lighting();game.expansion.ApplyDecor();game.gameObject.AddComponent<CafeDecorProgression>().Setup(game,this);MergeScenery();
+            bevel=Lathe();Floor();Furniture();Bar();Decor();InteriorRevamp();RearFloorPlan();FinishBarEquipment();FinishNightInteriors();NaturalCafeDetails();CraftedInterior();RefinePropMaterials();RefineStreetArtDirection();Lighting();game.expansion.ApplyDecor();game.gameObject.AddComponent<CafeDecorProgression>().Setup(game,this);MergeScenery();
             game.player.view.farClipPlane=140;game.player.view.nearClipPlane=.08f;
             var arm=game.world.transform.Find("Kol / kıyafet");if(arm)arm.gameObject.SetActive(false);
             foreach(var transform in game.player.view.GetComponentsInChildren<Transform>())if(transform.name=="Kol / kıyafet")transform.gameObject.SetActive(false);
@@ -29,7 +29,7 @@ namespace CafeLife
         Material Surface(string name,Color color,float smooth,float metal=0,Texture2D texture=null)
         {var mat=new Material(Shader.Find("Universal Render Pipeline/Lit"));mat.name=name;mat.SetColor("_BaseColor",color);mat.SetFloat("_Smoothness",smooth);mat.SetFloat("_Metallic",metal);if(texture)mat.SetTexture("_BaseMap",texture);mat.enableInstancing=true;materials.Add(mat);return mat;}
         Texture2D Wood(float seed)
-        {var tex=new Texture2D(256,256,TextureFormat.RGB24,true);tex.wrapMode=TextureWrapMode.Repeat;for(int y=0;y<256;y++)for(int x=0;x<256;x++){float grain=Mathf.PerlinNoise(x*.08f+seed,y*.008f);float fine=Mathf.Sin(x*.5f+Mathf.PerlinNoise(seed+x*.012f,y*.02f)*5)*.025f;float v=.88f+grain*.12f+fine*.3f;tex.SetPixel(x,y,new Color(v,v*.96f,v*.89f));}tex.Apply();textures.Add(tex);return tex;}
+        {var tex=new Texture2D(256,256,TextureFormat.RGB24,true);tex.wrapMode=TextureWrapMode.Repeat;tex.filterMode=FilterMode.Trilinear;tex.anisoLevel=8;for(int y=0;y<256;y++)for(int x=0;x<256;x++){float grain=Mathf.PerlinNoise(x*.08f+seed,y*.008f);float fine=Mathf.Sin(x*.5f+Mathf.PerlinNoise(seed+x*.012f,y*.02f)*5)*.025f;float v=.88f+grain*.12f+fine*.3f;tex.SetPixel(x,y,new Color(v,v*.96f,v*.89f));}tex.Apply();textures.Add(tex);return tex;}
         Texture2D Stone()
         {var tex=new Texture2D(128,128,TextureFormat.RGB24,true);for(int y=0;y<128;y++)for(int x=0;x<128;x++){float n=.78f+Mathf.PerlinNoise(x*.17f,y*.17f)*.3f;tex.SetPixel(x,y,new Color(n,n,n));}tex.Apply();textures.Add(tex);return tex;}
         Texture2D Plaster()
@@ -122,10 +122,10 @@ namespace CafeLife
         {
             QualitySettings.shadowDistance=45;QualitySettings.shadows=UnityEngine.ShadowQuality.All;QualitySettings.shadowResolution=UnityEngine.ShadowResolution.Medium;QualitySettings.antiAliasing=0;
             foreach(var light in game.world.GetComponentsInChildren<Light>())if(light.type==LightType.Directional){light.shadows=LightShadows.Soft;light.shadowStrength=.65f;light.shadowBias=.035f;light.shadowNormalBias=.25f;}
-            var camera=game.player.view.GetUniversalAdditionalCameraData();camera.renderPostProcessing=true;camera.antialiasing=AntialiasingMode.FastApproximateAntialiasing;
+            var camera=game.player.view.GetUniversalAdditionalCameraData();camera.renderPostProcessing=true;camera.antialiasing=Application.isMobilePlatform?AntialiasingMode.FastApproximateAntialiasing:AntialiasingMode.SubpixelMorphologicalAntiAliasing;camera.antialiasingQuality=AntialiasingQuality.High;
             var volume=scenery.gameObject.AddComponent<Volume>();volume.isGlobal=true;volume.priority=10;profile=ScriptableObject.CreateInstance<VolumeProfile>();volume.profile=profile;
-            var tone=profile.Add<Tonemapping>(true);tone.mode.Override(TonemappingMode.ACES);var colors=profile.Add<ColorAdjustments>(true);colors.postExposure.Override(.2f);colors.contrast.Override(8);colors.saturation.Override(-6);
-            var bloom=profile.Add<Bloom>(true);bloom.intensity.Override(.13f);bloom.threshold.Override(1.3f);var vignette=profile.Add<Vignette>(true);vignette.intensity.Override(.12f);vignette.smoothness.Override(.4f);
+            var tone=profile.Add<Tonemapping>(true);tone.mode.Override(TonemappingMode.ACES);var colors=profile.Add<ColorAdjustments>(true);colors.postExposure.Override(.08f);colors.contrast.Override(6);colors.saturation.Override(-3);
+            var bloom=profile.Add<Bloom>(true);bloom.intensity.Override(.075f);bloom.threshold.Override(1.3f);var vignette=profile.Add<Vignette>(true);vignette.intensity.Override(.065f);vignette.smoothness.Override(.4f);
         }
         public void ApplyPalette()
         {

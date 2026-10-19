@@ -1,0 +1,10 @@
+Wood Floor by Dimitrios Savva / Poly Haven
+Source: https://polyhaven.com/a/wood_floor
+License: CC0 1.0 Universal (public domain dedication)
+License page verified 2026-10-19: https://polyhaven.com/license
+Legal text: https://creativecommons.org/publicdomain/zero/1.0/legalcode
+Downloaded original 2K diffuse and OpenGL normal JPG maps via public API.
+API manifest retained in work/visual-pass-19/wood-floor-files.json.
+Diffuse MD5: d209b7416b022ed06093aef068c7fe23
+Normal MD5: e1d8a588c1fc3d62cc60da1e4cd1a689
+Commercial use and redistribution permitted under CC0.

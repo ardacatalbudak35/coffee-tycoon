@@ -14,13 +14,13 @@ namespace CafeLife
 #endif
         private RectTransform canvas,safe,menu; private Text stats,hint,toast; private Font font;
         private int districtPage; private Text orders; private Image brewFill; private RectTransform brewCard; private static Sprite rounded; private Image hintCard; private string page=""; private GameObject joystick,look,action,worldMenuButton; private Vector2 lastSize;
-        Color ink=new Color(.94f,.92f,.87f), panel=new Color(.045f,.053f,.065f,.96f), green=new Color(.17f,.19f,.22f);
+        Color ink=new Color(.94f,.92f,.87f), panel=new Color(.045f,.065f,.055f,.97f), green=new Color(.14f,.18f,.15f);
         public void Build()
         {
             font=CafeTypography.Regular;
             var es=new GameObject("EventSystem",typeof(EventSystem),typeof(InputSystemUIInputModule)); es.GetComponent<InputSystemUIInputModule>().AssignDefaultActions();
             var go=new GameObject("Cafe HUD",typeof(RectTransform),typeof(Canvas),typeof(CanvasScaler),typeof(GraphicRaycaster));
-            canvas=go.GetComponent<RectTransform>(); go.GetComponent<Canvas>().renderMode=RenderMode.ScreenSpaceOverlay;
+            canvas=go.GetComponent<RectTransform>(); go.GetComponent<Canvas>().renderMode=RenderMode.ScreenSpaceOverlay;go.GetComponent<Canvas>().pixelPerfect=true;
             var scale=go.GetComponent<CanvasScaler>(); scale.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize; scale.referenceResolution=new Vector2(1280,720); scale.matchWidthOrHeight=.5f;
             safe=Rect("Safe area",canvas,Vector2.zero,Vector2.one,Vector2.zero,Vector2.zero);
             var top=Panel(safe,new Vector2(0,1),new Vector2(1,1),new Vector2(0,-88),Vector2.zero,panel);
@@ -38,13 +38,23 @@ namespace CafeLife
             var sprintButton=Panel(ar,new Vector2(1,0),new Vector2(1,0),new Vector2(-320,100),new Vector2(-200,160),green);
             game.player.sprintPad=sprintButton.gameObject.AddComponent<TouchSprint>();
             Text(sprintButton,"HIZLI",18,TextAnchor.MiddleCenter);
-            menu=Panel(safe,Vector2.zero,Vector2.one,Vector2.zero,Vector2.zero,new Color(.045f,.053f,.065f,1));
+            menu=Panel(safe,Vector2.zero,Vector2.one,Vector2.zero,Vector2.zero,new Color(.045f,.065f,.055f,1));
             var orderCard=Panel(safe,new Vector2(1,1),new Vector2(1,1),new Vector2(-302,-435),new Vector2(-18,-108),panel);
             orders=Text(orderCard,"",17,TextAnchor.UpperLeft); orders.rectTransform.offsetMin=new Vector2(18,14); orders.rectTransform.offsetMax=new Vector2(-18,-14);
             brewCard=Panel(safe,new Vector2(.32f,0),new Vector2(.68f,0),new Vector2(0,40),new Vector2(0,70),panel);
             var fill=Panel(brewCard,Vector2.zero,Vector2.one,new Vector2(4,4),new Vector2(-4,-4),new Color(.72f,.53f,.26f)); brewFill=fill.GetComponent<Image>(); brewFill.type=Image.Type.Filled; brewFill.fillMethod=Image.FillMethod.Horizontal;
             Text(brewCard,"ESPRESSO HAZIRLANIYOR",14,TextAnchor.MiddleCenter);
             BuildExpansionHud();BuildOrderHud();StyleTouchControls();if(CafeFocusedMode.CounterControls)BuildFocusedHud(); SafeArea();
+        }
+        public void ApplyReadability(bool largeText,bool contrast)
+        {
+            if(!canvas)return;
+            foreach(var metric in canvas.GetComponentsInChildren<CafeFontSize>(true))
+            {
+                var text=metric.GetComponent<Text>();if(!text)continue;
+                text.fontSize=largeText?Mathf.RoundToInt(metric.size*1.12f):metric.size;
+                text.color=contrast?Color.white:metric.color;
+            }
         }
         void SafeArea()
         {
@@ -195,7 +205,7 @@ namespace CafeLife
         Text Label(RectTransform parent,Vector2 min,Vector2 max,Vector2 lower,Vector2 upper,int size,TextAnchor align)
         { var r=Rect("Label",parent,min,max,lower,upper); return Text(r,"",size,align); }
         void Button(RectTransform parent,string label,Vector2 anchor,Vector2 pos,Vector2 size,UnityEngine.Events.UnityAction action)
-        { var r=Panel(parent,anchor,anchor,pos,pos+size,green); var b=r.gameObject.AddComponent<Button>(); b.targetGraphic=r.GetComponent<Image>(); b.onClick.AddListener(action); var palette=b.colors; palette.normalColor=Color.white; palette.highlightedColor=new Color(1.2f,1.35f,1.25f); palette.pressedColor=new Color(.65f,.8f,.7f); palette.fadeDuration=.12f; b.colors=palette; var text=Text(r,label,19,TextAnchor.MiddleCenter); text.rectTransform.offsetMin=new Vector2(14,4); text.rectTransform.offsetMax=new Vector2(-14,-4); }
+        { var r=Panel(parent,anchor,anchor,pos,pos+size,green); var b=r.gameObject.AddComponent<Button>(); b.targetGraphic=r.GetComponent<Image>(); b.onClick.AddListener(action); var palette=b.colors; palette.normalColor=Color.white; palette.highlightedColor=new Color(1.2f,1.35f,1.25f); palette.pressedColor=new Color(.65f,.8f,.7f); palette.fadeDuration=.12f; b.colors=palette; var text=Text(r,label,19,TextAnchor.MiddleCenter); text.font=CafeTypography.Strong;text.fontStyle=FontStyle.Normal; text.rectTransform.offsetMin=new Vector2(14,4); text.rectTransform.offsetMax=new Vector2(-14,-4); }
     }
     public sealed class MenuNotice : MonoBehaviour
     {

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 namespace CafeLife {
  public sealed class CafeDecorProgression:MonoBehaviour {
@@ -17,6 +17,7 @@ namespace CafeLife {
   public int Selected=>game?Mathf.Clamp(game.data.interiorStyle,0,3):0;
   public int SurfaceCount=>finishes.Count;
   public Color CurrentSeatColor {get{foreach(var f in finishes)if(f.channel==3)return f.material.color;return Color.clear;}}
+  static Color FloorTint(int style)=>style==1?new Color(1,1,.96f):style==2?new Color(.84f,.78f,.7f):new Color(.79f,.78f,.75f);
   static Color C(string hex){ColorUtility.TryParseHtmlString("#"+hex,out var c);return c;}
   public static Color Swatch(int style,int channel)=>palettes[Mathf.Clamp(style,0,3)][Mathf.Clamp(channel,0,5)];
   public static bool Unlocked(SaveData data,int style)=>data!=null&&style>=0&&style<Levels.Length&&Economy.Level(data)>=Levels[style];
@@ -26,6 +27,7 @@ namespace CafeLife {
     var source=r.sharedMaterial;if(!source)continue;int channel=-1;string n=r.name;
     if(n=="Arka duvar"||n=="Sol duvar"||n=="Sağ duvar"||source==polish.wall)channel=0;
     else if(source==polish.oak)channel=1;else if(source==polish.walnut||n=="Kahve barı - ahşap gövde"||n=="Ahşap ön panel")channel=2;
+    else if(n=="El işçiliği parke")channel=6;
     else if(source==polish.fabric)channel=3;else if(source==polish.stone)channel=4;else if(source==polish.brass)channel=5;
     if(channel<0)continue;string key=channel+"/"+source.GetEntityId();if(!cache.TryGetValue(key,out var material)){material=new Material(source){name="Kafe tarzı / "+channel+" / "+source.name};cache[key]=material;owned.Add(material);finishes.Add(new Finish{material=material,original=source.color,channel=channel});}r.sharedMaterial=material;
    }
@@ -33,7 +35,7 @@ namespace CafeLife {
    BuildDetails(polish);if(!Unlocked(game.data,Selected))game.data.interiorStyle=0;Apply();
   }
   public bool Select(int style){if(!Unlocked(game.data,style)){game.Tell(style>=0&&style<4?Names[style]+" için kafe seviyesi "+Levels[style]+" gerekli.":"Geçersiz dekor seçimi.");return false;}game.data.interiorStyle=style;Apply();game.Save();game.Tell(Names[style]+" tarzı uygulandı. Tarz değiştirmek ücretsiz.",true);return true;}
-  public void Apply(){if(!game||finishes.Count==0)return;int style=Selected;foreach(var f in finishes)f.material.color=style==0?f.original:palettes[style][f.channel];
+  public void Apply(){if(!game||finishes.Count==0)return;int style=Selected;foreach(var f in finishes)f.material.color=style==0?f.original:f.channel==6?FloorTint(style):palettes[style][f.channel];
    foreach(var light in pendantLights)if(light){light.color=style==2?new Color(1,.9f,.77f):style==3?new Color(1,.79f,.53f):new Color(1,.83f,.61f);light.intensity=style==3?.9f:1.1f;}
    plants.SetActive(style==1||style==3);panels.SetActive(style==2);sconces.SetActive(style==3);
   }

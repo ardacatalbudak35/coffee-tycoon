@@ -10,3 +10,9 @@ Sonraki işler: Yeni oyuncuyla oynanış ve ekonomi dengesini değerlendirmek, y
 Doğrulama: Kaynak klasörü ve önceki çalışma raporları incelendi; bu yedekleme sırasında Unity testleri tekrar çalıştırılmadı.
 Git kapsamı: Yeniden açılabilir Unity kaynak projesi; Library, Temp, Logs, UserSettings ve Windows derleme çıktıları dışarıda.
 
+
+19 Ekim 2026 — görsel tasarım sürümü
+Parke CC0 ahşap dokusu ve normal haritasıyla yenilendi; tavan birleşimleri, yuvarlatılmış döşemeler, bar ekipmanı yüzeyleri ve cadde cepheleri düzenlendi. Menü/sipariş kartları ortak renk ve yazı düzenine alındı; gerçek büyük yazı uygulaması ve dekor başlıklarının taşması düzeltildi. Blackjack kartları ve masa eylemleri yenilendi, kart malzemesinin Windows paketine dahil olması doğrulandı.
+Doğrulama: 19 Ekim 13:57 toplu oyun testinde 342 kontrol geçti. Sekiz menü normal ve gerçek %12 büyük yazıyla kontrol edildi. 13:59 Windows derlemesi başarılı, 0 hata; 14:00 bağımsız Windows uygulamasında kafe/kart görüntüleri ve shader kontrolü geçti. Bu Git kaydı hazırlanırken doğrulanmış kaynakların dosya özetleri tekrar karşılaştırıldı; oyun testleri yeniden çalıştırılmadı.
+Windows teslimi yerelde CoffeeTycoon-Windows-v4 klasöründe, masaüstü kısayolu bu sürüme bağlı. Derleme çıktıları ve kişisel kayıt dosyası kaynak deposuna eklenmez. Sahnedeki mevcut serileştirilmiş oyun durumu korunmuştur; açılışta gerçek ilerleme ayrı kayıt dosyasından yüklenir. Geçici test bayrakları kapalıdır.
+Bilinen sınırlar: Karakter modelleri/animasyonları bu görsel turda yeniden yapılmadı; iPhone üzerinde fiziksel cihaz testi yapılmadı; bazı eski Unity API uyarıları sürüyor.

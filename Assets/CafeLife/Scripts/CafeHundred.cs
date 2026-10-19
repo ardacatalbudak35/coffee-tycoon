@@ -20,7 +20,7 @@ namespace CafeLife {
    if(CafeFocusedMode.Enabled){signs=game.world.GetComponentsInChildren<TextMesh>();return;}
    beacon=new GameObject("Yön bulma hedefi");beacon.transform.SetParent(game.world.transform);beaconLabel=beacon.AddComponent<TextMesh>();beaconLabel.anchor=TextAnchor.MiddleCenter;beaconLabel.characterSize=.08f;beaconLabel.fontSize=48;beaconLabel.color=new Color(1,.85f,.3f);signs=game.world.GetComponentsInChildren<TextMesh>();
   }
-  public void Readability(){if(!game.ui)return;foreach(var metric in game.ui.GetComponentsInChildren<CafeFontSize>(true)){var text=metric.GetComponent<UnityEngine.UI.Text>();text.fontSize=Data.largeText?Mathf.RoundToInt(metric.size*1.12f):metric.size;text.color=Data.contrast?Color.white:metric.color;}}
+  public void Readability(){if(game&&game.ui)game.ui.ApplyReadability(Data.largeText,Data.contrast);}
   public void ApplySettings(){game.player.view.farClipPlane=Data.drawDistance;QualitySettings.shadowDistance=game.data.quality==0?20:game.data.quality==1?35:50;}
   void LateUpdate(){if(!game||signs==null)return;foreach(var text in signs)if(text&&text.gameObject.activeInHierarchy){var renderer=text.GetComponent<Renderer>();if(renderer)renderer.enabled=Vector3.Dot(game.player.view.transform.position-text.transform.position,text.transform.forward)<0;}}
   void NewDay(){if(Data.challengeDay==game.data.day)return;Data.materialCost=0;Data.challengeDay=game.data.day;Data.challengeSales=Data.challengeArt=Data.challengeClean=0;}
