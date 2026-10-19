@@ -1,0 +1,13 @@
+﻿using System;
+using System.Linq;
+using UnityEngine;
+using UnityEngine.UI;
+namespace CafeLife {
+ public static class CafeOrderGuideChecks {
+  public static string Report="";
+  static void Check(bool ok,string title){if(!ok)throw new Exception(title);Report+="PASS "+title+"\n";}
+  public static void Validate(CafeGame g){Report="";g.Continue();g.Discard();var mode=g.GetComponent<CafeFocusedMode>();var created=new System.Collections.Generic.List<CafeCustomer>();for(int i=0;i<2;i++){g.Spawn();var c=g.customers.Last();c.state=CafeCustomer.State.Waiting;c.recipe=i==0?2:5;c.patience=20+i*20;created.Add(c);}g.ui.SendMessage("Update");var hud=GameObject.Find("Cafe HUD").GetComponentsInChildren<Transform>(true).First(t=>t.name=="Order cards HUD");var buttons=hud.GetComponentsInChildren<Button>();Check(buttons.Length==2,"Two order cards expose selection actions");buttons[0].onClick.Invoke();Check(mode.selectedOrder==created[0]&&g.selected==2&&created[0].accepted,"Order card accepts and selects visible customer's recipe");g.ui.SendMessage("Update");Check(buttons[0].GetComponentsInChildren<Text>().Any(t=>t.text.Contains("Sıcak bardak rafı")),"Selected order guides player to correct cup shelf");int number=created[0].orderNumber;g.selected=0;created[0].Interact(g);Check(g.selected==2&&created[0].orderNumber==number,"Revisiting accepted customer restores recipe without duplicate order number");g.Act("cup_hot");g.ui.SendMessage("Update");Check(buttons[0].GetComponentsInChildren<Text>().Any(t=>t.text.Contains("Sıradaki: Karamel")),"Order card updates to next preparation station");created[0].identity=0;g.cup.ground=true;g.cup.brewed=true;g.cup.hasMilk=true;g.cup.syrup="caramel";Check(g.NextStep()=="Süt köpürtme","Latte-art preference guides to steaming before lid");g.expansion.foamTime=1;Check(g.NextStep()=="Süt köpürtülüyor","Active steaming has a waiting instruction");g.expansion.foamTime=0;g.cup.foamed=true;Check(g.NextStep()=="Latte art istasyonu","Foamed preference drink guides to latte art");g.cup.art=true;Check(g.NextStep()=="Kapak istasyonu","Completed latte art returns to lid instruction");g.cup.lidded=true;Check(g.NextStep().StartsWith("Teslim"),"Sealed unfinished drink guides to delivery rather than impossible ingredients");g.cup.lidded=false;var held=g.cup;buttons[1].onClick.Invoke();Check(g.cup==held&&g.selected==2&&mode.selectedOrder==created[0],"Selecting another card preserves drink in progress");g.Discard();created[1].patience=10;g.ui.SendMessage("Update");buttons[0].onClick.Invoke();Check(mode.selectedOrder==created[1]&&g.selected==5,"Reordered card selects current visible customer");foreach(var c in created){g.customers.Remove(c);UnityEngine.Object.Destroy(c.gameObject);}mode.selectedOrder=null;g.Tell("");
+  }
+ }
+}
+

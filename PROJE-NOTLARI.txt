@@ -1,0 +1,12 @@
+Coffee Tycoon
+Tarih: 19 Ekim 2026
+Klasör: C:\Users\ardac\CoffeeTycon
+GitHub: https://github.com/ardacatalbudak35/coffee-tycoon
+
+Hedef: Unity ile kahve hazırlama, müşteri servisi, ekonomi ve kafe geliştirme döngüsü olan oynanabilir bir kafe yönetim oyunu geliştirmek.
+Durum: Assets, Packages ve ProjectSettings mevcut. Kahve/espresso, servis, stok ve tedarik, yönetim ekranı, blackjack ve dekor ilerlemesi üzerinde çalışılmış.
+Son çalışma raporu (17 Ekim 2026): Lv.1 Mahalle, Lv.3 Botanik, Lv.6 Atölye ve Lv.10 İmza dekorları tamamlanmış; ücretsiz geçiş ve seçim kaydı eklenmiş. Seviye kilidi, eski kayıt uyumu ve oynanış testlerinin geçtiği; Windows sürümünün sıfır hatayla derlenip gerçek kayıtla açıldığı raporlanmış. Masaüstü kısayolu güncellenmiş.
+Sonraki işler: Yeni oyuncuyla oynanış ve ekonomi dengesini değerlendirmek, yeni özellikleri ayrı görevlerle belirlemek. Yeni bir mağaza yayını doğrulanmadı.
+Doğrulama: Kaynak klasörü ve önceki çalışma raporları incelendi; bu yedekleme sırasında Unity testleri tekrar çalıştırılmadı.
+Git kapsamı: Yeniden açılabilir Unity kaynak projesi; Library, Temp, Logs, UserSettings ve Windows derleme çıktıları dışarıda.
+

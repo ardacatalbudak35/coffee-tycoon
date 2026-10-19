@@ -1,0 +1,11 @@
+using System;
+using System.Linq;
+using UnityEngine;
+namespace CafeLife {
+ public static class CafeSupplyChecks {
+  public static string Report="";static readonly string[] fields={"beans","milk","ice","cupsHot","cupsCold","lidsHot","lidsCold","caramel","vanilla","depotBeans","depotMilk","depotIce","depotCupsHot","depotCupsCold","depotLidsHot","depotLidsCold","depotCaramel","depotVanilla"};
+  static void Check(bool ok,string name){if(!ok)throw new Exception(name);Report+="PASS "+name+"\n";}static void Zero(SaveData d){foreach(var f in fields)typeof(SaveData).GetField(f).SetValue(d,0);}
+  public static void Validate(CafeGame g){Report="";g.Continue();g.Discard();var d=g.data;var mode=g.GetComponent<CafeFocusedMode>();int money=d.money;Zero(d);d.money=100;mode.Supply("syrup");Check(d.money==78&&d.caramel==10&&d.vanilla==10&&d.depotCaramel==0&&d.depotVanilla==0,"Syrup package charges 22 coins and fills both bar bottles");d.caramel=9;d.vanilla=8;mode.Supply("syrup");Check(d.money==56&&d.caramel==10&&d.vanilla==10&&d.depotCaramel==9&&d.depotVanilla==8,"Syrup overflow stays in depot without exceeding shelf capacity");Zero(d);d.money=0;d.depotBeans=7;mode.Supply("beans");Check(d.money==0&&d.beans==0&&d.depotBeans==7&&g.notice.Contains("25"),"Unaffordable purchase preserves money, depot and failure message");Check(!g.expansion.Supply("invalid")&&d.money==0,"Unknown supply item cannot debit wallet");Zero(d);d.money=100;mode.Supply("packaging");Check(d.money==82&&d.cupsHot==12&&d.cupsCold==12&&d.lidsHot==12&&d.lidsCold==12&&d.depotCupsHot==13,"Packaging purchase respects all shelf capacities");Zero(d);d.money=20;g.RescueStock();Check(d.money==20&&d.beans==3&&d.cupsHot==3&&d.lidsHot==3,"Insufficient funds for missing ingredients offers three-espresso rescue");g.RescueStock();Check(d.beans==3&&d.cupsHot==3,"Repeated rescue cannot accumulate free stock");Zero(d);d.money=43;g.RescueStock();Check(d.beans==0&&d.cupsHot==0,"Affordable complete espresso restock uses normal purchase");d.money=0;g.selected=0;g.Act("cup_hot");Check(g.notice.Contains("Tedarik")&&g.cup==null,"Stockout message points to supply menu");d.money=money;foreach(var f in fields)typeof(SaveData).GetField(f).SetValue(d,100);g.Tell("");
+  }
+ }
+}

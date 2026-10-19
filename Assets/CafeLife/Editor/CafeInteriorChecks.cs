@@ -1,0 +1,22 @@
+using System;
+using System.Linq;
+using UnityEngine;
+namespace CafeLife {
+ public static class CafeInteriorChecks {
+  public static string Report="";
+  static void Check(bool ok,string title){if(!ok)throw new Exception(title);Report+="PASS "+title+"\n";}
+  static void Walk(CafeGame g,Vector3 destination){for(int i=0;i<1600;i++){Vector3 d=destination-g.player.transform.position;d.y=0;if(d.magnitude<.15f)return;var v=g.player.transform.InverseTransformDirection(d.normalized);g.player.Move(new Vector2(v.x,v.z),.02f);}throw new Exception("Interior route blocked at "+g.player.transform.position+" toward "+destination);}
+  public static void Validate(CafeGame g){Report="";g.Continue();var all=g.world.GetComponentsInChildren<Transform>(true);foreach(string name in new[]{"Çift gruplu espresso makinesi","Hassas kahve değirmeni","Tezgâh tipi buz ünitesi","Butik pastane vitrini","Düzenli arka hazırlık tezgâhı"})Check(all.Any(t=>t.name==name),"Detailed interior prop "+name);
+   Check(all.Count(t=>t.name=="Opal kafe sarkıtı")==12&&all.Count(t=>t.name=="Duvar yanı dinlenme sediri")==2,"Twelve distributed pendant lights and two wall banquettes");
+   var market=g.world.GetComponentsInChildren<CafeTarget>().First(t=>t.kind=="boulevard_market");Check(market.transform.position.z< -22,"Interior storage relocation preserves street market");
+   CafeBoulevardChecks.At(g,new Vector3(0,.1f,-9.7f));Walk(g,new Vector3(0,0,-8.8f));Walk(g,new Vector3(7.95f,0,-8.8f));Walk(g,new Vector3(7.95f,0,3.6f));Walk(g,new Vector3(6.7f,0,3.6f));Walk(g,new Vector3(6.7f,0,6.2f));Walk(g,new Vector3(-4.8f,0,6.2f));Check(g.player.transform.position.z>6,"Player walks behind counter and along seating aisle");
+   foreach(string kind in new[]{"cup_hot","cup_cold","grinder","ice","machine","foam","art","milk","water","depot"}){var target=g.world.GetComponentsInChildren<CafeTarget>().First(t=>t.kind==kind);var trigger=target.GetComponentsInChildren<Collider>().First(c=>c.enabled&&c.isTrigger&&c.gameObject.layer==8);Vector3 at=trigger.bounds.center;Vector3 stand=new Vector3(at.x,.08f,kind=="milk"||kind=="water"||kind=="depot"?6.15f:3.3f);CafeBoulevardChecks.At(g,stand);g.player.view.transform.rotation=Quaternion.LookRotation(at-g.player.view.transform.position);var hits=Physics.SphereCastAll(g.player.view.transform.position,.075f,g.player.view.transform.forward,3.4f,1<<8,QueryTriggerInteraction.Collide).OrderBy(h=>h.distance).ToArray();var found=hits.Select(h=>h.collider.GetComponentInParent<CafeTarget>()).FirstOrDefault(t=>t);Check(found&&found.kind==kind,"Aim selects the visible station "+kind);}
+   var rig=new GameObject("Scaled rig regression probe");rig.transform.localScale=Vector3.one*100;var anchor=new GameObject("Hand bone").transform;anchor.SetParent(rig.transform,false);anchor.localPosition=new Vector3(.01f,.015f,.002f);var prop=g.world.CupModel(new CupWork{recipe=0},Economy.Recipes[0],g.world.transform,false);var attach=prop.AddComponent<CafeMetricAttachment>();attach.Setup(anchor,new Vector3(0,.045f,.09f),Quaternion.identity,.6f);float initial=prop.transform.Find("Bardak").GetComponent<Renderer>().bounds.size.y;Check(initial>.12f&&initial<.22f,"Cup stays life size under a 100x animated rig");rig.transform.localScale=Vector3.one*.01f;attach.Apply();Check(Mathf.Abs(prop.transform.Find("Bardak").GetComponent<Renderer>().bounds.size.y-initial)<.001f&&Vector3.Distance(prop.transform.position,anchor.position)<.15f,"Rig scale changes cannot enlarge or displace attached props");prop.SetActive(false);rig.SetActive(false);UnityEngine.Object.Destroy(prop);UnityEngine.Object.Destroy(rig);
+for(int recipe=0;recipe<10;recipe++){var cup=g.world.CupModel(new CupWork{recipe=recipe,coldCup=Economy.Recipes[recipe].cold,lidded=true},Economy.Recipes[recipe],g.world.transform,false);g.world.PositionPrepared(cup,0);var b=cup.transform.Find("Bardak").GetComponent<Renderer>().bounds;Check(b.size.y<.22f&&b.size.x<.13f&&b.min.y>1.14f&&b.min.y<1.5f,"Prepared recipe prop has safe dimensions "+recipe);cup.SetActive(false);UnityEngine.Object.Destroy(cup);}
+g.data.staff=1;g.world.Refresh();g.world.StaffHoldCup(new CupWork{recipe=1,brewed=true,hasMilk=true});var staffCup=g.world.GetComponentsInChildren<CafeMetricAttachment>(true).First(a=>a.gameObject!=prop);staffCup.Apply();Check(staffCup.transform.Find("Bardak").GetComponent<Renderer>().bounds.size.y<.22f,"Actual barista hand cup is life size");g.world.StaffClearCup();g.data.staff=0;g.world.Refresh();
+CafeBoulevardChecks.At(g,new Vector3(0,.1f,-9.7f));}
+ }
+}
+
+
+
