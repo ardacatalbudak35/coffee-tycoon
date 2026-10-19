@@ -398,7 +398,7 @@ namespace CafeLife {
   }
   void BuildStudioCasino(){
    var casino=game.GetComponent<CafeCasino>();if(!casino)casino=game.gameObject.AddComponent<CafeCasino>();
-   StudioChrome("NOIR · ÜST KAT","Blackjack","As 1 veya 11 · Krupiye 17'de durur · Doğal 21, 3:2 öder");
+   StudioChrome("SMOKEBANK · ÜST KAT","Blackjack","As 1 veya 11 · Krupiye 17'de durur · Doğal 21, 3:2 öder");
    SText("KRUPİYE",80,246,1120,27,13,studioMuted);CardHand(casino.dealer,80,281,casino.Active);
    SText("SEN · "+(casino.player.Count>0?CafeCasino.Score(casino.player).ToString():"—"),80,399,1120,27,13,studioGold);CardHand(casino.player,80,434,false);
    SText(casino.Result,80,551,1120,35,19,ink);

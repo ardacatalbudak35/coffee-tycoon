@@ -12,7 +12,7 @@ namespace CafeLife {
    for(int i=0;i<11;i++)Shape("NOIR akustik duvar paneli",PrimitiveType.Cube,scenery,new Vector3(4.18f,2.1f,-25-i*1.35f),new Vector3(.06f,2.3f,.55f),violet);
    foreach(float x in new[]{11f,17f})foreach(float y in new[]{.65f,1.65f}){var cone=Disc("NOIR hoparlör konisi",scenery,new Vector3(x,y,-38.58f),new Vector3(.57f,.04f,.57f),fabric);cone.transform.localRotation=Quaternion.Euler(90,0,0);var center=Disc("NOIR hoparlör toz kapağı",scenery,new Vector3(x,y,-38.54f),new Vector3(.20f,.035f,.20f),steel);center.transform.localRotation=Quaternion.Euler(90,0,0);}
    Shape("DJ mixer kontrol yüzeyi",PrimitiveType.Cube,scenery,new Vector3(14,1.21f,-39),new Vector3(.65f,.05f,.72f),steel);for(int i=0;i<5;i++){Shape("DJ mixer fader yolu",PrimitiveType.Cube,scenery,new Vector3(13.76f+i*.12f,1.24f,-38.9f),new Vector3(.018f,.015f,.35f),paper);Shape("DJ mixer fader düğmesi",PrimitiveType.Cube,scenery,new Vector3(13.76f+i*.12f,1.26f,-38.95f+(i%3)*.08f),new Vector3(.07f,.025f,.07f),brass);}
-   InteriorLabel("N O I R\nAFTER HOURS",scenery,new Vector3(14,2.85f,-40.82f),.045f,180);foreach(float x in new[]{5f,10f,15f,19f})Shape("NOIR tavan ışık çizgisi",PrimitiveType.Cube,scenery,new Vector3(x,3.88f,-34),new Vector3(.035f,.035f,10),neon);
+   InteriorLabel("S M O K E B A N K\nAFTER HOURS",scenery,new Vector3(14,2.85f,-40.82f),.045f,180);foreach(float x in new[]{5f,10f,15f,19f})Shape("NOIR tavan ışık çizgisi",PrimitiveType.Cube,scenery,new Vector3(x,3.88f,-34),new Vector3(.035f,.035f,10),neon);
    // Casino tables: low-profile printed markings, cards, and correctly sized chips.
    foreach(float x in new[]{8f,15f}){
     Disc("Casino keçe iç alan",scenery,new Vector3(x,5.20f,-33),new Vector3(3.45f,.012f,2.2f),felt);

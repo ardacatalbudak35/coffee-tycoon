@@ -70,7 +70,7 @@ namespace CafeLife
             UpdateExpansionHud(); var d=game.data;
             stats.transform.parent.gameObject.SetActive(false);toast.gameObject.SetActive(!game.Paused);
             stats.text="ARDA'S COFFEE    •    "+d.money+" coin    •    Lv."+Economy.Level(d)+"    •    Gün "+d.day+"\nMemnuniyet %"+Mathf.RoundToInt(d.reputation)+"    Çekirdek "+d.beans+" / Süt "+d.milk+" / Buz "+d.ice+"    •    Müşteri "+game.customers.Count+" / "+Mathf.Min(game.data.tables*2,24)+"    •    Teslimde "+game.shelf.Count;
-            if(game.player.transform.position.z<-11)stats.text="ARDA'S COFFEE   /   "+d.money+" COIN   /   GÜN "+d.day+"\n"+(game.player.transform.position.z<-23?(game.player.transform.position.x>3?(game.player.transform.position.y>3?"ROYAL JACKPOT · ÜST KAT":"NOIR · GECE KULÜBÜ"):game.player.transform.position.x< -22?"BASKET NOKTASI":"GECE MARKETİ"):"CADDE · E ile etkileş");
+            if(game.player.transform.position.z<-11)stats.text="ARDA'S COFFEE   /   "+d.money+" COIN   /   GÜN "+d.day+"\n"+(game.player.transform.position.z<-23?(game.player.transform.position.x>3?(game.player.transform.position.y>3?"ROYAL JACKPOT · ÜST KAT":"SMOKEBANK · GECE KULÜBÜ"):game.player.transform.position.x< -22?"BASKET NOKTASI":"GECE MARKETİ"):"CADDE · E ile etkileş");
             hint.text=game.player.Hint; hintCard.gameObject.SetActive(!game.Paused && !string.IsNullOrEmpty(hint.text)); toast.text=game.noticePinned||Time.unscaledTime<game.noticeUntil?game.notice:"";
             orders.transform.parent.gameObject.SetActive(false);UpdateOrderHud();
             string queue="<color=#E8C88F><b>SİPARİŞLER</b></color>\n"; int count=0;

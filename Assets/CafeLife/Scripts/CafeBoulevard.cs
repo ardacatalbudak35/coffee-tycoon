@@ -26,7 +26,7 @@ namespace CafeLife {
    for(int i=0;i<2;i++){var bench=Model("Chair",new Vector3(-32+i*2,0,-23.6f),.9f,180);Target(bench,"bench");}
 
    Shell("NOIR gece kulübü",new Vector3(14,0,-32),dark,true);
-   Sign("N O I R",new Vector3(14,3.1f,-22.7f),.13f,new Color(.9f,.3f,1),180);
+   Sign("S M O K E B A N K",new Vector3(14,3.1f,-22.7f),.13f,new Color(.9f,.3f,1),180);
    Sign("GECE KULÜBÜ   /   CASINO ÜST KAT",new Vector3(14,2.45f,-22.7f),.035f,new Color(.65f,.8f,1),180);
    Block("Casino üst kat ana döşeme",new Vector3(12,4.08f,-32),new Vector3(16,.24f,18),new Color(.19f,.1f,.12f));
    Block("Merdiven üst sahanlık",new Vector3(22,4.08f,-38.75f),new Vector3(4,.24f,4.5f),new Color(.19f,.1f,.12f));
