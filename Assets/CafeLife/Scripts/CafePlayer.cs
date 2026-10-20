@@ -113,9 +113,11 @@ namespace CafeLife
     public sealed class CafeTarget : MonoBehaviour
     {
         public string kind; public CafeCustomer customer;
-        public int branchIndex; public CafeVenue venue; public CafeLitter litter;
+        public int branchIndex; public CafeVenue venue; public CafeLitter litter; public CafeDirt dirt;
         public string Label(CafeGame g)
         {
+            if(dirt)return g.cleaning.DirtLabel(dirt);
+            if(kind!=null&&kind.StartsWith("cc_"))return g.CareLabel(kind);
             if(kind!=null&&kind.StartsWith("blackjack_"))return "Blackjack · "+(kind=="blackjack_hit"?"Kart çek":kind=="blackjack_stand"?"Dur":kind=="blackjack_leave"?"Masadan ayrıl":kind.Substring(10)+" coin oyna")+" [E]";
             if(litter)return litter.table?"Masayı temizle [E]":"Sokak çöpünü topla · +2 coin [E]";
             if(kind=="foam")return "Süt köpürt [E]"; if(kind=="art")return "Latte art · zamanlamayı yakala [E]"; if(kind=="clean_machine")return "Makineyi temizle · 5 coin [E]"; if(kind=="clean_cafe")return "Kafeyi temizle [E]"; if(kind=="taxi")return "Taksi · mahalle yolculuğu [E]"; if(kind=="bench")return "Bankta otur / kalk [E]";
@@ -144,7 +146,7 @@ namespace CafeLife
             return "Kafe yönetimi / stok / dekor [E]";
         }
         public void Use(CafeGame g)
-        { if(kind!=null&&kind.StartsWith("blackjack_"))g.GetComponent<CafeTableBlackjack>().Action(kind.Substring(10));else if(kind=="boulevard_ranking")g.OpenStreetPage("ranking");else if(kind=="boulevard_arcade")g.GetComponent<CafeBasketball>().Interact();else if(kind=="boulevard_market")g.OpenOperations("supply");else if(litter)litter.Clean();else if(venue) g.OpenVenue(venue); else if(customer) customer.Interact(g); else if(kind=="branch")g.OpenBranch(branchIndex); else if(kind=="branch_exit")g.ExitBranch(); else if(kind=="casino")g.OpenCasino(); else g.Act(kind); }
+        { if(dirt)g.cleaning.UseDirt(dirt);else if(kind!=null&&kind.StartsWith("cc_"))g.CareUse(kind);else if(kind!=null&&kind.StartsWith("blackjack_"))g.GetComponent<CafeTableBlackjack>().Action(kind.Substring(10));else if(kind=="boulevard_ranking")g.OpenStreetPage("ranking");else if(kind=="boulevard_arcade")g.GetComponent<CafeBasketball>().Interact();else if(kind=="boulevard_market")g.OpenOperations("supply");else if(litter)litter.Clean();else if(venue) g.OpenVenue(venue); else if(customer) customer.Interact(g); else if(kind=="branch")g.OpenBranch(branchIndex); else if(kind=="branch_exit")g.ExitBranch(); else if(kind=="casino")g.OpenCasino(); else g.Act(kind); }
     }
 }
 

@@ -32,7 +32,7 @@ namespace CafeLife
     {
         public GameObject[] prefabs;
         public GameObject[] customerPrefabs;
-        public GameObject[] cityPrefabs;
+        public GameObject[] cityPrefabs,homePrefabs;
         public RuntimeAnimatorController customerAnimator;
         public SaveData data;
         public CafePlayer player;
@@ -82,8 +82,11 @@ namespace CafeLife
             world.SetStaffLevel(Mathf.Max(1,data.baristaLevel));
             gameObject.AddComponent<CafeFocusedMode>().Setup(this);
             ui=gameObject.AddComponent<CafeUI>(); ui.game=this; ui.Build();
+            story=gameObject.AddComponent<CafeStory>(); story.game=this; gameObject.AddComponent<CafeParanormal>().game=this;
+            cleaning=gameObject.AddComponent<CafeCleaning>(); cleaning.Setup(this);
+            home=gameObject.AddComponent<CafeHome>(); home.Setup(this);
             audioSource=gameObject.AddComponent<AudioSource>(); click=Tone(560,.09f); sale=Tone(880,.2f);
-            music=gameObject.AddComponent<AudioSource>(); music.clip=Music(); music.loop=true; music.volume=.18f; music.Play();
+            music=gameObject.AddComponent<AudioSource>(); music.clip=Music(); music.loop=true; music.volume=.18f; /* Şarkı şimdilik kapalı. Açmak için: music.Play(); */
             machineAudio=gameObject.AddComponent<AudioSource>(); machineAudio.clip=Tone(95,1); machineAudio.loop=true; machineAudio.volume=.07f;
             AudioListener.volume=data.volume; ApplyAudio();
             ui.ShowMenu("home");
@@ -103,17 +106,24 @@ namespace CafeLife
             if(world.steam) world.steam.SetActive(brewTime>0);
             if(brewTime>0 && !machineAudio.isPlaying) machineAudio.Play();
             else if(brewTime<=0 && machineAudio.isPlaying) machineAudio.Stop();
+            if(data.dayTime>=300 && story && story.NightHold()) { data.dayTime=300; return; } // Gece uyumadan sabah olmaz.
             spawnTimer-=dt;
             if(spawnTimer<=0) { spawnTimer=CafeFocusedMode.Enabled?Mathf.Lerp(14,7,Mathf.Clamp01(data.served/30f)):Mathf.Max(5,20-data.decor+(80-data.reputation)*.08f)*(expansion?expansion.DemandMultiplier:1); Spawn(); }
             data.dayTime+=dt;
-            if(data.dayTime>=300) { if(expansion)expansion.EndDay(data.day); data.day++; data.dayTime-=300; data.earned=0; Tell("Yeni gün: "+data.day); Save(); }
+            if(data.dayTime>=300) AdvanceDay();
             saveTimer-=dt; if(saveTimer<=0) { Save(); saveTimer=30; }
             staffTimer-=dt;
             if(data.staff>0 && (!expansion||expansion.Data.staffOn) && staffTimer<=0 && !staffBusy) { staffTimer=45; StaffServe(); }
         }
+        public CafeStory story; public CafeCleaning cleaning; public CafeHome home;
+        public string CareLabel(string k)=>k=="cc_mop"||k=="cc_cloth"?cleaning.ToolLabel(k):home.Label(k);
+        public void CareUse(string k){ if(k=="cc_mop"||k=="cc_cloth")cleaning.UseTool(k); else home.Use(k); }
+        public void AdvanceDay() { if(expansion)expansion.EndDay(data.day); data.day++; data.dayTime=data.dayTime>=300?data.dayTime-300:0; data.earned=0; int dirty=cleaning?cleaning.Overnight():0; Tell("Yeni gün: "+data.day+(dirty>0?" · gece kafe tozlanmış, "+dirty+" yeni toz var":"")); Save(); }
+        public void StoryPause(bool on)
+        { if(on) { Paused=true; if(machineAudio) machineAudio.Stop(); player.Lock(false); } else { Paused=false; player.Lock(!CafeFocusedMode.CounterControls); } }
         public void Continue() { started=true; Paused=false; ui.ShowMenu(""); player.Lock(!CafeFocusedMode.CounterControls); }
         public void TogglePause()
-        { if(Paused && started) Continue(); else { Paused=true; if(machineAudio) machineAudio.Stop(); player.Lock(false); ui.ShowMenu("pause"); Save(); } }
+        { if(CafeStory.Busy) return; if(Paused && started) Continue(); else { Paused=true; if(machineAudio) machineAudio.Stop(); player.Lock(false); ui.ShowMenu("pause"); Save(); } }
         public CafeVenue activeVenue,trackedVenue;
         public void OpenOperations(string section="business") { Paused=true; if(machineAudio)machineAudio.Stop(); player.Lock(false); ui.operationSection=section; ui.SetStudioSection(section);ui.ShowMenu("operations"); }
         public void OpenDistrict() { if(CafeFocusedMode.Enabled){OpenStreetPage("ranking");return;}Paused=true; player.Lock(false); ui.ShowMenu("district"); }

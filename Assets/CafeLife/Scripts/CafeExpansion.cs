@@ -39,7 +39,6 @@ namespace CafeLife
             MakeStation("Süt köpürtme","foam",new Vector3(-2.8f,1.2f,CafeFocusedMode.Enabled?-5.5f:3.5f),new Color(.65f,.72f,.7f));
             MakeStation("Latte art tezgâhı","art",new Vector3(-2.15f,1.2f,CafeFocusedMode.Enabled?-5.5f:3.5f),new Color(.7f,.48f,.25f));
             MakeStation("Makine temizliği","clean_machine",new Vector3(-.6f,1.3f,-5.25f),new Color(.2f,.55f,.45f),.16f);
-            MakeStation("Temizlik dolabı","clean_cafe",new Vector3(8.6f,.7f,4f),new Color(.25f,.5f,.45f),.5f);
             ApplyDecor();
         }
         public static void Normalize(CafeExpansionData d)
@@ -126,7 +125,7 @@ namespace CafeLife
                     if(game.cup==null||!game.cup.foamed||!game.cup.brewed||game.cup.lidded||game.cup.art){game.Tell("Latte art için köpüklü, demlenmiş ve açık bardak gerekli.");return true;}
                     var pour=GetComponent<CafeLattePour>();if(!pour)pour=gameObject.AddComponent<CafeLattePour>();pour.Begin(game);return true;
                 case "clean_machine":if(Pay(5)){Data.machineDirt=0;game.Tell("Makine temizlendi. Demleme hızı düzeldi.",true);game.Save();}return true;
-                case "clean_cafe":if(Data.cleanliness>=99){game.Tell("Kafe zaten temiz.");return true;}GetComponent<CafeHundred>()?.Clean();Data.cleanliness=100;Data.cleaned++;game.Tell("Kafe temizlendi. Müşteriler daha rahat bekleyecek.",true);game.Save();return true;
+                case "clean_cafe":game.Tell("Kafe tek tuşla temizlenmez: yerdeki tozları paspasla, masaları bezle sil (ikisi de merdiven altında).");return true;
                 case "taxi":game.OpenOperations("travel");return true;
                 case "bench":ToggleSit();return true;
                 case "clear_stale":ClearStale();return true;

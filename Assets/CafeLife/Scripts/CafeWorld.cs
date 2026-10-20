@@ -258,6 +258,7 @@ namespace CafeLife
         {
             foreach(var prefab in game.prefabs) if(prefab) assets[prefab.name]=prefab;
             if(game.cityPrefabs!=null) foreach(var prefab in game.cityPrefabs) if(prefab) cityAssets[prefab.name]=prefab;
+            if(game.homePrefabs!=null) foreach(var prefab in game.homePrefabs) if(prefab) assets["VNB "+prefab.name]=prefab; // Üst kat evi: "VNB Sofa" gibi çağrılır
             Color cream=new Color(.8f,.73f,.6f), wood=new Color(.2f,.1f,.06f);
             Block("Zemin",new Vector3(0,-.15f,-1),new Vector3(20,.3f,20),cream);
             for(int x=-8;x<=8;x+=2) for(int z=-9;z<=7;z+=2) {

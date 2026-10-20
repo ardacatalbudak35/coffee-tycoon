@@ -7,7 +7,9 @@ namespace CafeLife {
  }
  public sealed class CafeFocusedMode:MonoBehaviour {
   public static bool Enabled=>true; public static bool CounterControls=>false;public CafeGame game;public CafeCustomer selectedOrder;public float holdProgress;public string heldAction="";bool consumeClick;GameObject jug,stream;
-  public static int[] AvailableRecipes(int served)=>served<5?new[]{0,1}:served<10?new[]{0,1,4}:served<20?new[]{0,1,2,3,4}:served<35?new[]{0,1,2,3,4,5,8}:Enumerable.Range(0,10).ToArray();
+  static int[] ServedRecipes(int served)=>served<5?new[]{0,1}:served<10?new[]{0,1,4}:served<20?new[]{0,1,2,3,4}:served<35?new[]{0,1,2,3,4,5,8}:Enumerable.Range(0,10).ToArray();
+  // Hikaye açıkken menüyü haberler belirler; ilk gecenin ardından eski servis sayısı kuralı da devreye girer.
+  public static int[] AvailableRecipes(int served){var old=ServedRecipes(served);if(!CafeStory.Active)return old;var list=Enumerable.Range(0,10).Where(i=>(CafeStory.Mask&(1<<i))!=0||(CafeStory.Free&&old.Contains(i))).ToArray();return list.Length>0?list:new[]{0};}
   public void Setup(CafeGame owner){game=owner;if(!CounterControls){var p=game.player;p.body.enabled=false;p.transform.position=new Vector3(0,.08f,-9.7f);p.transform.rotation=Quaternion.identity;p.view.transform.localPosition=Vector3.up*1.65f;p.view.transform.localRotation=Quaternion.identity;p.pitch=0;p.body.enabled=true;return;}Pose();
    var light=new GameObject("Tezgâh çalışma ışığı").AddComponent<Light>();light.transform.SetParent(game.world.transform);light.transform.position=new Vector3(0,3,-6);light.type=LightType.Point;light.range=10;light.intensity=1.6f;light.color=new Color(1,.9f,.75f);
    jug=GameObject.CreatePrimitive(PrimitiveType.Cylinder);jug.name="Süt döküm sürahisi";jug.transform.SetParent(game.player.view.transform,false);jug.transform.localPosition=new Vector3(.2f,.06f,.78f);jug.transform.localScale=new Vector3(.1f,.09f,.1f);jug.transform.localRotation=Quaternion.Euler(0,0,35);jug.layer=2;Destroy(jug.GetComponent<Collider>());jug.GetComponent<Renderer>().sharedMaterial=game.world.ColorMaterial(new Color(.65f,.7f,.72f));

@@ -119,7 +119,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &746458429
+--- !u!1 &1851272629
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -127,8 +127,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 746458431}
-  - component: {fileID: 746458430}
+  - component: {fileID: 1851272631}
+  - component: {fileID: 1851272630}
   m_Layer: 0
   m_Name: Cafe Life - Oyun
   m_TagString: Untagged
@@ -136,13 +136,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &746458430
+--- !u!114 &1851272630
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 746458429}
+  m_GameObject: {fileID: 1851272629}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5fc00a54d3fbedf4581419a2eb2dfc48, type: 3}
@@ -202,12 +202,85 @@ MonoBehaviour:
   - {fileID: 8429504087269281412, guid: a422320b19276e244a6a789baf24ac5a, type: 3}
   - {fileID: 2888273331130483981, guid: e66613c88a3a2d7498c4e4a2af6b931a, type: 3}
   - {fileID: 8509081606571834462, guid: 7d8c1c77edd33ae47b3d487ee28b7b8d, type: 3}
+  homePrefabs:
+  - {fileID: 6867888445284286958, guid: 4b88d3017dea81d419560d5e5b3234f0, type: 3}
+  - {fileID: 5211124666064554688, guid: 6e83bdb40baf7f94485cb29a20dcc7c7, type: 3}
+  - {fileID: 270082881127532208, guid: b6363fb4d1176924da5a92a5383f569f, type: 3}
+  - {fileID: 1327290533632646105, guid: 2db0d55c1c1fc4e4ba21a8eb231d1404, type: 3}
+  - {fileID: 594574280666964093, guid: 466061f3fd4bec141a97787320c7f5d3, type: 3}
+  - {fileID: 6154092109373509031, guid: ef307dcdfce7d924aa39af8363af579b, type: 3}
+  - {fileID: 2590944932886589084, guid: 7561943de8d87ee469feec014e2a4307, type: 3}
+  - {fileID: 1497197732478445669, guid: 499d3aa4d56b9394abbeefb798bc900f, type: 3}
+  - {fileID: 3448378548891914701, guid: fb5a3ee54ad8ce849972e5f999651149, type: 3}
+  - {fileID: 5579001893687281397, guid: 6979e55ad502a664986120db531d43d1, type: 3}
+  - {fileID: 2859243696232758643, guid: a8649502b6252f743b2fec9bdfa3801d, type: 3}
+  - {fileID: 6021262846917932210, guid: 8c655c3ff4b6d61419a993929b7453f9, type: 3}
+  - {fileID: 6219544330484885824, guid: 7338b7b69c16ddd4fa93bc18029f077b, type: 3}
+  - {fileID: 6149668692674433882, guid: 8e3784e12246b0d4ea8e5a8bc06dfd11, type: 3}
+  - {fileID: 2521996568384492319, guid: e0024709b4ecd8940a922d2aadfd08ef, type: 3}
+  - {fileID: 5715533080084167698, guid: 30c03ba9b84e77a4aa127e9fb64600e6, type: 3}
+  - {fileID: 5715533080084167698, guid: 6158e4a8d292be34985f537bc85ef060, type: 3}
+  - {fileID: 4538175129291623729, guid: 3ec4e09ad1aa44f4db2b8de1dbc2c67b, type: 3}
+  - {fileID: 3074942524935125775, guid: ffe1504051935ae4d9d2d98c6a8462d2, type: 3}
+  - {fileID: 7753755273851700739, guid: 3c9c4ccfb61cde442833e56d5f08f907, type: 3}
+  - {fileID: 1033094240981571515, guid: d5d69b2c6eead224caebe10ced6c3619, type: 3}
+  - {fileID: 2196752893192274825, guid: 5ab5ff0b8ef0b004c9ed7bf057eec855, type: 3}
+  - {fileID: 5955587701810026444, guid: 10298b9e560245b4992792f616175844, type: 3}
+  - {fileID: 6712229636693181147, guid: 171b99c7e05d1af4aaf40d7cd187b140, type: 3}
+  - {fileID: 4224822716114321013, guid: f7b4fc809722b684aa37daf24425f194, type: 3}
+  - {fileID: 1122680716994669007, guid: 806845e13ef08a749bae3f682a8c4bfe, type: 3}
+  - {fileID: 5981302625659511687, guid: 278759375cd7e8549ba762983539cfee, type: 3}
+  - {fileID: 4162978912271458162, guid: f681cc44779dbfe4680147f404469ff2, type: 3}
+  - {fileID: 6024379467745456903, guid: 1593ea4606d9b644d829eb2468277bba, type: 3}
+  - {fileID: 3779842332081184168, guid: 7376817d66b5b1a46a60792a826a7b8e, type: 3}
+  - {fileID: 5049131972970627031, guid: 8696c905ce34e8c479b6b5c84e2538a7, type: 3}
+  - {fileID: 7018149740049990884, guid: 872286f6db1951c418d11e2ad7a14841, type: 3}
+  - {fileID: 6930229667536110192, guid: bc519c28e783360469b918176408309b, type: 3}
+  - {fileID: 1712598794445152689, guid: e5a128c33f192b747963b721167f4c12, type: 3}
+  - {fileID: 1169846662114238645, guid: 2efe4c7e5649ecc45a11a8e721811697, type: 3}
+  - {fileID: 751178592360698313, guid: 9fb9dc039efa3ae4dba3dfb6d948136d, type: 3}
+  - {fileID: 7147805673388315298, guid: 55a7c377c811f6444bd0ec97a8020205, type: 3}
+  - {fileID: 327718886543524860, guid: 4e6a17e3b8dd0a34aa1d09fa67307554, type: 3}
+  - {fileID: 8115888069296819905, guid: 21d7d307cd0345846bb2838cfd0f7beb, type: 3}
+  - {fileID: 4651206932664407072, guid: 96080e32de51543459193b388cae7ee4, type: 3}
+  - {fileID: 8697762909259180210, guid: 88891b2237a315f488db15157353185f, type: 3}
+  - {fileID: 8923048152342743067, guid: cbd357172804a594e84114b80dcbdf98, type: 3}
+  - {fileID: 2196592804463086559, guid: 6e95bb178bca29e43b39b52886308626, type: 3}
+  - {fileID: 9215766986088239884, guid: d88e2f31213b557458b289b8320bd160, type: 3}
+  - {fileID: 4940478326171830788, guid: 5c5bbf1ac2fc4244c8965ea2e24f736d, type: 3}
+  - {fileID: 4036990033736811605, guid: 1b4a2fcec2f376840a9b00435c549e68, type: 3}
+  - {fileID: 6392951005274703728, guid: c3fb4a2c7adba364fab43ee49fc6fd4c, type: 3}
+  - {fileID: 694404784448019737, guid: 8a1156f3f921d3e4392e7916638fe303, type: 3}
+  - {fileID: 8457159862497001879, guid: ed87f770558b4c04294eab2cdf6b5304, type: 3}
+  - {fileID: 8415047381540525549, guid: 321a0438df9e91145b603f128769c8c4, type: 3}
+  - {fileID: 3427576529591750598, guid: 5b7b7e1d81923744587397b4460bd6e4, type: 3}
+  - {fileID: 5567208263766938737, guid: e8f495fed65639a4a857b2268b40f516, type: 3}
+  - {fileID: 1889621226166455509, guid: dfaa52422572dea44abb4fa7b5449965, type: 3}
+  - {fileID: 9157375025217438749, guid: aeb60ae00cf42b24781d6467b06523b7, type: 3}
+  - {fileID: 1758126560155392758, guid: 7b443a248a08fd742a9a93cad4561a1d, type: 3}
+  - {fileID: 485416128087734100, guid: e46336e55ae510a429df381c042e6e41, type: 3}
+  - {fileID: 8352391561264918986, guid: 9abf3a5db0718474b99d53de5611f298, type: 3}
+  - {fileID: 6246169942098742250, guid: bedc74fecd7fb414c8488128d3ba941b, type: 3}
+  - {fileID: 3445191361937488951, guid: 63b03e51a637e6f44ad4bb2a3a23c8a3, type: 3}
+  - {fileID: 8195903777857769936, guid: 3822a4e73f9a89f42bb1c7e7389395b2, type: 3}
+  - {fileID: 1827671705352995241, guid: 3beb30967b5ce9c44ba179ab9ae7f342, type: 3}
+  - {fileID: 1248767474631093451, guid: d369d6eace77e5844b6822d8b1d751ab, type: 3}
+  - {fileID: 2384440897504528936, guid: 3c81db9f12f27a440b8dd6250760b79a, type: 3}
+  - {fileID: 2150325593898613835, guid: bbe20776896d0a34eb1b2d81fe11c0e7, type: 3}
+  - {fileID: 1720505183821408705, guid: e31e4fec45489e94fbbe45c66d5591ac, type: 3}
+  - {fileID: 1884263127011962435, guid: 5466be3b49e370b41835fcd09f1606b9, type: 3}
+  - {fileID: 8073015660527583167, guid: 988d13dc5aa8a9241b517122f6dfc54c, type: 3}
+  - {fileID: 1922503423901417378, guid: ed788101d6ae1244a9a6b4110eff5ebb, type: 3}
+  - {fileID: 3707258890302647119, guid: 6be47641a22677f40a392beb3769112e, type: 3}
+  - {fileID: 8436580773724463588, guid: 43a8c0c44d4744344b675dae27cabbcb, type: 3}
+  - {fileID: 2900242332372587410, guid: ad627beecdb4f5e43b1e621c1e0a7a04, type: 3}
+  - {fileID: 4603494881687142300, guid: f99779424a762ad42bde7fe5d501f244, type: 3}
   customerAnimator: {fileID: 9100000, guid: 88fde266c5c8e0f46af70a10036e9375, type: 2}
   data:
     interiorStyle: 1
     version: 3
-    money: 8212
-    xp: 710
+    money: 18026
+    xp: 1080
     machine: 5
     tables: 12
     decor: 6
@@ -245,36 +318,41 @@ MonoBehaviour:
       espressoLevel: 1
       paintLevel: 0
       capacity: 80
-    beans: 1
-    milk: 0
-    ice: 5
-    cupsHot: 0
-    cupsCold: 5
-    lidsHot: 0
-    lidsCold: 6
-    caramel: 6
-    vanilla: 8
-    depotBeans: 284
-    depotMilk: 302
-    depotIce: 200
-    depotCupsHot: 344
-    depotCupsCold: 369
-    depotLidsHot: 345
-    depotLidsCold: 370
-    depotCaramel: 84
-    depotVanilla: 82
+    beans: 0
+    milk: 2
+    ice: 3
+    cupsHot: 1
+    cupsCold: 2
+    lidsHot: 2
+    lidsCold: 2
+    caramel: 5
+    vanilla: 9
+    depotBeans: 999
+    depotMilk: 840
+    depotIce: 522
+    depotCupsHot: 682
+    depotCupsCold: 711
+    depotLidsHot: 683
+    depotLidsCold: 713
+    depotCaramel: 200
+    depotVanilla: 200
     unlocked: 1023
-    served: 35
-    missed: 5
-    day: 5
-    earned: 158
+    served: 51
+    missed: 6
+    day: 7
+    earned: 338
     tutorial: 0
     quest: 0
     staff: 1
     outfit: 0
-    reputation: 48
-    dayTime: 128.35193
-    volume: 0.55
+    noteRead: 0
+    shadowSeen: 0
+    jumpSeen: 0
+    storyStage: -1
+    menuMask: 1023
+    reputation: 61
+    dayTime: 279.9723
+    volume: 0.75
     sensitivity: 0.1
     hundred:
       dose: 18
@@ -283,22 +361,22 @@ MonoBehaviour:
       walkSpeed: 3.4
       drawDistance: 140
       roast: 1
-      combo: 0
-      bestCombo: 8
-      wasted: 2
-      materialCost: 22
-      challengeDay: 5
-      challengeSales: 5
+      combo: 1
+      bestCombo: 13
+      wasted: 3
+      materialCost: 38
+      challengeDay: 7
+      challengeSales: 10
       challengeArt: 0
       challengeClean: 0
       challengeRewardDay: 0
-      qualitySum: 2685
-      qualityCount: 35
-      preferencesMet: 14
-      basketBest: 0
+      qualitySum: 4107
+      qualityCount: 51
+      preferencesMet: 24
+      basketBest: 6
       streetRewardDay: 0
-      mastery: 230000007300000019000000190000002d0000002800000000000000000000001900000000000000i
-      sales: 030000000d0000000400000004000000060000000300000000000000000000000200000000000000i
+      mastery: 3c0000007d00000032000000190000005a000000320000000f0000000f000000190000002d000000i
+      sales: 050000000e0000000600000004000000090000000400000002000000010000000200000004000000i
       minimap: 1
       autoSupply: 0
       reduceMotion: 0
@@ -307,20 +385,20 @@ MonoBehaviour:
       mapZoom: 1
     expansion:
       schema: 1
-      price: 100
-      dayIncome: 158
-      dayExpenses: 9
-      dayServed: 5
+      price: 80
+      dayIncome: 938
+      dayExpenses: 21
+      dayServed: 10
       debt: 0
-      dailyRewardDay: 0
-      achievements: 0
-      visits: 56
-      cleaned: 1
+      dailyRewardDay: 7
+      achievements: 29
+      visits: 96
+      cleaned: 2
       tutorial: 31
-      cleanliness: 0
-      machineDirt: 51
-      stamina: 4.310189
-      fov: 72
+      cleanliness: 56.944103
+      machineDirt: 72
+      stamina: 16.58374
+      fov: 80
       music: 0.5
       effects: 1
       open: 1
@@ -329,8 +407,18 @@ MonoBehaviour:
       wall: 0
       layout: 0
       light: 1
-      loyalty: 070000000200000002000000030000000200000001000000020000000300000005000000050000000100000002000000i
+      loyalty: 070000000600000003000000050000000300000002000000040000000400000006000000050000000200000004000000i
       history:
+      - day: 6
+        income: 489
+        expenses: 1559
+        served: 5
+        debt: 0
+      - day: 5
+        income: 188
+        expenses: 72
+        served: 6
+        debt: 0
       - day: 4
         income: 3505
         expenses: 3284
@@ -352,15 +440,15 @@ MonoBehaviour:
         served: 4
         debt: 0
       reviews:
-      - "Mert: Kahve beklemi\u015Fti; daha taze servis et. \u2605\u2605"
-      - "\u0130pek: Tam istedi\u011Fim gibi! Dengeli espresso ister \xB7 tercih bonusu +3 \u2605\u2605\u2605\u2605\u2605"
+      - "Selin: Tarif g\xFCzeldi. Bir dahakine: Latte art ister. \u2605\u2605\u2605\u2605\u2605"
+      - "Ece: Malzeme veya haz\u0131rl\u0131k s\u0131ras\u0131 yanl\u0131\u015Ft\u0131. \u2605\u2605"
+      - "Ece: Malzeme veya haz\u0131rl\u0131k s\u0131ras\u0131 yanl\u0131\u015Ft\u0131. \u2605\u2605"
+      - "Mert: Tam istedi\u011Fim gibi! Taze servis \xB7 30 sn alt\u0131nda \xB7 tercih bonusu +3 \u2605\u2605\u2605\u2605\u2605"
+      - "Ali: Tam istedi\u011Fim gibi! Taze servis \xB7 30 sn alt\u0131nda \xB7 tercih bonusu +3 \u2605\u2605\u2605\u2605\u2605"
+      - "Ali: Tam istedi\u011Fim gibi! Taze servis \xB7 30 sn alt\u0131nda \xB7 tercih bonusu +3 \u2605\u2605\u2605\u2605\u2605"
       - "Can: Tarif g\xFCzeldi. Bir dahakine: G\xFC\xE7l\xFC kahve \xB7 en az 20 g. \u2605\u2605\u2605\u2605\u2605"
-      - "Ada: Tam istedi\u011Fim gibi! Taze servis \xB7 30 sn alt\u0131nda \xB7 tercih bonusu +3 \u2605\u2605\u2605\u2605\u2605"
-      - "Ada: Kahve beklemi\u015Fti; daha taze servis et. \u2605\u2605"
-      - "Bora: Tarif g\xFCzeldi. Bir dahakine: G\xFC\xE7l\xFC kahve \xB7 en az 20 g. \u2605\u2605\u2605\u2605\u2605"
       - "Duru: Tam istedi\u011Fim gibi! Dengeli espresso ister \xB7 tercih bonusu +3 \u2605\u2605\u2605\u2605\u2605"
-      - "Deniz: Tarif g\xFCzeldi. Bir dahakine: Latte art ister. \u2605\u2605\u2605\u2605\u2605"
-    quality: 1
+    quality: 0
     districtContract: -1
     contractStart: 0
     venueVisitDay: 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000i
@@ -407,15 +495,18 @@ MonoBehaviour:
   blackjackPlayer: 0
   blackjackDealer: 0
   blackjackMessage: "Masaya oturup bahis se\xE7."
+  story: {fileID: 0}
+  cleaning: {fileID: 0}
+  home: {fileID: 0}
   activeVenue: {fileID: 0}
   trackedVenue: {fileID: 0}
---- !u!4 &746458431
+--- !u!4 &1851272631
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 746458429}
+  m_GameObject: {fileID: 1851272629}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -428,4 +519,4 @@ Transform:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 746458431}
+  - {fileID: 1851272631}

@@ -19,6 +19,8 @@ namespace CafeLife
         public int caramel=10, vanilla=10, depotBeans=30, depotMilk=20, depotIce=20;
         public int depotCupsHot=20, depotCupsCold=20, depotLidsHot=20, depotLidsCold=20, depotCaramel=15, depotVanilla=15;
         public int unlocked=1023, served, missed, day=1, earned, tutorial, quest, staff, outfit;
+        public bool noteRead,shadowSeen,jumpSeen;
+        public int storyStage, menuMask=3; // storyStage -1: eski kayıt, hikaye kapalı; menuMask: haberlerle açılan tarifler
         public float reputation=80, dayTime, volume=.55f, sensitivity=.10f;
         public CafeHundredData hundred=new CafeHundredData();
         public CafeExpansionData expansion=new CafeExpansionData(); public int quality=1; public int districtContract=-1,contractStart; public int[] venueVisitDay=new int[64];
@@ -90,6 +92,7 @@ namespace CafeLife
                     fresh.quest=d.quest; fresh.staff=d.staff; fresh.outfit=d.outfit; fresh.reputation=d.reputation;
                     fresh.dayTime=d.dayTime; fresh.volume=d.volume; fresh.sensitivity=d.sensitivity; fresh.quality=d.quality; d=fresh; }
                 if(!json.Contains("\"districtContract\"")) { d.districtContract=-1; d.contractStart=0; }
+                if(!json.Contains("\"menuMask\"")) { d.storyStage=-1; d.menuMask=1023; }
                 if(d.hundred==null)d.hundred=new CafeHundredData();CafeHundred.Normalize(d.hundred);
                 if(d.expansion==null)d.expansion=new CafeExpansionData(); CafeExpansion.Normalize(d.expansion);
                 if(d.venueVisitDay==null || d.venueVisitDay.Length!=64) d.venueVisitDay=new int[64];
