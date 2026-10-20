@@ -12,7 +12,7 @@ namespace CafeLife {
    var metal=Surface("Cadde · boyalı antrasit",new Color(.055f,.075f,.065f),.22f,.25f);
    var market=Surface("Market · adaçayı sıva",new Color(.44f,.50f,.41f),.04f,0,Plaster());
    var canopy=Surface("Market · koyu yeşil saçak",new Color(.075f,.17f,.115f),.08f);
-   var glazing=Surface("Market · vitrin camı",new Color(.085f,.13f,.12f),.67f,.18f);
+   var glazing=Surface("Market · vitrin camı",new Color(.085f,.13f,.12f),.95f,.3f);
    var club=Surface("NOIR · kömür gri cephe",new Color(.18f,.20f,.20f),.07f,0,Plaster());
    var joint=Surface("Cadde · genleşme derzi",new Color(.31f,.33f,.30f),.02f);
    var paint=Surface("Cadde · yol boyası",new Color(.68f,.64f,.45f),.03f);
@@ -49,7 +49,7 @@ namespace CafeLife {
     else if(name=="Basket saha yan çizgisi"){renderer.sharedMaterial=crossing;FlatStreetOverlay(renderer,.036f);}
     else if(name.StartsWith("Cadde marketi")&&(name.Contains("duvar")||name.EndsWith("ön cephe")||name.EndsWith("kapı üstü")))renderer.sharedMaterial=market;
     else if(name=="Market saçak")renderer.sharedMaterial=canopy;
-    else if(name=="Market vitrin")renderer.sharedMaterial=glazing;
+    else if(name=="Market vitrin"||name=="NOIR üst kat vitrin camı")renderer.sharedMaterial=glazing;
     else if(name=="NOIR gece kulübü ön cephe"||name=="NOIR gece kulübü yan duvar")renderer.sharedMaterial=club;
    }
 

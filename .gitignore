@@ -15,3 +15,7 @@
 *.p12
 *.p8
 *.key
+
+# graphify
+graphify-out/*
+!graphify-out/GRAPH_REPORT.md

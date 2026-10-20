@@ -21,8 +21,9 @@ namespace CafeLife
         public Material ColorMaterial(Color color)
         {
             if(colors.TryGetValue(color,out var m)) return m;
-            m=new Material(Shader.Find("Universal Render Pipeline/Lit")); m.color=color;
-            if(color.a<.99f) { m.SetFloat("_Surface",1); m.SetFloat("_Blend",0); m.SetFloat("_SrcBlend",5);
+            var glassAsset=color.a<.99f?Resources.Load<Material>("CafeMaterials/CafeGlass"):null;
+            m=glassAsset?new Material(glassAsset):new Material(Shader.Find("Universal Render Pipeline/Lit")); m.color=color;
+            if(color.a<.99f && !glassAsset) { m.SetFloat("_Surface",1); m.SetFloat("_Blend",0); m.SetFloat("_SrcBlend",5);
                 m.SetFloat("_DstBlend",10); m.SetFloat("_ZWrite",0); m.EnableKeyword("_SURFACE_TYPE_TRANSPARENT"); m.renderQueue=3000; }
             colors[color]=m; return m;
         }
