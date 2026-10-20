@@ -26,6 +26,34 @@ namespace CafeLife
         }
         public static GameObject[] People() => new[]{"skaterMaleA","skaterFemaleA","criminalMaleA"}.Select(n=>AssetDatabase.LoadAssetAtPath<GameObject>(Root+n+".prefab")).Where(p=>p).ToArray();
         public static RuntimeAnimatorController Controller()=>AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(ControllerPath);
+        // Kulüp için: kontrolcüye "Dance" (Dancing) ve "Talking" durumlarını ekler. Zaten varsa dokunmaz.
+        static void EnsureMoods()
+        {
+            var controller=AssetDatabase.LoadAssetAtPath<AnimatorController>(ControllerPath); if(!controller)return;
+            var clips=AssetDatabase.LoadAllAssetsAtPath(Root+"Quaternius/UAL1_Standard.fbx").OfType<AnimationClip>().Where(c=>!c.name.StartsWith("__preview__")).ToArray();
+            AnimationClip Clip(string n)=>clips.FirstOrDefault(c=>c.name==n||c.name.EndsWith("|"+n));
+            var sm=controller.layers[0].stateMachine; bool changed=false;
+            void Mood(string state,string param,string clipName)
+            {
+                if(controller.parameters.Any(p=>p.name==param)&&sm.states.Any(s=>s.state.name==state))return;
+                var clip=Clip(clipName); var idleState=sm.states.FirstOrDefault(s=>s.state.name=="Idle").state; if(!clip||idleState==null)return;
+                if(!controller.parameters.Any(p=>p.name==param))controller.AddParameter(param,AnimatorControllerParameterType.Bool);
+                var st=sm.AddState(state); st.motion=clip;
+                var enter=sm.AddAnyStateTransition(st); enter.hasExitTime=false; enter.duration=.25f; enter.canTransitionToSelf=false; enter.AddCondition(AnimatorConditionMode.If,0,param);
+                var back=st.AddTransition(idleState); back.hasExitTime=false; back.duration=.25f; back.AddCondition(AnimatorConditionMode.IfNot,0,param); changed=true;
+            }
+            Mood("Dance","Dancing","Dance_Loop"); Mood("Talking","Talking","Idle_Talking_Loop");
+            if(changed){ EditorUtility.SetDirty(controller); AssetDatabase.SaveAssets(); }
+        }
+        // loopTime set through AnimationUtility on an imported clip is lost on reimport and in builds; store it in the FBX import settings.
+        static void Loops(string path)
+        {
+            var importer=AssetImporter.GetAtPath(path) as ModelImporter; if(!importer || !importer.importAnimation)return;
+            var clips=importer.clipAnimations; if(clips==null||clips.Length==0)clips=importer.defaultClipAnimations;
+            bool changed=false;
+            foreach(var clip in clips) if(clip.name.EndsWith("_Loop") && !clip.loopTime) { clip.loopTime=true; clip.loopPose=true; changed=true; }
+            if(changed || importer.clipAnimations==null || importer.clipAnimations.Length==0) { importer.clipAnimations=clips; importer.SaveAndReimport(); }
+        }
         [MenuItem("Cafe Life/Görsel yenilemeyi uygula")]
         public static void Install()
         {
@@ -65,6 +93,7 @@ namespace CafeLife
                     }
                     AssetDatabase.SaveAssets();
                 }
+                Loops(Root+"Quaternius/UAL1_Standard.fbx"); EnsureMoods();
                 var game=UnityEngine.Object.FindAnyObjectByType<CafeGame>();
                 if(game) { game.customerPrefabs=People(); game.customerAnimator=Controller(); EditorUtility.SetDirty(game); EditorSceneManager.MarkSceneDirty(game.gameObject.scene); EditorSceneManager.SaveScene(game.gameObject.scene); }
                 File.WriteAllText("Logs/CafeVisualInstall.txt","OK: Kenney CC0 models + Quaternius humanoid idle/walk/sitting; "+DateTime.Now);

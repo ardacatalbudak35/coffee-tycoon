@@ -58,7 +58,22 @@ namespace CafeLife
     public sealed class CafeWalker : MonoBehaviour
     {
         public CafeExpansion expansion;public float left,right,direction;public Animator animator;
-        void Update(){if(!expansion)return;bool move=!expansion.game.Paused;if(animator)animator.SetBool("Moving",move);if(!move)return;transform.position+=Vector3.right*direction*1.2f*Time.deltaTime;if(transform.position.x>=right)direction=-1;if(transform.position.x<=left)direction=1;transform.rotation=Quaternion.Slerp(transform.rotation,Quaternion.LookRotation(Vector3.right*direction),Time.deltaTime*5);}
+        float speed,pace;
+        // Already mid-stride when the street appears; each pedestrian keeps its own pace.
+        void Start(){pace=Random.Range(1.05f,1.35f);speed=pace;transform.rotation=Quaternion.LookRotation(Vector3.right*direction);if(animator){animator.SetBool("Moving",true);int walk=Animator.StringToHash("Walk");if(animator.HasState(0,walk))animator.Play(walk,0,Random.value);}}
+        void Update()
+        {
+            if(!expansion)return;
+            if(expansion.game.Paused){speed=0;CafeCustomer.Gait(animator,0);return;}
+            // Ease out before the end of the sidewalk, turn around in place, then ease back in; movement follows facing so there is no moonwalk.
+            Quaternion facing=Quaternion.LookRotation(Vector3.right*direction);float edge=direction>0?right-transform.position.x:transform.position.x-left;
+            float target=Quaternion.Angle(transform.rotation,facing)>30?0:pace*Mathf.Lerp(.25f,1,Mathf.Clamp01(edge/1.8f));
+            speed=Mathf.MoveTowards(speed,target,Time.deltaTime*(target>speed?1.8f:3.5f));
+            transform.position+=Vector3.right*transform.forward.x*speed*Time.deltaTime;
+            if(transform.position.x>=right)direction=-1;if(transform.position.x<=left)direction=1;
+            transform.rotation=Quaternion.RotateTowards(transform.rotation,facing,Time.deltaTime*(speed<.2f?260:120));
+            CafeCustomer.Gait(animator,speed);
+        }
     }
     public sealed class CafeLitter : MonoBehaviour
     {

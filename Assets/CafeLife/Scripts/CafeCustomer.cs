@@ -16,9 +16,23 @@ namespace CafeLife
         private float drink=7;
         private Vector3 waypoint;
         private TextMesh label;
-        private Transform leftLeg,rightLeg;
+        private Transform leftLeg,rightLeg,leftArm,rightArm;
         private Animator animator;
         private int route;
+        private float speed,stride;
+        public const float WalkSpeed=1.4f;
+        static float walkClipSpeed=-1;
+        // Moving/idle with hysteresis and walk clip playback matched to real speed, so feet don't slide or moonwalk.
+        public static void Gait(Animator a,float velocity)
+        {
+            if(!a)return;
+            bool moving=a.GetBool("Moving")?velocity>.05f:velocity>.15f; a.SetBool("Moving",moving);
+            if(walkClipSpeed<0){walkClipSpeed=0;if(a.runtimeAnimatorController)foreach(var clip in a.runtimeAnimatorController.animationClips)if(clip&&clip.name.Contains("Walk")){walkClipSpeed=clip.averageSpeed.magnitude*(a.isHuman?a.humanScale:1);break;}if(walkClipSpeed<.3f||walkClipSpeed>3)walkClipSpeed=WalkSpeed;}
+            a.speed=moving?Mathf.Clamp(velocity/walkClipSpeed,.6f,1.4f):1;
+            // Safety net: a non-looping walk clip would freeze on its last frame.
+            if(moving&&!a.IsInTransition(0)){var info=a.GetCurrentAnimatorStateInfo(0);if(info.IsName("Walk")&&info.normalizedTime>=1)a.Play(info.fullPathHash,0,0);}
+        }
+        bool Passing=>(state==State.Entering&&route<2)||(state==State.ToSeat&&path!=null&&route<path.Length-1)||(state==State.Leaving&&path!=null&&route<path.Length-1);
         private Vector3[] path;
         public static Vector3[] SeatRoute(CafeWorld world,int seat)
         {
@@ -54,7 +68,7 @@ namespace CafeLife
                     {
                         animator.applyRootMotion=false;
                         if(game.customerAnimator) animator.runtimeAnimatorController=game.customerAnimator;
-                        animator.SetBool("Moving",true);
+                        animator.SetBool("Moving",false);
                     }
                 }
             }
@@ -64,10 +78,10 @@ namespace CafeLife
                 Part("Torso",PrimitiveType.Capsule,new Vector3(0,1.06f,0),new Vector3(.44f,.38f,.3f),shirt);
                 Part("Baş",PrimitiveType.Sphere,new Vector3(0,1.62f,0),Vector3.one*.34f,new Color(.77f,.52f,.36f));
                 Part("Saç",PrimitiveType.Sphere,new Vector3(0,1.73f,-.025f),new Vector3(.35f,.18f,.33f),new Color(.14f,.08f,.05f));
-                leftLeg=Part("Sol bacak",PrimitiveType.Capsule,new Vector3(-.12f,.4f,0),new Vector3(.16f,.36f,.18f),new Color(.13f,.17f,.24f));
-                rightLeg=Part("Sağ bacak",PrimitiveType.Capsule,new Vector3(.12f,.4f,0),new Vector3(.16f,.36f,.18f),new Color(.13f,.17f,.24f));
-                Part("Sol kol",PrimitiveType.Capsule,new Vector3(-.29f,1.02f,0),new Vector3(.13f,.3f,.13f),shirt);
-                Part("Sağ kol",PrimitiveType.Capsule,new Vector3(.29f,1.02f,0),new Vector3(.13f,.3f,.13f),shirt);
+                leftLeg=Limb("Sol kalça",Part("Sol bacak",PrimitiveType.Capsule,new Vector3(-.12f,.4f,0),new Vector3(.16f,.36f,.18f),new Color(.13f,.17f,.24f)),.36f);
+                rightLeg=Limb("Sağ kalça",Part("Sağ bacak",PrimitiveType.Capsule,new Vector3(.12f,.4f,0),new Vector3(.16f,.36f,.18f),new Color(.13f,.17f,.24f)),.36f);
+                leftArm=Limb("Sol omuz",Part("Sol kol",PrimitiveType.Capsule,new Vector3(-.29f,1.02f,0),new Vector3(.13f,.3f,.13f),shirt),.26f);
+                rightArm=Limb("Sağ omuz",Part("Sağ kol",PrimitiveType.Capsule,new Vector3(.29f,1.02f,0),new Vector3(.13f,.3f,.13f),shirt),.26f);
             }
             var col=gameObject.AddComponent<CapsuleCollider>(); col.center=Vector3.up*.9f; col.height=1.8f; col.radius=.28f; col.isTrigger=true;
             var target=gameObject.AddComponent<CafeTarget>(); target.customer=this;
@@ -81,6 +95,16 @@ namespace CafeLife
         {
             var obj=GameObject.CreatePrimitive(type); obj.name=n; obj.transform.SetParent(transform,false); obj.transform.localPosition=pos; obj.transform.localScale=scale;
             Destroy(obj.GetComponent<Collider>()); obj.GetComponent<Renderer>().sharedMaterial=game.world.ColorMaterial(color); return obj.transform;
+        }
+        // Pivot at the top of the capsule (hip/shoulder) so limbs swing from the joint instead of their middle.
+        Transform Limb(string n,Transform part,float up)
+        { var pivot=new GameObject(n).transform; pivot.SetParent(transform,false); pivot.localPosition=part.localPosition+Vector3.up*up; part.SetParent(pivot,true); return pivot; }
+        void SwingLimbs(float velocity)
+        {
+            if(!leftLeg||!rightLeg)return;
+            stride+=velocity*Time.deltaTime*5.2f; float amount=Mathf.Clamp01(velocity/WalkSpeed),s=Mathf.Sin(stride),leg=s*28*amount,arm=s*22*amount;
+            leftLeg.localRotation=Quaternion.Euler(leg,0,0); rightLeg.localRotation=Quaternion.Euler(-leg,0,0);
+            if(leftArm&&rightArm){leftArm.localRotation=Quaternion.Euler(-arm,0,0);rightArm.localRotation=Quaternion.Euler(arm,0,0);}
         }
         public string Label(CafeGame g) { return state==State.Waiting?(accepted?"Sipariş #"+orderNumber+" · ":"Sipariş al · ")+Economy.Recipes[recipe].name+" [E]":"Müşteri"; }
         public void Interact(CafeGame g)
@@ -119,7 +143,9 @@ namespace CafeLife
         }
         void Update()
         {
-            if(!this || !game || !game.world || game.Paused) return;
+            if(!this || !game || !game.world) return;
+            if(game.Paused){if(animator)animator.speed=0;return;}
+            if(animator&&(state==State.Waiting||state==State.Drinking))animator.speed=1;
             if(state==State.Leaving&&path==null)Leave();
             if(label){bool visible=state==State.Waiting&&!game.Paused&&(game.player.transform.position-transform.position).sqrMagnitude<30.25f;label.gameObject.SetActive(visible);if(visible){label.transform.rotation=game.player.view.transform.rotation;label.text=(accepted?"#"+orderNumber:"Sipariş")+(vip?" ★":"")+" · "+CafeExpansion.Names[identity]+"\n"+Economy.Recipes[recipe].name;label.color=patience<25?new Color(1,.65f,.4f):new Color(.96f,.93f,.85f);}}
             if(state==State.Waiting)
@@ -131,16 +157,21 @@ namespace CafeLife
             }
             if(state==State.Drinking) { drink-=Time.deltaTime; if(drink<=0) { if(Random.value<(goodDrink?.35f:.05f)) { int tip=Random.Range(2,9); game.data.money+=tip; game.data.earned+=tip;if(game.expansion)game.expansion.Data.dayIncome+=tip; game.Tell("Masada "+tip+" coin bahşiş bırakıldı!",true); game.Save(); } transform.position=new Vector3(transform.position.x,0,transform.position.z); Leave(); } return; }
             Vector3 delta=waypoint-transform.position; delta.y=0;
-            if(delta.magnitude>.06f)
+            // Corner waypoints are passed with a wider radius so the walk rounds turns instead of stopping at each one.
+            bool passing=Passing; float distance=delta.magnitude;
+            if(distance>(passing?.3f:.06f))
             {
-                if(animator) animator.SetBool("Moving",true);
                 bool yield=false;foreach(var other in game.customers)if(other&&other!=this&&other.slot<slot&&other.state!=State.Drinking&&other.state!=State.Waiting&&Vector3.Distance(other.transform.position,transform.position)<.55f){yield=true;break;}
-                if(!yield)transform.position=Vector3.MoveTowards(transform.position,waypoint,Time.deltaTime*1.4f);
-                transform.rotation=Quaternion.Slerp(transform.rotation,Quaternion.LookRotation(delta),Time.deltaTime*8);
-                if(leftLeg && rightLeg) { float a=Mathf.Sin(Time.time*9)*22; leftLeg.localRotation=Quaternion.Euler(a,0,0); rightLeg.localRotation=Quaternion.Euler(-a,0,0); }
+                Vector3 heading=delta/distance;
+                float target=yield?0:WalkSpeed*Mathf.Lerp(.4f,1,Mathf.Clamp01(Vector3.Dot(transform.forward,heading)*1.4f));
+                if(!passing)target*=Mathf.Lerp(.35f,1,Mathf.Clamp01(distance/.7f));
+                speed=Mathf.MoveTowards(speed,target,Time.deltaTime*(target>speed?2.8f:5f));
+                transform.position=Vector3.MoveTowards(transform.position,waypoint,Time.deltaTime*speed);
+                transform.rotation=Quaternion.RotateTowards(transform.rotation,Quaternion.LookRotation(heading),Time.deltaTime*Mathf.Lerp(220,420,speed/WalkSpeed));
+                Gait(animator,speed); SwingLimbs(speed);
                 return;
             }
-            if(animator) animator.SetBool("Moving",false);
+            if(!passing){speed=0;Gait(animator,0);SwingLimbs(0);}
             if(state==State.Entering) { if(route==0){route++;waypoint=new Vector3(0,0,1.6f);}else if(route==1){route++;waypoint=QueuePosition;}else {state=State.Waiting;game.TryMatchShelf(this);} }
             else if(state==State.ToPickup) Collect();
             else if(state==State.ToSeat) { if(++route<path.Length)waypoint=path[route];else { state=State.Drinking; drink=Random.Range(14f,48f); transform.position=game.world.Seat(seat); Vector3 tableDirection=game.world.TableCenter(seat/2)-transform.position; tableDirection.y=0; if(tableDirection.sqrMagnitude>.01f)transform.rotation=Quaternion.LookRotation(tableDirection); if(animator) { if(HasSitting())animator.SetBool("Sitting",true); else SetupSittingPose(); } } }
