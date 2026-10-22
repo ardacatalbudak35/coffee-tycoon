@@ -89,7 +89,7 @@ namespace CafeLife
             audioSource=gameObject.AddComponent<AudioSource>(); click=Tone(560,.09f); sale=Tone(880,.2f);
             music=gameObject.AddComponent<AudioSource>(); music.clip=Music(); music.loop=true; music.volume=.18f; music.Play();
             machineAudio=gameObject.AddComponent<AudioSource>(); machineAudio.clip=Tone(95,1); machineAudio.loop=true; machineAudio.volume=.07f;
-            AudioListener.volume=data.volume; ApplyAudio();
+            AudioListener.volume=data.volume; ApplyAudio(); CafeParanormal.JumpscaresEnabled=!data.noJumpscare;
             ui.ShowMenu("home");
         }
         public GameObject Model(string name,Vector3 at,float width,float rotation=0,bool solid=true) => world.Model(name,at,width,rotation,solid);
