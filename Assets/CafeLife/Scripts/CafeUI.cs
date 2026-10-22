@@ -136,7 +136,9 @@ namespace CafeLife
                 Row("Ses: "+Mathf.RoundToInt(game.data.volume*100)+"%",0,()=>{game.data.volume=game.data.volume>=.99f?0:Mathf.Min(1,game.data.volume+.25f); AudioListener.volume=game.data.volume; game.Save(); ShowMenu(page);});
                 Row("Bakış hassasiyeti: "+game.data.sensitivity.ToString("0.00"),1,()=>{game.data.sensitivity=game.data.sensitivity>=.2f?.05f:game.data.sensitivity+.05f; game.Save(); ShowMenu(page);});
                 Row("Grafik: "+QualitySettings.names[QualitySettings.GetQualityLevel()],2,()=>{game.data.quality=(QualitySettings.GetQualityLevel()+1)%QualitySettings.names.Length;QualitySettings.SetQualityLevel(game.data.quality);game.Save();ShowMenu(page);});
-                Row("GÖRÜŞ / MÜZİK / EFEKTLER",3,()=>game.OpenOperations("settings")); Row("GERİ",4,()=>ShowMenu("pause"));
+                Row("GÖRÜŞ / MÜZİK / EFEKTLER",3,()=>game.OpenOperations("settings"));
+                Row("Ani korkutmalar (jumpscare): "+(CafeParanormal.JumpscaresEnabled?"AÇIK":"KAPALI"),4,()=>{CafeParanormal.JumpscaresEnabled=!CafeParanormal.JumpscaresEnabled; game.data.noJumpscare=!CafeParanormal.JumpscaresEnabled; game.Save(); ShowMenu(page);});
+                Row("GERİ",5,()=>ShowMenu("pause"));
             }
             else if(name=="shop")
             {
