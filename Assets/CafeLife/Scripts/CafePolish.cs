@@ -137,6 +137,7 @@ namespace CafeLife
         }
         void MergeScenery()
         {
+            game.world.RemoveBackBarProps();   // birleştirmeden ÖNCE: sonra tek mesh'in içinden çıkarılamaz
             var groups=new Dictionary<Material,List<CombineInstance>>();var originals=new List<Renderer>();
             foreach(var filter in scenery.GetComponentsInChildren<MeshFilter>())
             {

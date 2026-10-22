@@ -287,17 +287,18 @@ namespace CafeLife {
    SButton(done?"ÖDÜL ALINDI":c.ChallengeReady?"ÖDÜLÜ AL":"HEDEF DEVAM EDİYOR",814,535,386,44,()=>RefreshStudio(()=>c.Claim()),c.ChallengeReady&&!done).interactable=c.ChallengeReady&&!done;
   }
 
-  static int StudioRecipeUnlock(int index)=>index==0||index==1?0:index==4?5:index==2||index==3?10:index==5||index==8?20:35;
+  static int StudioRecipeUnlock(int index)=>index==0||index==1?0:index==4?5:index==2||index==3?10:index==5||index==8||index==10?20:35;
+  static string RecipeUnlockText(int i)=>CafeStory.Active?CafeStory.UnlockDay(i)+". gün":StudioRecipeUnlock(i)+" servis";
   void BuildStudioRecipes(){
    var available=CafeFocusedMode.AvailableRecipes(game.data.served);
-   if(studioRecipe<0||studioRecipe>=Economy.Recipes.Length)studioRecipe=Mathf.Clamp(game.selected,0,9);
-   for(int i=0;i<10;i++){
-    int selected=i;bool active=studioRecipe==i,unlocked=available.Contains(i);float y=223+i*39;
-    var button=SQuietButton(Economy.Recipes[i].name,80,y,420,37,()=>{studioRecipe=selected;ShowMenu("operations");},active);
+   if(studioRecipe<0||studioRecipe>=Economy.Recipes.Length)studioRecipe=Mathf.Clamp(game.selected,0,Economy.Recipes.Length-1);float rowStep=Mathf.Min(39f,396f/Economy.Recipes.Length);
+   for(int i=0;i<Economy.Recipes.Length;i++){
+    int selected=i;bool active=studioRecipe==i,unlocked=available.Contains(i);float y=223+i*rowStep;
+    var button=SQuietButton(Economy.Recipes[i].name,80,y,420,rowStep-2,()=>{studioRecipe=selected;ShowMenu("operations");},active);
     var label=button.GetComponentInChildren<Text>();label.alignment=TextAnchor.MiddleLeft;label.rectTransform.offsetMin=new Vector2(14,4);label.rectTransform.offsetMax=new Vector2(-72,-4);
-    label.fontSize=15;label.GetComponent<CafeFontSize>().size=15;
-    if(!unlocked)SText(StudioRecipeUnlock(i)+" servis",425,y+4,65,29,11,studioMuted,TextAnchor.MiddleRight);
-    if(active)SBox(80,y+7,2,23,studioGold);
+    int fs=rowStep<30?13:15;label.fontSize=fs;label.GetComponent<CafeFontSize>().size=fs;
+    if(!unlocked)SText(RecipeUnlockText(i),405,y+Mathf.Max(0,(rowStep-29)/2),85,29,11,studioMuted,TextAnchor.MiddleRight);
+    if(active)SBox(80,y+rowStep*.2f,2,rowStep*.55f,studioGold);
    }
    SBox(534,224,1,394,studioRule);
    var r=Economy.Recipes[studioRecipe];bool ready=available.Contains(studioRecipe);
@@ -310,7 +311,7 @@ namespace CafeLife {
    for(int i=0;i<steps.Length;i++){
     float y=415+i*35;SText((i+1).ToString("00"),576,y,46,29,13,studioGold);SText(StepName(steps[i]),630,y,570,29,18,ink);
    }
-   SText(ready?(r.milk&&!r.cold?"Sütü köpürt · İstersen latte art ile bitir.":"Hazır kahveye kapağı tak ve servis et."):"Toplam "+StudioRecipeUnlock(studioRecipe)+" serviste açılır.",576,600,624,28,14,ready?studioMuted:studioGold);
+   SText(ready?(r.milk&&!r.cold?"Sütü köpürt · İstersen latte art ile bitir.":"Hazır kahveye kapağı tak ve servis et."):(CafeStory.Active?CafeStory.UnlockDay(studioRecipe)+". gün haberlerinden sonra açılır.":"Toplam "+StudioRecipeUnlock(studioRecipe)+" serviste açılır."),576,600,624,28,14,ready?studioMuted:studioGold);
   }
 
   void StudioSetting(string label,string value,float x,float y,UnityAction change){

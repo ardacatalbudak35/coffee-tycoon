@@ -348,6 +348,18 @@ MonoBehaviour:
     noteRead: 0
     shadowSeen: 0
     jumpSeen: 0
+    bookRead: 0
+    finale: 0
+    ledgerRead: 0
+    nermin: 0
+    choice1: 0
+    choice2: 0
+    choice3: 0
+    dayStartServed: 0
+    dayStartMoney: 0
+    dayStartMet: 0
+    journal: []
+    residents: []
     storyStage: -1
     menuMask: 1023
     reputation: 61
@@ -471,6 +483,7 @@ MonoBehaviour:
     mixed: 0
     flavored: 0
     lidded: 0
+    filtered: 0
     hasMilk: 0
     hasWater: 0
     dose: 18
@@ -498,8 +511,37 @@ MonoBehaviour:
   story: {fileID: 0}
   cleaning: {fileID: 0}
   home: {fileID: 0}
+  thief: {fileID: 0}
+  vampire: {fileID: 0}
+  ghosts: {fileID: 0}
+  filterCup:
+    recipe: 0
+    productName: 
+    foamed: 0
+    art: 0
+    perfectBrew: 0
+    iced: 0
+    coldCup: 0
+    ground: 0
+    brewed: 0
+    mixed: 0
+    flavored: 0
+    lidded: 0
+    filtered: 0
+    hasMilk: 0
+    hasWater: 0
+    dose: 18
+    yield: 36
+    extraction: 28
+    grind: 5
+    temperature: 93
+    milkTemperature: 20
+    roast: 1
+    syrup: 
+  filterTime: 0
   activeVenue: {fileID: 0}
   trackedVenue: {fileID: 0}
+  musicMul: 1
 --- !u!4 &1851272631
 Transform:
   m_ObjectHideFlags: 0

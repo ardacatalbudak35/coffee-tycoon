@@ -18,9 +18,9 @@ namespace CafeLife
         public int beans=20, milk=12, ice=12, cupsHot=12, cupsCold=12, lidsHot=12, lidsCold=12;
         public int caramel=10, vanilla=10, depotBeans=30, depotMilk=20, depotIce=20;
         public int depotCupsHot=20, depotCupsCold=20, depotLidsHot=20, depotLidsCold=20, depotCaramel=15, depotVanilla=15;
-        public int unlocked=1023, served, missed, day=1, earned, tutorial, quest, staff, outfit;
-        public bool noteRead,shadowSeen,jumpSeen;
-        public int storyStage, menuMask=3; // storyStage -1: eski kayıt, hikaye kapalı; menuMask: haberlerle açılan tarifler
+        public int unlocked=32767, served, missed, day=1, earned, tutorial, quest, staff, outfit;
+        public bool noteRead,shadowSeen,jumpSeen,bookRead,finale,ledgerRead; public int nermin,choice1,choice2,choice3,dayStartServed,dayStartMoney,dayStartMet; public System.Collections.Generic.List<JournalEntry> journal=new System.Collections.Generic.List<JournalEntry>(); public System.Collections.Generic.List<ResState> residents=new System.Collections.Generic.List<ResState>();
+        public int storyStage, menuMask=1537; // storyStage -1: eski kayıt, hikaye kapalı; menuMask: eski alan (menü artık güne göre CafeStory.MaskForDay ile belirlenir)
         public float reputation=80, dayTime, volume=.55f, sensitivity=.10f;
         public CafeHundredData hundred=new CafeHundredData();
         public CafeExpansionData expansion=new CafeExpansionData(); public int quality=1; public int districtContract=-1,contractStart; public int[] venueVisitDay=new int[64];
@@ -29,10 +29,12 @@ namespace CafeLife
     {
         public readonly string name;
         public readonly int price, level, unlock;
-        public readonly bool cold, milk, water;
+        public readonly bool cold, milk, water, filter;
         public readonly string syrup;
-        public Recipe(string name,int price,bool cold,bool milk,bool water,string syrup="")
-        { this.name=name; this.price=price; this.cold=cold; this.milk=milk; this.water=water; this.syrup=syrup; level=1; unlock=0; }
+        public readonly int shots;   // espresso shot sayısı (filtre kahvede 0)
+        public Recipe(string name,int price,bool cold,bool milk,bool water,string syrup="",int shots=1,bool filter=false)
+        { this.name=name; this.price=price; this.cold=cold; this.milk=milk; this.water=water; this.syrup=syrup; this.shots=shots; this.filter=filter; level=1; unlock=0; }
+        public int BeansNeeded=>Mathf.Max(1,shots+(filter?1:0));
     }
     public static class Economy
     {
@@ -46,7 +48,12 @@ namespace CafeLife
             new Recipe("Buzlu Karamel Latte",43,true,true,false,"caramel"),
             new Recipe("Buzlu Vanilyalı Latte",43,true,true,false,"vanilla"),
             new Recipe("Buzlu Americano",31,true,false,true),
-            new Recipe("Buzlu Espresso",25,true,false,false)
+            new Recipe("Buzlu Espresso",25,true,false,false),
+            new Recipe("Filtre Kahve",16,false,false,false,"",0,true),       // 10 · yalnızca filtre makinesi
+            new Recipe("Flat White",38,false,true,false,"",2),               // 11 · 2 shot + süt
+            new Recipe("Red Eye",36,false,false,false,"",1,true),            // 12 · filtre kahve + 1 shot
+            new Recipe("Black Eye",44,false,false,false,"",2,true),          // 13 · filtre kahve + 2 shot
+            new Recipe("Dead Eye",52,false,false,false,"",3,true)            // 14 · filtre kahve + 3 shot
         };
         public static int Level(SaveData d) => 1+d.xp/100;
         public static int BranchIncome(CafeBranchData b)
@@ -55,14 +62,14 @@ namespace CafeLife
         public static bool HasStock(SaveData d,int recipe)
         {
             if(recipe<0||recipe>=Recipes.Length) return false;
-            var r=Recipes[recipe]; return d.beans>0 && (!r.milk||d.milk>0) && (!r.cold||d.ice>0) &&
+            var r=Recipes[recipe]; return d.beans>=r.BeansNeeded && (!r.milk||d.milk>0) && (!r.cold||d.ice>0) &&
                 (r.cold?d.cupsCold>0&&d.lidsCold>0:d.cupsHot>0&&d.lidsHot>0) &&
                 (r.syrup!="caramel"||d.caramel>0) && (r.syrup!="vanilla"||d.vanilla>0);
         }
         public static bool StartRecipe(SaveData d,int recipe)
         {
             if(!HasStock(d,recipe)) return false;
-            var r=Recipes[recipe]; d.beans--; if(r.milk)d.milk--; if(r.cold)d.ice--; return true;
+            var r=Recipes[recipe]; d.beans-=r.BeansNeeded; if(r.milk)d.milk--; if(r.cold)d.ice--; return true;
         }
         public static int Sale(SaveData d,int recipe,bool good=true)
         {
@@ -92,7 +99,7 @@ namespace CafeLife
                     fresh.quest=d.quest; fresh.staff=d.staff; fresh.outfit=d.outfit; fresh.reputation=d.reputation;
                     fresh.dayTime=d.dayTime; fresh.volume=d.volume; fresh.sensitivity=d.sensitivity; fresh.quality=d.quality; d=fresh; }
                 if(!json.Contains("\"districtContract\"")) { d.districtContract=-1; d.contractStart=0; }
-                if(!json.Contains("\"menuMask\"")) { d.storyStage=-1; d.menuMask=1023; }
+                if(!json.Contains("\"menuMask\"")) { d.storyStage=-1; d.menuMask=32767; }
                 if(d.hundred==null)d.hundred=new CafeHundredData();CafeHundred.Normalize(d.hundred);
                 if(d.expansion==null)d.expansion=new CafeExpansionData(); CafeExpansion.Normalize(d.expansion);
                 if(d.venueVisitDay==null || d.venueVisitDay.Length!=64) d.venueVisitDay=new int[64];
@@ -111,7 +118,7 @@ namespace CafeLife
                     d.branches[i].paintLevel=Mathf.Clamp(d.branches[i].paintLevel,0,8);
                 }
                 d.branches[0].owned=true; d.branches[0].baristaLevel=d.baristaLevel; d.branches[0].espressoLevel=d.espressoLevel; d.branches[0].paintLevel=d.paintLevel;
-                d.reputation=Mathf.Clamp(d.reputation,0,100); d.unlocked=1023; d.version=3; return d;
+                d.reputation=Mathf.Clamp(d.reputation,0,100); d.unlocked=32767; d.version=3; return d;
             } catch(Exception) { }
             return new SaveData();
         }

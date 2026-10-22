@@ -10,6 +10,7 @@ namespace CafeLife
         public int identity,persona,qualityBonus; public bool vip; public int slot,recipe,seat=-1,orderNumber,queueSlot;
         public Vector3 QueuePosition=>new Vector3(-3.4f+queueSlot*1.7f,0,3.4f);
         public bool accepted;
+        public CafeResidents.Resident resident; CafeCharacterBuilder.Rig rig;
         public bool goodDrink=true;
         public int serviceQuality;public bool preferenceMet;public string feedback="";
         public float patience=100,waitSeconds;
@@ -49,11 +50,13 @@ namespace CafeLife
             var choices=new System.Collections.Generic.List<int>();
             for(int i=0;i<Economy.Recipes.Length;i++) if((game.data.unlocked&(1<<i))!=0) choices.Add(i);
             recipe=choices[Random.Range(0,choices.Count)];
+            resident=CafeResidents.Pick(game,choices); if(resident!=null)recipe=CafeResidents.RecipeIndex(resident.siparis);
             if(game.expansion)game.expansion.Identify(this); gameObject.AddComponent<CafeSip>().Setup(this);
             var variants=game.customerPrefabs;
             if(variants!=null && variants.Length>0)
             {
-                var prefab=variants[Random.Range(0,variants.Length)];
+                var mixamo=resident!=null?CafeResidents.Mixamo(resident):null;
+                var prefab=mixamo?mixamo:resident!=null?CafeResidents.Prefab(game,resident.cinsiyet):variants[Random.Range(0,variants.Length)];
                 if(prefab)
                 {
                     var avatar=Instantiate(prefab,transform);
@@ -63,16 +66,19 @@ namespace CafeLife
                     { string prop=child.name.ToLowerInvariant(); if(prop.Contains("baseball")||prop.Contains("knife")||prop.Contains("handgun")||prop.Contains("weapon")||prop.Contains("sword")||prop.Contains("axe"))child.gameObject.SetActive(false); }
                     foreach(var collider in avatar.GetComponentsInChildren<Collider>()) Destroy(collider);
                     game.world.PrepareAvatar(avatar);
+                    if(resident!=null){if(mixamo)CafeResidents.DressMixamo(avatar,transform,resident);else CafeResidents.Dress(game,avatar,transform,resident);}
                     animator=avatar.GetComponentInChildren<Animator>();
                     if(animator)
                     {
                         animator.applyRootMotion=false;
-                        if(game.customerAnimator) animator.runtimeAnimatorController=game.customerAnimator;
+                        var mixCtrl=mixamo?CafeResidents.MixamoController():null;
+                        if(mixCtrl) animator.runtimeAnimatorController=mixCtrl;
+                        else if(game.customerAnimator) animator.runtimeAnimatorController=game.customerAnimator;
                         animator.SetBool("Moving",false);
                     }
                 }
             }
-            if(!animator)
+            if(!animator&&rig==null)
             {
                 Color shirt=Color.HSVToRGB(Random.value,.45f,.7f);
                 Part("Torso",PrimitiveType.Capsule,new Vector3(0,1.06f,0),new Vector3(.44f,.38f,.3f),shirt);
@@ -101,23 +107,24 @@ namespace CafeLife
         { var pivot=new GameObject(n).transform; pivot.SetParent(transform,false); pivot.localPosition=part.localPosition+Vector3.up*up; part.SetParent(pivot,true); return pivot; }
         void SwingLimbs(float velocity)
         {
+            if(rig!=null){stride+=velocity*Time.deltaTime*5.2f;rig.Walk(Mathf.Sin(stride),Mathf.Clamp01(velocity/WalkSpeed));return;}
             if(!leftLeg||!rightLeg)return;
             stride+=velocity*Time.deltaTime*5.2f; float amount=Mathf.Clamp01(velocity/WalkSpeed),s=Mathf.Sin(stride),leg=s*28*amount,arm=s*22*amount;
             leftLeg.localRotation=Quaternion.Euler(leg,0,0); rightLeg.localRotation=Quaternion.Euler(-leg,0,0);
             if(leftArm&&rightArm){leftArm.localRotation=Quaternion.Euler(-arm,0,0);rightArm.localRotation=Quaternion.Euler(arm,0,0);}
         }
-        public string Label(CafeGame g) { return state==State.Waiting?(accepted?"Sipariş #"+orderNumber+" · ":"Sipariş al · ")+Economy.Recipes[recipe].name+" [E]":"Müşteri"; }
+        public string Label(CafeGame g) { string who=resident!=null&&accepted?resident.ad:"Müşteri"; string limit=resident!=null&&accepted&&CafeResidents.AtLimit(g,resident)?" · 19. fincan! Reddet [X]":""; return state==State.Waiting?(resident!=null&&accepted?who+" · ":"")+(accepted?"Sipariş #"+orderNumber+" · ":"Sipariş al · ")+Economy.Recipes[recipe].name+" [E]"+limit:who; }
         public void Interact(CafeGame g)
         {
             if(state!=State.Waiting) return;
-            if(!accepted) { accepted=true; orderNumber=++g.orderCounter; }
+            if(!accepted) { accepted=true; orderNumber=++g.orderCounter; if(resident!=null)CafeResidents.OnMeet(g,resident); }
             if(g.cup==null){g.selected=recipe;var mode=g.GetComponent<CafeFocusedMode>();if(mode)mode.selectedOrder=this;}
             var r=Economy.Recipes[recipe]; var steps=new System.Collections.Generic.List<string>();
             steps.Add(r.cold?"Soğuk bardak":"Sıcak bardak"); if(r.cold)steps.Add("buz"); if(r.syrup!="")steps.Add(r.syrup=="vanilla"?"vanilya şurubu":"karamel şurubu");
             steps.Clear();steps.Add(r.cold?"Soğuk bardak":"Sıcak bardak");foreach(var step in CafeGame.IdealSteps(r))steps.Add(CafeUI.StepName(step));
-            string order="Sipariş: "+r.name;
+            string order="Sipariş: "+r.name; string quote=resident!=null?resident.ad+" ("+resident.meslek+"): “"+CafeResidents.Line(g,resident,orderNumber)+"”\n":"";
             if(g.noticePinned&&g.notice.StartsWith(order)) { g.Tell(""); return; }
-            g.TellRecipe(order+"\n"+CafeService.PreferenceLabel(this)+"\nTarif: "+string.Join(" → ",steps.ToArray())+"\n(E’ye tekrar basınca kapatılır)");
+            g.TellRecipe(quote+order+"\n"+CafeService.PreferenceLabel(this)+"\nTarif: "+string.Join(" → ",steps.ToArray())+"\n(E’ye tekrar basınca kapatılır)");
         }
         public void Deliver(bool staff,bool good=true)
         {
@@ -129,14 +136,15 @@ namespace CafeLife
         {
             game.TakeReservedDrink(this);
             int payment=game.expansion?game.expansion.CompleteSale(this):Economy.Sale(game.data,recipe,goodDrink);
-            game.Save(); game.Tell(CafeExpansion.Names[identity]+" · Kalite "+serviceQuality+" / 100 · +"+payment+" coin\n"+feedback,goodDrink);
+            if(resident!=null){ CafeResidents.Bond(game,resident,goodDrink); if(CafeStory.Active&&game.data.day>=6&&CafeResidents.State(game,resident).cups>=20)CafeResidents.Overdrawn(game,resident); }
+            game.Save(); game.Tell((resident!=null?resident.ad:CafeExpansion.Names[identity])+" · Kalite "+serviceQuality+" / 100 · +"+payment+" coin\n"+feedback,goodDrink);
             for(int i=0;i<game.data.tables*2;i++) { bool occupied=false; foreach(var c in game.customers) if(c!=this && c.seat==i) occupied=true; if(!occupied) { seat=i; break; } }
             if(seat>=0) { state=State.ToSeat; route=0;path=SeatRoute(game.world,seat);waypoint=path[0]; } else Leave();
         }
         bool HasSitting() { if(!animator)return false; foreach(var p in animator.parameters)if(p.name=="Sitting")return true; return false; }
         void Leave()
         {
-            if(HasSitting())animator.SetBool("Sitting",false);route=0;
+            if(HasSitting())animator.SetBool("Sitting",false);if(rig!=null)rig.Sit(false);route=0;
             if(seat>=0){Vector3[] inward=SeatRoute(game.world,seat);path=new[]{inward[3],new Vector3(inward[3].x,0,-8.9f),new Vector3(0,0,-8.9f),new Vector3(0,0,-10.5f),new Vector3(0,0,-14)};}
             else path=new[]{new Vector3(transform.position.x,0,-14)};
             state=State.Leaving;waypoint=path[0];seat=-1;
@@ -147,7 +155,8 @@ namespace CafeLife
             if(game.Paused){if(animator)animator.speed=0;return;}
             if(animator&&(state==State.Waiting||state==State.Drinking))animator.speed=1;
             if(state==State.Leaving&&path==null)Leave();
-            if(label){bool visible=state==State.Waiting&&!game.Paused&&(game.player.transform.position-transform.position).sqrMagnitude<30.25f;label.gameObject.SetActive(visible);if(visible){label.transform.rotation=game.player.view.transform.rotation;label.text=(accepted?"#"+orderNumber:"Sipariş")+(vip?" ★":"")+" · "+CafeExpansion.Names[identity]+"\n"+Economy.Recipes[recipe].name;label.color=patience<25?new Color(1,.65f,.4f):new Color(.96f,.93f,.85f);}}
+            if(label){bool visible=state==State.Waiting&&!game.Paused&&(game.player.transform.position-transform.position).sqrMagnitude<30.25f;label.gameObject.SetActive(visible);if(visible){label.transform.rotation=game.player.view.transform.rotation;label.text=(accepted?"#"+orderNumber:"Sipariş")+(vip?" ★":"")+" · "+(resident!=null?(accepted?resident.ad:"Müşteri"):CafeExpansion.Names[identity])+"\n"+Economy.Recipes[recipe].name;label.color=patience<25?new Color(1,.65f,.4f):new Color(.96f,.93f,.85f);}}
+            if(state==State.Waiting&&resident!=null&&accepted&&CafeResidents.AtLimit(game,resident)&&game.player&&game.player.target&&game.player.target.customer==this){ var kb=UnityEngine.InputSystem.Keyboard.current; if(kb!=null&&kb.xKey.wasPressedThisFrame){ CafeResidents.Refuse(game,resident); Leave(); return; } }
             if(state==State.Waiting)
             {
                 if(game.TryMatchShelf(this)) return;
@@ -187,6 +196,7 @@ namespace CafeLife
         void LateUpdate()
         {
             if(state!=State.Drinking)return;
+            if(rig!=null){rig.Sit(true);return;}
             if(animator&&animator.isHuman&&game.GetComponent<CafePolish>()){var hips=animator.GetBoneTransform(HumanBodyBones.Hips);if(hips)transform.position+=Vector3.up*(.59f-hips.position.y);}
             if(sitBones==null) { if(leftLeg)leftLeg.localRotation=Quaternion.Euler(-68,0,0); if(rightLeg)rightLeg.localRotation=Quaternion.Euler(-68,0,0); return; }
             // The demo pack has no sitting clip; bend hips, knees and feet after the idle pose is evaluated.

@@ -42,7 +42,7 @@ namespace CafeLife
             brewFill.color=game.cup!=null&&game.cup.yield/game.cup.dose>=1.8f&&game.cup.yield/game.cup.dose<=2.2f?new Color(.3f,.8f,.45f):new Color(.72f,.53f,.26f);
         }
         static string Meter(float value){int marker=Mathf.Clamp(Mathf.RoundToInt(value*16),0,16);string bar="";for(int i=0;i<=16;i++)bar+=i==marker?"◆":"─";return bar;}
-        public static string StepName(string s)=>s=="ice"?"Buz":s=="milk"?"Süt":s=="water"?"Su":s=="espresso"?"Espresso":s=="lid"?"Kapak":s=="vanilla"?"Vanilya şurubu":s=="caramel"?"Karamel şurubu":s;
+        public static string StepName(string s)=>s=="ice"?"Buz":s=="milk"?"Süt":s=="water"?"Su":s=="espresso"?"Espresso":s=="filter"?"Filtre kahve":s=="lid"?"Kapak":s=="vanilla"?"Vanilya şurubu":s=="caramel"?"Karamel şurubu":s;
         void Op(string label,int row,bool right,UnityEngine.Events.UnityAction action)
         {
             UnityEngine.Events.UnityAction wrapped=()=>{action();if(game.Paused)ShowMenu("operations");};
@@ -67,7 +67,8 @@ namespace CafeLife
             else if(operationSection=="craftreport")BuildHundredReport();
             else if(operationSection=="recipes")
             {
-                for(int i=0;i<10;i++){int recipe=i;var r=Economy.Recipes[i];Op((game.selected==i?"✓ ":"")+r.name+" · "+Mathf.RoundToInt(r.price*d.price/100f)+" coin",i%5,i>=5,()=>game.selected=recipe);}
+                var open=CafeFocusedMode.AvailableRecipes(game.data.served); if(System.Array.IndexOf(open,game.selected)<0&&open.Length>0)game.selected=open[0]; int shownCount=0;
+                foreach(int i in open){int recipe=i;var r=Economy.Recipes[i];Op((game.selected==i?"✓ ":"")+r.name+" · "+Mathf.RoundToInt(r.price*d.price/100f)+" coin",shownCount%8,shownCount>=8,()=>game.selected=recipe);shownCount++;}
                 var chosen=Economy.Recipes[game.selected];OperationInfo("Seçili: "+chosen.name+" · "+string.Join(" → ",CafeGame.IdealSteps(chosen).Select(StepName))+"\nBardak almadan önce tarifi seç. Doğru sırayla ekle; köpük ve latte art sıcak sütlü içeceklere ekstra kazandırır.");
             }
             else if(operationSection=="business")
@@ -109,7 +110,7 @@ namespace CafeLife
             else if(operationSection=="help")
             {
                 string[] tasks={"Bardak al","Çekirdek öğüt","Süt veya su ekle","Kapak tak","Doğru içeceği müşteriye sat"};string help="BAŞLANGIÇ GÖREVLERİ\n\n";for(int i=0;i<tasks.Length;i++)help+=((d.tutorial&(1<<i))!=0?"✓ ":"○ ")+tasks[i]+"\n\n";BodyText(help,false);
-                BodyText("KONTROLLER\n\nWASD: yürü · Shift: dayanıklılıkla koş\nE: kullan · Space: zıpla / banktan kalk\nR: tarif kitabı · Tab: yönetim\nM: mahalle · F1: yardım · Esc: duraklat\n\nUSTALIK\nSüt dolabının yanında köpürtme ve art istasyonu var. Espressoyu yaklaşık 1:2 oranında E ile kes. Art istasyonunda sol tuşla süt dök; tekerlekle yüksekliği ayarla, desen çiz ve bitir. H: küçük harita.",true);
+                BodyText("KONTROLLER\n\nWASD: yürü · Shift: koş\nE: kullan · Space: zıpla / banktan kalk\nR: tarif kitabı · Tab: yönetim\nM: mahalle · F1: yardım · Esc: duraklat\n\nUSTALIK\nSüt dolabının yanında köpürtme ve art istasyonu var. Espressoyu yaklaşık 1:2 oranında E ile kes. Art istasyonunda sol tuşla süt dök; tekerlekle yüksekliği ayarla, desen çiz ve bitir. H: küçük harita.",true);
             }
             else if(operationSection=="travel")
             {

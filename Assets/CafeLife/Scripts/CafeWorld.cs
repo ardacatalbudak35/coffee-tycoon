@@ -310,6 +310,7 @@ namespace CafeLife
             var water=Model("waterCooler",new Vector3(.53f,0,4.33f),.65f,180); Target(water,"water");
             var caramel=Model("bottle",new Vector3(.75f,1.15f,-5.8f),.2f,180); Target(caramel,"caramel");
             var vanilla=Model("bottle",new Vector3(1.7f,1.15f,-5.8f),.2f,180); Target(vanilla,"vanilla");
+            BuildFilterStation(new Vector3(3.6f,1.15f,-5.8f));
             var carLabel=Block("Karamel etiketi",new Vector3(.75f,1.37f,-6.04f),new Vector3(.16f,.1f,.018f),new Color(.6f,.3f,.1f)); carLabel.GetComponent<Collider>().enabled=false;
             var vanLabel=Block("Vanilya etiketi",new Vector3(1.7f,1.37f,-6.04f),new Vector3(.16f,.1f,.018f),new Color(.94f,.8f,.48f)); vanLabel.GetComponent<Collider>().enabled=false;
             var hotLids=new GameObject("Karton kapak rafı"); hotLids.transform.SetParent(transform); hotLids.transform.position=new Vector3(2.8f,0,-5.8f); Target(hotLids,"lid_hot");
@@ -491,7 +492,7 @@ namespace CafeLife
             body.GetComponent<Renderer>().sharedMaterial=ColorMaterial(outside); Destroy(body.GetComponent<Collider>()); body.layer=2;
             if(cup.steps.Count>0)
             {
-                Color liquid=cup.brewed?(cup.hasMilk?new Color(.67f,.43f,.25f):new Color(.22f,.11f,.06f)):
+                Color liquid=(cup.brewed||cup.filtered)?(cup.hasMilk?new Color(.67f,.43f,.25f):new Color(.22f,.11f,.06f)):
                     cup.hasMilk?new Color(.91f,.87f,.74f):cup.hasWater?new Color(.65f,.82f,.89f):
                     cup.syrup!=""?new Color(.7f,.42f,.19f):new Color(.83f,.93f,.97f);
                 var fill=GameObject.CreatePrimitive(PrimitiveType.Cylinder); fill.name="Bardaktaki karışım"; fill.transform.SetParent(root.transform,false);

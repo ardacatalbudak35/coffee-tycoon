@@ -1,0 +1,374 @@
+[
+    {
+        "id":  "ayse_ogretmen",
+        "ad":  "Ayşe Yılmaz",
+        "yas":  68,
+        "cinsiyet":  "kadin",
+        "meslek":  "Emekli Öğretmen",
+        "huy":  "Her sabah gazete okurken fincanını asla bırakmaz, öğrencilerine hala ders verir gibi konuşur.",
+        "gorunum":  {
+                        "boy_cm":  160,
+                        "yapi":  "ince",
+                        "ten":  "buğday",
+                        "sac":  "kısa bob",
+                        "sac_rengi_hex":  "#6B4F4F",
+                        "ust_giysi":  "kazak",
+                        "ust_renk_hex":  "#8B5E3C",
+                        "alt_giysi":  "kot pantolon",
+                        "alt_renk_hex":  "#3A3A3A",
+                        "ayakkabi":  "ortopedik bot",
+                        "aksesuar":  "ince altın kolye"
+                    },
+        "siparis":  "Filtre Kahve",
+        "geldigi_saat":  9,
+        "kahve_bagimliligi":  6,
+        "replikler":  [
+                          "Hasan Dede\u0027nin kahvesi hâlâ en iyisi, Allah rahmet eylesin.",
+                          "Bu mahallede kahve olmadan gün doğmaz.",
+                          "Gazete manşetleri kahve fiyatlarından başlıyor artık."
+                      ],
+        "haber_tepkisi":  "Yeni kahve türü duyunca \u0027Bu da ne yine?\u0027 diye gülümser.",
+        "gece_gizemi":  "Gece 20. fincanı içince duvarlardaki resimler hareket ediyor gibi geliyor."
+    },
+    {
+        "id":  "can_tasarimci",
+        "ad":  "Can Kaya",
+        "yas":  27,
+        "cinsiyet":  "erkek",
+        "meslek":  "Grafik Tasarımcı",
+        "huy":  "Tabletini yanından ayırmaz, kahve logosunu saniyelerde çizer.",
+        "gorunum":  {
+                        "boy_cm":  178,
+                        "yapi":  "orta",
+                        "ten":  "esmer",
+                        "sac":  "uzun kaşlı",
+                        "sac_rengi_hex":  "#2C1B1B",
+                        "ust_giysi":  "oversize tişört",
+                        "ust_renk_hex":  "#1A1A2E",
+                        "alt_giysi":  "cargo pantolon",
+                        "alt_renk_hex":  "#2E2E2E",
+                        "ayakkabi":  "klasik sneaker",
+                        "aksesuar":  "akıllı saat"
+                    },
+        "siparis":  "Vanilyalı Latte",
+        "geldigi_saat":  11,
+        "kahve_bagimliligi":  8,
+        "replikler":  [
+                          "Hasan Dede\u0027nin eski menü tasarımını hatırlıyorum, efsaneviydi.",
+                          "Kahve olmasaydı tasarımım da olmazdı.",
+                          "TV kendi açıldığında en son hangi fontu kullandım diye sorarım."
+                      ],
+        "haber_tepkisi":  "Yeni kahve çeşidi logosu zaten kafamda canlandı.",
+        "gece_gizemi":  "20. fincandan sonra ekranımda gölgeler kendi logomu çiziyor."
+    },
+    {
+        "id":  "elif_anne",
+        "ad":  "Elif Demir",
+        "yas":  34,
+        "cinsiyet":  "kadin",
+        "meslek":  "Ev Hanımı",
+        "huy":  "Çocukları okula bıraktıktan sonra kendine bir nefes molası verir.",
+        "gorunum":  {
+                        "boy_cm":  165,
+                        "yapi":  "orta",
+                        "ten":  "acik",
+                        "sac":  "dalgalı omuz boyu",
+                        "sac_rengi_hex":  "#A0522D",
+                        "ust_giysi":  "uzun kollu bluz",
+                        "ust_renk_hex":  "#F5E6D3",
+                        "alt_giysi":  "kot şort",
+                        "alt_renk_hex":  "#4B4B4B",
+                        "ayakkabi":  "rahat loafer",
+                        "aksesuar":  "bebeği taşıma çantası"
+                    },
+        "siparis":  "Flat White",
+        "geldigi_saat":  13,
+        "kahve_bagimliligi":  5,
+        "replikler":  [
+                          "Hasan Dede bize her bayramda çikolatalı kurabiye getirirdi.",
+                          "Kahve içmeden ev işleri bitmez.",
+                          "Gece televizyon kendi açıldığında çocuklar uyurken ben de uykuya dalarım."
+                      ],
+        "haber_tepkisi":  "Yeni kahve haberi gelince \u0027Çocuklar için de bir şeyler olur mu?\u0027 diye düşünürüm.",
+        "gece_gizemi":  "20. fincanı içince mutfak ışıkları kendi kendine yanıp sönüyor."
+    },
+    {
+        "id":  "mehmet_insaat",
+        "ad":  "Mehmet Arslan",
+        "yas":  42,
+        "cinsiyet":  "erkek",
+        "meslek":  "İnşaat İşçisi",
+        "huy":  "Vardiya bitince tozlu eliyle fincanı kucaklar, gülümser.",
+        "gorunum":  {
+                        "boy_cm":  180,
+                        "yapi":  "iri",
+                        "ten":  "koyu",
+                        "sac":  "kısa saç",
+                        "sac_rengi_hex":  "#1A1A1A",
+                        "ust_giysi":  "iş montu",
+                        "ust_renk_hex":  "#FF6600",
+                        "alt_giysi":  "iş pantolonu",
+                        "alt_renk_hex":  "#000000",
+                        "ayakkabi":  "çelik burunlu bot",
+                        "aksesuar":  "saat yok, sadece kemer"
+                    },
+        "siparis":  "Black Eye",
+        "geldigi_saat":  17,
+        "kahve_bagimliligi":  9,
+        "replikler":  [
+                          "Hasan Dede\u0027nin kahvesi yapıyı dikine tutar, inşaat gibi.",
+                          "Kahve olmasaydı betonlar erirdi.",
+                          "TV kendi açıldığında haberler beton fiyatları anlatıyor."
+                      ],
+        "haber_tepkisi":  "Yeni kahve türü duyunca \u0027Bu da betona karışır mı?\u0027 diye sorar.",
+        "gece_gizemi":  "20. fincandan sonra çimento torbaları gölge gibi hareket ediyor."
+    },
+    {
+        "id":  "elif",
+        "ad":  "Elif Aksoy",
+        "yas":  21,
+        "cinsiyet":  "kadin",
+        "meslek":  "Üniversite Öğrencisi (Psikoloji)",
+        "huy":  "Sınavlarda kafeine bağımlı, her dersten önce bir fincan istiyor.",
+        "gorunum":  {
+                        "boy_cm":  165,
+                        "yapi":  "ince",
+                        "ten":  "buğday",
+                        "sac":  "kısa bob",
+                        "sac_rengi_hex":  "#4A2C2A",
+                        "ust_giysi":  "oversize kazak",
+                        "ust_renk_hex":  "#6B5B95",
+                        "alt_giysi":  "kot pantolon",
+                        "alt_renk_hex":  "#2D2D2D",
+                        "ayakkabi":  "beyaz spor ayakkabı",
+                        "aksesuar":  "kulaklık"
+                    },
+        "siparis":  "Vanilyalı Latte",
+        "geldigi_saat":  10,
+        "kahve_bagimliligi":  7,
+        "replikler":  [
+                          "Hasan Dede\u0027nin tarifleri hala aklımda.",
+                          "Bu kahve benim notlarımı yazdırıyor.",
+                          "20. fincanı içerseydim belki gölgelerimle konuşurdum."
+                      ],
+        "haber_tepkisi":  "Yeni kahve çayı gibi içilebilir diye duyunca gülümsedi.",
+        "gece_gizemi":  "Gece TV kendi kendine açılıyor, ekranda sadece kahve tanıtımı var."
+    },
+    {
+        "id":  "ahmet",
+        "ad":  "Ahmet Çelik",
+        "yas":  48,
+        "cinsiyet":  "erkek",
+        "meslek":  "Manav",
+        "huy":  "Sabah erken gelir, taze meyveyle kahve eşleştirir.",
+        "gorunum":  {
+                        "boy_cm":  178,
+                        "yapi":  "orta",
+                        "ten":  "esmer",
+                        "sac":  "kısa saç",
+                        "sac_rengi_hex":  "#3B2F2F",
+                        "ust_giysi":  "yeşil pamuklu gömlek",
+                        "ust_renk_hex":  "#2E7D32",
+                        "alt_giysi":  "kumaş pantolon",
+                        "alt_renk_hex":  "#4E342E",
+                        "ayakkabi":  "çizme",
+                        "aksesuar":  "eldiven"
+                    },
+        "siparis":  "Filtre Kahve",
+        "geldigi_saat":  8,
+        "kahve_bagimliligi":  5,
+        "replikler":  [
+                          "Hasan Dede bana her zaman en iyi çekirdeği ayırırdı.",
+                          "Kahve fiyatları arttı, ama benim müşterilerim azalmadı.",
+                          "Gölgeler gece manav başında meyve sayar diye duyduğum var."
+                      ],
+        "haber_tepkisi":  "Yeni kahve türü duyunca \u0027Bu da satar mı?\u0027 diye sordu.",
+        "gece_gizemi":  "Gece 20. fincanı içenlerin gölgelerinin meyve koktuğunu iddia eder."
+    },
+    {
+        "id":  "zeynep",
+        "ad":  "Zeynep Korkmaz",
+        "yas":  34,
+        "cinsiyet":  "kadin",
+        "meslek":  "Gece Vardiyası Hemşiresi",
+        "huy":  "Vardiya sonrası kahve olmadan evde uyuyamaz.",
+        "gorunum":  {
+                        "boy_cm":  170,
+                        "yapi":  "iri",
+                        "ten":  "acik",
+                        "sac":  "uzun düz",
+                        "sac_rengi_hex":  "#1A1A2E",
+                        "ust_giysi":  "beyaz hastane önlüğü",
+                        "ust_renk_hex":  "#FFFFFF",
+                        "alt_giysi":  "koyu mavi scrubs pantolon",
+                        "alt_renk_hex":  "#0D47A1",
+                        "ayakkabi":  "konforlu klok",
+                        "aksesuar":  "saat"
+                    },
+        "siparis":  "Red Eye",
+        "geldigi_saat":  22,
+        "kahve_bagimliligi":  9,
+        "replikler":  [
+                          "Hasan Dede\u0027nin kahvesi gece nöbetlerimi kurtardı.",
+                          "20. fincanı içen hastalar gölge gibi odalarda dolaşır.",
+                          "TV kendi açılıyor, haberler hep kahve hakkında."
+                      ],
+        "haber_tepkisi":  "Yeni kahve keşfi duyunca \u0027Bu bize yetmez\u0027 dedi.",
+        "gece_gizemi":  "Gece 20. fincanı içenlerin gölgeleri hastane koridorlarında sessizce yürür."
+    },
+    {
+        "id":  "mehmet",
+        "ad":  "Murat Öztürk",
+        "yas":  55,
+        "cinsiyet":  "erkek",
+        "meslek":  "Taksi Şoförü",
+        "huy":  "Şehirden şehire kahve kokusu sürer, her durakta bir fincan.",
+        "gorunum":  {
+                        "boy_cm":  175,
+                        "yapi":  "orta",
+                        "ten":  "buğday",
+                        "sac":  "kısa saç",
+                        "sac_rengi_hex":  "#4E342E",
+                        "ust_giysi":  "koyu gri polo",
+                        "ust_renk_hex":  "#37474F",
+                        "alt_giysi":  "kot pantolon",
+                        "alt_renk_hex":  "#1B1B1B",
+                        "ayakkabi":  "deri bot",
+                        "aksesuar":  "yüzük"
+                    },
+        "siparis":  "Black Eye",
+        "geldigi_saat":  14,
+        "kahve_bagimliligi":  8,
+        "replikler":  [
+                          "Hasan Dede benim için kahve rehberiydi.",
+                          "20. fincanı içen yolcular gölge gibi koltukta kaybolur.",
+                          "Radyo kendi açılıyor, her saat kahve haberi verir."
+                      ],
+        "haber_tepkisi":  "Yeni kahve türü duyunca \u0027Bu da bir rota olur\u0027 diye gülümsedi.",
+        "gece_gizemi":  "Gece TV kendi açılıyor, ekranda sadece kahve reklamları akar."
+    },
+    {
+        "id":  "elena",
+        "ad":  "Elena Rossi",
+        "yas":  28,
+        "cinsiyet":  "kadin",
+        "meslek":  "Turist",
+        "huy":  "Türkçe cümleleri sevimli bir akzentle kurar, her fincanda şehrin tadını arar.",
+        "gorunum":  {
+                        "boy_cm":  165,
+                        "yapi":  "ince",
+                        "ten":  "acik",
+                        "sac":  "dalgalı",
+                        "sac_rengi_hex":  "#6B4226",
+                        "ust_giysi":  "hafif kazak",
+                        "ust_renk_hex":  "#F5E6CC",
+                        "alt_giysi":  "kot pantolon",
+                        "alt_renk_hex":  "#3B3B3B",
+                        "ayakkabi":  "rahat sneaker",
+                        "aksesuar":  "şapka"
+                    },
+        "siparis":  "Latte",
+        "geldigi_saat":  10,
+        "kahve_bagimliligi":  4,
+        "replikler":  [
+                          "Merhaba, bir tane latte lütfen.",
+                          "Bu kahve çok lezzetli, teşekkürler.",
+                          "Yarın da gelirim, sağ ol."
+                      ],
+        "haber_tepkisi":  "Haberlerde yeni kahve duyunca gülümsüyor.",
+        "gece_gizemi":  "Gece 20. fincanı içenlerin gölgeleri duvarlarda dans ediyor."
+    },
+    {
+        "id":  "memur_ahmet",
+        "ad":  "Kemal Şahin",
+        "yas":  45,
+        "cinsiyet":  "erkek",
+        "meslek":  "Belediye Memuru",
+        "huy":  "Kurallara sıkı sıkıya bağlı, kahve molası tek nefes molasıdır.",
+        "gorunum":  {
+                        "boy_cm":  178,
+                        "yapi":  "orta",
+                        "ten":  "buğday",
+                        "sac":  "kısa",
+                        "sac_rengi_hex":  "#2C2C2C",
+                        "ust_giysi":  "beyaz gömlek",
+                        "ust_renk_hex":  "#FFFFFF",
+                        "alt_giysi":  "koyu kahverengi pantolon",
+                        "alt_renk_hex":  "#4B3621",
+                        "ayakkabi":  "deri oxford",
+                        "aksesuar":  "saat"
+                    },
+        "siparis":  "Espresso",
+        "geldigi_saat":  13,
+        "kahve_bagimliligi":  7,
+        "replikler":  [
+                          "Saat 13:00, kahve molası.",
+                          "Belgeler hazır, imza atacağım.",
+                          "İyi günler, patron."
+                      ],
+        "haber_tepkisi":  "Yeni kahve türü duyunca form doldurmak istiyor.",
+        "gece_gizemi":  "Televizyonlar gece yarısı kendi açılıyor, belki belediye sinyali."
+    },
+    {
+        "id":  "balikci_mehmet",
+        "ad":  "Hüseyin Reis",
+        "yas":  68,
+        "cinsiyet":  "erkek",
+        "meslek":  "Emekli Balıkçı",
+        "huy":  "Deniz kokusunu kahveyle karıştırır, Hasan Dede\u0027nin hikayelerini her sabah dinler.",
+        "gorunum":  {
+                        "boy_cm":  170,
+                        "yapi":  "iri",
+                        "ten":  "esmer",
+                        "sac":  "saçsız",
+                        "sac_rengi_hex":  "#1A1A1A",
+                        "ust_giysi":  "yün kazak",
+                        "ust_renk_hex":  "#6B8E23",
+                        "alt_giysi":  "jean",
+                        "alt_renk_hex":  "#2F4F4F",
+                        "ayakkabi":  "çizme",
+                        "aksesuar":  "deniz kabuğu bilezik"
+                    },
+        "siparis":  "Filtre Kahve",
+        "geldigi_saat":  8,
+        "kahve_bagimliligi":  5,
+        "replikler":  [
+                          "Sabahın ilk ışığı kahveyle başlar.",
+                          "Hasan Dede balık tutarken kahve içirdi.",
+                          "Dalga gelince fincan titrer."
+                      ],
+        "haber_tepkisi":  "Yeni kahve keşfi denizde yeni balık türü gibi.",
+        "gece_gizemi":  "Gölgeler limandan kalkıp kafenin camına çarpar."
+    },
+    {
+        "id":  "komsu_zeynep",
+        "ad":  "Fatma Güler",
+        "yas":  55,
+        "cinsiyet":  "kadin",
+        "meslek":  "Ev Hanımı",
+        "huy":  "Kahve kokusundan nefret eder, her sabah \u0027bu kokular beni delirtir\u0027 diye mırıldanır. Hasan Dede bile bu kahveyle mahalleyi bozdu diye söylerdi.",
+        "gorunum":  {
+                        "boy_cm":  160,
+                        "yapi":  "ince",
+                        "ten":  "koyu",
+                        "sac":  "toplu",
+                        "sac_rengi_hex":  "#3A3A3A",
+                        "ust_giysi":  "uzun kollu bluz",
+                        "ust_renk_hex":  "#8B0000",
+                        "alt_giysi":  "uzun etek",
+                        "alt_renk_hex":  "#2E2E2E",
+                        "ayakkabi":  "ortopedik ayakkabı",
+                        "aksesuar":  "gözlük"
+                    },
+        "siparis":  "Americano",
+        "geldigi_saat":  16,
+        "kahve_bagimliligi":  1,
+        "replikler":  [
+                          "Yine bu kokular, başım ağrıyor.",
+                          "Kahve içmem, sadece su isterim.",
+                          "Mahalle sakinliği bozuldu."
+                      ],
+        "haber_tepkisi":  "Haberlerde kahve lafı duyunca kızıp kapatır.",
+        "gece_gizemi":  "yok"
+    }
+]

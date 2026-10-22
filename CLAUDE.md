@@ -37,3 +37,8 @@ Rules:
 - Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
 - After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).
 - A committed graphify-out/graph.json is rewritten whole on every build, so a large diff to it in a pull request is expected. Do not flag it as churn or suggest skipping the graph rebuild or its hooks.
+
+## Bulut oturumu (PC kapalıyken)
+- Bulutta Unity editörü yok: `Logs/*.flag` kontrolleri, `Cafe*Checks` ve exe derlemesi çalışmaz. Değişikliği derlenmemiş say, PR açıklamasına "Unity'de doğrulanmadı" yaz.
+- `Resources/CafeMixamo` (Mixamo FBX'leri) git'te yok, sadece yerel PC'de. Bu modellere dayanan kodu bozma, yeni Mixamo varlığı ekleme.
+- `main`'e doğrudan push etme; ayrı branch'e commit at ve PR aç. Kullanıcı PC'yi açınca Unity'de deneyip birleştirir.

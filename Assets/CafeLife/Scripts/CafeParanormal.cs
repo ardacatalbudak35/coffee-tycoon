@@ -18,6 +18,7 @@ namespace CafeLife
         // gölge
         GameObject shadow; float shadowLook,shadowLife,shadowY,scareT,behindT; bool behind; string lastInfo="";
         public string Info()=>shadow?lastInfo:"gölge yok";
+        public Transform ShadowTransform=>shadow?shadow.transform:null;
         // eşya kıpırtısı
         readonly Dictionary<Transform,Pose> chairHome=new Dictionary<Transform,Pose>();
         // TV
@@ -82,7 +83,7 @@ namespace CafeLife
             if(!night){ nextEvent=8; return; }
             int level=Level;
             if(level==0){ if(!hinted&&!up){ hinted=true; Flicker(1.4f); } nextEvent=30; return; }   // ilk gün: yalnızca bir ipucu
-            nextEvent=Random.Range(20f,42f)/(1f+level*.4f); tension+=.22f+.07f*level;
+            nextEvent=Random.Range(20f,42f)/(1f+level*.4f)*(game.data.choice3==1?1.3f:game.data.choice3==2?.75f:1f);   // Nermin'e cevap verdiysen olaylar seyrek, odayı kilitlediysen sık tension+=.22f+.07f*level;
             // Büyük korku: seviye 2+ ve gerginlik dolunca, uzun bekleme süresiyle
             if(JumpscaresEnabled&&level>=2&&tension>=1f&&Time.time-lastBig>150f&&!shadow&&tvTime<=0){ tension=0; lastBig=Time.time; if(up&&Random.value<.5f)TvOn(null,true); else BehindScare(); return; }
             var pool=new List<int>{0,1,5};
@@ -91,11 +92,13 @@ namespace CafeLife
             if(!up||level>=2)pool.Add(4);
             if(up&&level>=2&&tvTime<=0)pool.Add(7);
             if(level>=2)pool.Add(8);
+            if(level>=1&&!shadow&&!up&&game.ghosts!=null&&!game.ghosts.Active){ pool.Add(9); if(level>=2)pool.Add(9); }
             switch(pool[Random.Range(0,pool.Count)])
             {
                 case 0:Flicker(Random.Range(.8f,1.8f));break; case 1:Dim(Random.Range(3f,5f));break; case 2:StartCoroutine(StepsRoutine());break;
                 case 3:SpawnShadow(PickShadowSpot());break; case 4:MoveChair();break; case 5:Play(whisper,.14f,game.player.transform.position+Random.onUnitSphere*2f);break;
                 case 6:StartCoroutine(KnockRoutine());break; case 7:TvOn(null,false);break; case 8:Play(breath,.22f,game.player.transform.position-FlatForward()*.7f+Vector3.up*1.5f);break;
+                case 9:game.ghosts.Spawn(level);break;
             }
         }
         Vector3 FlatForward(){ var f=game.player.view.transform.forward; f.y=0; return f.sqrMagnitude<.01f?Vector3.forward:f.normalized; }
@@ -111,6 +114,8 @@ namespace CafeLife
                 if(cafe||home){ lights.Add(l); baseIntensity.Add(l.intensity); }
             }
         }
+        public void Scare(){ Kick(.3f); flashA=.7f; Play(stinger,.55f); Flicker(.4f); }
+        public void Whisper(Vector3 at){ Play(whisper,.16f,at); }
         public void Flicker(float duration){ if(flickerTime<=0&&dimTime<=0)CollectLights(); flickerTime=Mathf.Max(flickerTime,duration); Play(thump,.35f); }
         public void Dim(float duration){ if(flickerTime<=0&&dimTime<=0)CollectLights(); dimTime=dimTotal=duration; }
         void TickFlicker(float dt)
@@ -152,30 +157,32 @@ namespace CafeLife
             return good.Count>0?good[Random.Range(0,good.Count)]:spots[0];
         }
 
-        public void SpawnShadow(Vector3 pos)
+        public void SpawnShadow(Vector3 pos,bool scary=false)
         {
             if(shadow)Destroy(shadow); var variants=game.customerPrefabs; if(variants==null||variants.Length==0)return;
+            var goneRes=scary?null:CafeResidents.GoneToday(game); var goneModel=goneRes!=null?CafeResidents.Mixamo(goneRes):null;   // 20. fincanı içen sakin: gölge onun siluetinde
+            var mix=goneModel?goneModel:Resources.Load<GameObject>(scary?"CafeMixamo/Skeleton":"CafeMixamo/Olivia"); var mixCtrl=mix?CafeResidents.MixamoController():null;
             shadow=new GameObject("Gölge"); shadow.transform.SetParent(game.world.transform,false); shadow.transform.position=pos; shadowY=pos.y;
             var toPlayer=game.player.transform.position-pos; toPlayer.y=0; if(toPlayer.sqrMagnitude>.01f)shadow.transform.rotation=Quaternion.LookRotation(toPlayer);
-            var avatar=Instantiate(variants[0],shadow.transform); game.world.PrepareAvatar(avatar);
+            var avatar=Instantiate(mix?mix:variants[0],shadow.transform); game.world.PrepareAvatar(avatar);
             shadow.transform.localScale=new Vector3(.88f,1.2f,.88f);       // uzamış, ürkütücü orantı
             var black=game.world.ColorMaterial(new Color(.008f,.008f,.012f));
-            foreach(var r in avatar.GetComponentsInChildren<Renderer>()){ var m=new Material[r.sharedMaterials.Length]; for(int i=0;i<m.Length;i++)m[i]=black; r.sharedMaterials=m; r.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off; }
+            foreach(var r in avatar.GetComponentsInChildren<Renderer>()){ if(scary&&mix){ r.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off; continue; } var m=new Material[r.sharedMaterials.Length]; for(int i=0;i<m.Length;i++)m[i]=black; r.sharedMaterials=m; r.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off; }
             foreach(Transform t in avatar.GetComponentsInChildren<Transform>(true)){ string n=t.name.ToLowerInvariant(); if(n.Contains("baseball")||n.Contains("knife")||n.Contains("handgun")||n.Contains("weapon")||n.Contains("sword")||n.Contains("axe"))t.gameObject.SetActive(false); }
             foreach(var c in avatar.GetComponentsInChildren<Collider>())Destroy(c);
             var anim=avatar.GetComponentInChildren<Animator>();
-            if(anim){ anim.applyRootMotion=false; if(game.customerAnimator)anim.runtimeAnimatorController=game.customerAnimator; anim.SetBool("Moving",false); anim.speed=.45f; if(anim.isHuman)AddEyes(anim.GetBoneTransform(HumanBodyBones.Head)); }
+            if(anim){ anim.applyRootMotion=false; if(mixCtrl)anim.runtimeAnimatorController=mixCtrl; else if(game.customerAnimator)anim.runtimeAnimatorController=game.customerAnimator; anim.SetBool("Moving",false); anim.speed=.45f; if(anim.isHuman&&!scary)AddEyes(anim.GetBoneTransform(HumanBodyBones.Head),mix!=null); }
             shadowLook=0; shadowLife=42f; scareT=0; Play(whisper,.12f,pos);
         }
         // Parlayan iki göz: kafa kemiğine bağlı, yüzün önünde
-        void AddEyes(Transform head)
+        void AddEyes(Transform head,bool realistic=false)
         {
-            if(!head)return; var root=shadow.transform; var m=new Material(Shader.Find("Universal Render Pipeline/Lit")); m.SetColor("_BaseColor",Color.black); m.EnableKeyword("_EMISSION"); m.SetColor("_EmissionColor",new Color(.9f,.95f,1f)*6f);
+            if(!head)return; float fwd=realistic?.1f:.25f,side0=realistic?.032f:.075f,size=realistic?.022f:.05f; var root=shadow.transform; var m=new Material(Shader.Find("Universal Render Pipeline/Lit")); m.SetColor("_BaseColor",Color.black); m.EnableKeyword("_EMISSION"); m.SetColor("_EmissionColor",new Color(.9f,.95f,1f)*6f);
             foreach(float side in new[]{-1f,1f})
             {
                 var eye=GameObject.CreatePrimitive(PrimitiveType.Sphere); eye.name="Gölge gözü"; Destroy(eye.GetComponent<Collider>()); eye.GetComponent<Renderer>().sharedMaterial=m; eye.GetComponent<Renderer>().shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;
-                var world=head.position+root.forward*.25f+Vector3.up*.03f+root.right*side*.075f; eye.transform.SetParent(head,false); eye.transform.position=world;   // kartun kafası büyük: göz yüzün dışında durmalı
-                float s=.05f/Mathf.Max(.001f,head.lossyScale.x); eye.transform.localScale=new Vector3(s,s*.65f,s);
+                var world=head.position+root.forward*fwd+Vector3.up*(realistic?.06f:.03f)+root.right*side*side0; eye.transform.SetParent(head,false); eye.transform.position=world;   // kartun kafası büyük: göz yüzün dışında durmalı
+                float s=size/Mathf.Max(.001f,head.lossyScale.x); eye.transform.localScale=new Vector3(s,s*.65f,s);
             }
         }
         void TickShadow(float dt)
@@ -218,7 +225,7 @@ namespace CafeLife
             var p=game.player.transform.position; var back=-FlatForward(); float dist=2.7f; Vector3 pos=Vector3.zero; bool ok=false;
             for(int tries=0;tries<4&&!ok;tries++){ pos=p+Quaternion.Euler(0,Random.Range(-20f,20f),0)*back*dist; pos.y=FloorY; ok=!Physics.Linecast(p+Vector3.up,pos+Vector3.up,~0,QueryTriggerInteraction.Ignore); dist-=.45f; }
             if(!ok)return false;
-            SpawnShadow(pos); behind=true; behindT=0; Play(breath,.25f,pos+Vector3.up*1.5f); return true;
+            SpawnShadow(pos,true); behind=true; behindT=0; Play(breath,.25f,pos+Vector3.up*1.5f); return true;
         }
         void StartJumpscare()
         {

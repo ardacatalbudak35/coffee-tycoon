@@ -87,7 +87,7 @@ namespace CafeLife
             var craft=GetComponent<CafeHundred>();
             int money=game.data.money;int payment=Economy.Sale(game.data,c.recipe,c.goodDrink);
             int bonus=c.goodDrink?(c.qualityBonus+(c.vip?8:0)+(Data.loyalty[c.identity]>=3?4:0)):0;
-            int actual=Mathf.Max(1,Mathf.RoundToInt(payment*Data.price/100f)+bonus);
+            int actual=Mathf.Max(1,Mathf.RoundToInt(payment*Data.price/100f*(game.data.bookRead?1.1f:1f))+bonus);   // Hasan'ın defteri: gizli dokunuş +%10
             game.data.money=money+actual;game.data.earned+=actual-payment;Data.dayIncome+=actual;Data.dayServed++;Data.loyalty[c.identity]++;
             AddReview(Names[c.identity]+": "+c.feedback+(c.goodDrink?" ★★★★★":" ★★"));
             if(c.goodDrink)Data.tutorial|=16;
@@ -142,7 +142,7 @@ namespace CafeLife
             float progress=1-game.brewTime/game.brewTotal;
             game.cup.yield=progress*game.cup.dose*2.8f;game.cup.extraction=progress*game.brewTotal*GetComponent<CafeHundred>().BrewClockRate;
             game.cup.perfectBrew=CafeHundred.Score(game.cup)>.8f;GetComponent<CafeHundred>()?.FinishBrew();
-            game.brewTime=0;game.cup.brewed=true;game.cup.steps.Add("espresso");brewMeter=-1;game.UpdateHand();
+            game.brewTime=0;game.EspressoShotDone(game.cup);brewMeter=-1;game.UpdateHand();
             game.Tell(game.cup.dose.ToString("0")+" g → "+game.cup.yield.ToString("0")+" g · "+CafeHundred.Taste(game.cup),game.cup.perfectBrew);return true;
         }
         public void Ingredient(string kind)

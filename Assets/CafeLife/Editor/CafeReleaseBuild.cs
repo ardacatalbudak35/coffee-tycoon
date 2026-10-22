@@ -6,6 +6,10 @@ using UnityEngine;
 namespace CafeLife {
  [InitializeOnLoad] public static class CafeReleaseBuild {
   static CafeReleaseBuild(){EditorApplication.update+=Tick;}
+  // Unity menüsünden tek tıkla derleme: bayrak dosyasını bırakır, Tick derlemeyi başlatır (sonuç Logs/CafeReleaseBuild.txt).
+  [MenuItem("Cafe Life/Windows derlemesi al (masaüstü exe)")]
+  static void BuildFromMenu(){ Directory.CreateDirectory("Logs"); File.WriteAllText("Logs/RunCafeBuild.flag",""); Debug.Log("Windows derlemesi başlatıldı. Bitince Logs/CafeReleaseBuild.txt içinde Succeeded yazar."); }
+  public static void BatchBuild(){Directory.CreateDirectory("Logs");File.WriteAllText("Logs/RunCafeBuild.flag","");Tick();}
   static void Tick(){if(EditorApplication.isCompiling||EditorApplication.isUpdating||EditorApplication.isPlayingOrWillChangePlaymode||!File.Exists("Logs/RunCafeBuild.flag"))return;
    File.Delete("Logs/RunCafeBuild.flag");try{
     string folder=@"C:\Users\ardac\Documents\Codex\2026-10-16\kanka-udem\outputs\CoffeeTycoon-Windows-v6";Directory.CreateDirectory(folder);

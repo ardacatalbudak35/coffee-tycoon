@@ -41,6 +41,9 @@ namespace CafeLife
         static List<Tuple<double,Action>> Steps()
         {
             var s=new List<Tuple<double,Action>>(); void Add(double w,Action a){ s.Add(Tuple.Create(w,a)); }
+            Add(0,()=>{ var log="TARGETS\n"; foreach(var t in UnityEngine.Object.FindObjectsByType<CafeTarget>(FindObjectsInactive.Exclude)){ if(t.kind==null)continue; if(t.kind=="machine"||t.kind=="grinder"||t.kind=="milk"||t.kind=="ice"||t.kind=="water"||t.kind=="cup_hot"||t.kind=="cup_cold"||t.kind=="lid_hot"||t.kind=="pickup"||t.kind=="caramel"||t.kind=="vanilla"||t.kind=="trash"){ var r=t.GetComponentInChildren<Renderer>(); log+="  "+t.kind+" pos="+t.transform.position.ToString("F2")+(r?" size="+r.bounds.size.ToString("F2"):"")+"\n"; } }
+                foreach(var r in UnityEngine.Object.FindObjectsByType<Renderer>(FindObjectsInactive.Exclude)){ if(r.name=="Taş çalışma tezgâhı"||r.name=="Kahve barı - ahşap gövde"||r.name.StartsWith("Coffee_Machine"))log+="  R "+r.name+" c="+r.bounds.center.ToString("F2")+" s="+r.bounds.size.ToString("F2")+"\n"; }
+                File.AppendAllText("Logs/GhostShots.txt",log); });
             Add(1,()=>{ g.testing=true; g.suppressSaveOnExit=true; g.story.allowInTest=false; g.NewGame(); });   // giriş diyaloğu çıkmasın
             Add(2.5,()=>{ g.data.storyStage=4; g.data.day=3; g.data.dayTime=200; g.data.shadowSeen=true; g.data.jumpSeen=true; g.story.allowInTest=true; /* konuşma kutuları testi durdurmasın */ Log("story active="+CafeStory.Active+" busy="+CafeStory.Busy+" paranormal="+(Ghost()!=null)); });
             // 1) gölge: gözün önünde belirir, ona bakınca ~1 sn içinde kaybolmalı

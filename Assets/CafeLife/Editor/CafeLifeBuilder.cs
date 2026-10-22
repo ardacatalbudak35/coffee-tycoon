@@ -129,7 +129,7 @@ namespace CafeLife
             var d=new SaveData();
             Check(!Economy.Spend(d,161) && d.money==160,"Yetersiz bakiye değişmiyor");
             Check(Economy.StartRecipe(d,0) && d.beans==19,"Espresso stok tüketiyor");
-            Check(Economy.Recipes.Length==10 && Economy.Recipes[5].cold && Economy.Recipes[9].name=="Buzlu Espresso" && Economy.Recipes[2].syrup=="caramel","Tüm sıcak, buzlu ve şuruplu tarifler tanımlı");
+            Check(Economy.Recipes.Length>=10 && Economy.Recipes[5].cold && Economy.Recipes[9].name=="Buzlu Espresso" && Economy.Recipes[2].syrup=="caramel","Tüm sıcak, buzlu ve şuruplu tarifler tanımlı");
             Check(CafeGame.IdealSteps(Economy.Recipes[0]).SequenceEqual(new[]{"espresso","lid"}) &&
                 CafeGame.IdealSteps(Economy.Recipes[1]).SequenceEqual(new[]{"milk","espresso","lid"}) &&
                 CafeGame.IdealSteps(Economy.Recipes[3]).SequenceEqual(new[]{"vanilla","milk","espresso","lid"}) &&

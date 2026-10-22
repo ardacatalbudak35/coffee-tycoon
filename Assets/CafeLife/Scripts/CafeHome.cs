@@ -78,6 +78,10 @@ namespace CafeLife
                 {
                     foreach(float side in new[]{-1f,1f}){ var p=mid+dir*(side*width/2); Box("Kapı çerçevesi",new Vector3(p.x,Fy+o[3]/2,p.y),Along(.07f,o[3],thick+.04f),wood,false); }
                     Box("Kapı çerçevesi",new Vector3(mid.x,Fy+o[3],mid.y),Along(width+.14f,.07f,thick+.04f),wood,false);
+                    // aralık duran kapı kanadı: menteşe kenarında, duvara yaklaşık 75° açık; çarpışması yok
+                    var hinge=mid-dir*(width/2-.03f); var perp=new Vector2(-dir.y,dir.x); var d2=(dir*Mathf.Cos(1.3f)+perp*Mathf.Sin(1.3f)).normalized; var leafMid=hinge+d2*(width*.46f);
+                    var leaf=Box("Kapı kanadı",new Vector3(leafMid.x,Fy+(o[3]-.04f)/2,leafMid.y),new Vector3(width*.92f,o[3]-.06f,.045f),Mat(new Color(.62f,.46f,.3f)),false); leaf.transform.rotation=Quaternion.Euler(0,Mathf.Atan2(-d2.y,d2.x)*Mathf.Rad2Deg,0);
+                    var knob=Box("Kapı kolu",new Vector3(hinge.x+d2.x*width*.85f,Fy+1f,hinge.y+d2.y*width*.85f),Vector3.one*.06f,Mat(new Color(.85f,.7f,.3f)),false);
                 }
                 pos=o[1];
             }
@@ -183,6 +187,8 @@ namespace CafeLife
             Put("Small Lamp 1",-2.65f,8.5f,0,.85f,false); Put("Books II",.95f,8.5f,0,.85f,false);
             Put("Wardrobe",-1f,5.55f,0); Put("Drawer 2",.95f,5.6f,0); Put("Chair 2",.9f,6.7f,270);
             Put("Lamp 3",-3.0f,5.5f,0,0,false);
+            Trigger("Defter etkileşim",new Vector3(.95f,Fy+.75f,5.3f),new Vector3(1f,.7f,.9f),"cc_book");
+            Trigger("Borç defteri etkileşim",new Vector3(.95f,Fy+.25f,5.3f),new Vector3(1f,.45f,.9f),"cc_ledger");
         }
 
         void BuildOurRoom()
@@ -193,6 +199,13 @@ namespace CafeLife
             Put("Table (Modern)",-.3f,-.65f,0); Put("TV 1",-.3f,-.65f,0,.51f,false); Put("Simple Pillow (Sofa)",.5f,2.0f,0,.55f,false);
             var paper=Box("Hasan Dede'nin notu",NoteSpot,new Vector3(.38f,.012f,.27f),Mat(new Color(.98f,.95f,.85f)),false); paper.transform.rotation=Quaternion.Euler(0,20,0);
             // İki alan çakışmasın: nota bakınca not, yatağın baş tarafına bakınca uyku çıksın
+            // Nermin Nine'nin izleri: tarak (yatakta), fotoğraf (komodinde), kuru papatyalar (masada)
+            var comb=Box("Eski tarak",new Vector3(.45f,Fy+.585f,2.5f),new Vector3(.04f,.012f,.16f),Mat(new Color(.55f,.5f,.42f)),false); comb.transform.rotation=Quaternion.Euler(0,25,0);
+            var frame=Box("Eski fotoğraf çerçevesi",new Vector3(1.15f,Fy+.96f,2.2f),new Vector3(.02f,.2f,.15f),Mat(new Color(.32f,.22f,.14f)),false); frame.transform.rotation=Quaternion.Euler(0,-10,6); Box("Eski fotoğraf",new Vector3(1.145f,Fy+.96f,2.2f),new Vector3(.006f,.15f,.11f),Mat(new Color(.78f,.72f,.6f)),false).transform.rotation=Quaternion.Euler(0,-10,6);
+            Box("Papatya vazosu",new Vector3(1.1f,Fy+.58f,.8f),new Vector3(.08f,.12f,.08f),Mat(new Color(.7f,.75f,.72f)),false); Box("Kuru papatyalar",new Vector3(1.1f,Fy+.7f,.8f),new Vector3(.12f,.12f,.12f),Mat(new Color(.78f,.7f,.52f)),false);
+            Trigger("Tarak etkileşim",new Vector3(.45f,Fy+.6f,2.5f),new Vector3(.5f,.4f,.5f),"cc_nermin0");
+            Trigger("Fotoğraf etkileşim",new Vector3(1.15f,Fy+.95f,2.2f),new Vector3(.5f,.5f,.5f),"cc_nermin1");
+            Trigger("Papatya etkileşim",new Vector3(1.1f,Fy+.65f,.8f),new Vector3(.5f,.5f,.5f),"cc_nermin2");
             Trigger("Not etkileşim",NoteSpot,new Vector3(.8f,.5f,.7f),"cc_note");
             Trigger("Yatak etkileşim",new Vector3(-1.3f,Fy+.6f,2.0f),new Vector3(1.2f,1.2f,1.5f),"cc_bed");
             Trigger("Televizyon etkileşim",new Vector3(-.3f,Fy+1f,-.2f),new Vector3(1.6f,1.6f,1.2f),"cc_tv");
@@ -217,6 +230,11 @@ namespace CafeLife
             {
                 case "cc_tv": return "Televizyon · uyuyunca akşam haberleri açılıyor";
                 case "cc_bed": return game.story.BedLabel();
+                case "cc_nermin0": return game.story.NerminLabel(0);
+                case "cc_nermin1": return game.story.NerminLabel(1);
+                case "cc_nermin2": return game.story.NerminLabel(2);
+                case "cc_ledger": return game.data.day>=6?(game.data.ledgerRead?"Borç Defteri · fincan sayaçları [E]":"Çekmecenin altında ikinci bir bölme · aç [E]"):"Alt çekmece kilitli";
+                case "cc_book": return game.data.bookRead?"Hasan'ın defteri · tekrar oku [E]":"Altıncı çekmece · aç [E]";
                 case "cc_note": return game.data.noteRead?"Hasan Dede'nin notu · tekrar oku [E]":"Yatağın üstünde bir not var · oku [E]";
             }
             return "";
@@ -228,6 +246,11 @@ namespace CafeLife
                 case "cc_tv": game.Tell("Ekranda karıncalar var. Uyuyunca haberler kendiliğinden açılıyor."); break;
                 case "cc_bed": game.story.UseBed(); break;
                 case "cc_note": game.story.ReadNote(); break;
+                case "cc_book": game.story.ReadBook(); break;
+                case "cc_nermin0": game.story.ReadNermin(0); break;
+                case "cc_nermin1": game.story.ReadNermin(1); break;
+                case "cc_nermin2": game.story.ReadNermin(2); break;
+                case "cc_ledger": if(game.data.day>=6)game.story.ReadLedger(); else game.Tell("Alt çekmece kilitli."); break;
             }
         }
     }

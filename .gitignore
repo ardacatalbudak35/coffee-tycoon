@@ -19,3 +19,11 @@
 # graphify
 graphify-out/*
 !graphify-out/GRAPH_REPORT.md
+
+# Mixamo karakterleri (1,6 GB) sadece yerel PC'de
+/MixamoIndirilen/
+/Assets/CafeLife/Resources/CafeMixamo/
+/Assets/CafeLife/Resources/CafeMixamo.meta
+# Unity kurtarma sahnesi
+/Assets/_Recovery/
+/Assets/_Recovery.meta

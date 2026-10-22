@@ -11,7 +11,7 @@ namespace CafeLife
     {
         public int recipe;
         public string productName="";
-        public bool foamed,art,perfectBrew; public bool iced, coldCup, ground, brewed, mixed, flavored, lidded;
+        public bool foamed,art,perfectBrew; public bool iced, coldCup, ground, brewed, mixed, flavored, lidded, filtered;
         public bool hasMilk,hasWater;
         public float dose=18,yield=36,extraction=28,grind=5,temperature=93,milkTemperature=20; public int roast=1;
         public readonly List<float> artWidths=new List<float>();
@@ -83,10 +83,11 @@ namespace CafeLife
             gameObject.AddComponent<CafeFocusedMode>().Setup(this);
             ui=gameObject.AddComponent<CafeUI>(); ui.game=this; ui.Build();
             story=gameObject.AddComponent<CafeStory>(); story.game=this; gameObject.AddComponent<CafeParanormal>().game=this;
-            cleaning=gameObject.AddComponent<CafeCleaning>(); cleaning.Setup(this);
+            cleaning=gameObject.AddComponent<CafeCleaning>(); cleaning.Setup(this); thief=gameObject.AddComponent<CafeThief>(); thief.Setup(this); vampire=gameObject.AddComponent<CafeVampire>(); vampire.Setup(this); ghosts=gameObject.AddComponent<CafeGhosts>(); ghosts.Setup(this);
             home=gameObject.AddComponent<CafeHome>(); home.Setup(this);
+            world.RearrangeBackBar();   // her şey kurulduktan sonra: bar arkası, filtre makinesi, çeşme, süt dolabı
             audioSource=gameObject.AddComponent<AudioSource>(); click=Tone(560,.09f); sale=Tone(880,.2f);
-            music=gameObject.AddComponent<AudioSource>(); music.clip=Music(); music.loop=true; music.volume=.18f; /* Şarkı şimdilik kapalı. Açmak için: music.Play(); */
+            music=gameObject.AddComponent<AudioSource>(); music.clip=Music(); music.loop=true; music.volume=.18f; music.Play();
             machineAudio=gameObject.AddComponent<AudioSource>(); machineAudio.clip=Tone(95,1); machineAudio.loop=true; machineAudio.volume=.07f;
             AudioListener.volume=data.volume; ApplyAudio();
             ui.ShowMenu("home");
@@ -101,7 +102,12 @@ namespace CafeLife
             if(brewTime>0)
             {
                 brewTime=Mathf.Max(0,brewTime-dt);var craft=GetComponent<CafeHundred>();if(craft)craft.BrewTick(dt);
-                if(brewTime==0 && cup!=null) { cup.brewed=true; cup.steps.Add("espresso"); if(craft)craft.FinishBrew();UpdateHand(); Tell("Espresso bardağa eklendi. Sıradaki: "+NextStep(),true); }
+                if(brewTime==0 && cup!=null) { EspressoShotDone(cup); if(craft)craft.FinishBrew();UpdateHand(); Tell("Espresso bardağa eklendi. Sıradaki: "+NextStep(),true); }
+            }
+            if(filterCup!=null&&filterTime>0)
+            {   // filtre makinesi demleniyor; bitince kahve bardağa dolar, ışık yeşile döner
+                filterTime-=dt;
+                if(filterTime<=0)FilterDone();
             }
             if(world.steam) world.steam.SetActive(brewTime>0);
             if(brewTime>0 && !machineAudio.isPlaying) machineAudio.Play();
@@ -116,11 +122,50 @@ namespace CafeLife
             if(data.staff>0 && (!expansion||expansion.Data.staffOn) && staffTimer<=0 && !staffBusy) { staffTimer=45; StaffServe(); }
         }
         public CafeStory story; public CafeCleaning cleaning; public CafeHome home;
-        public string CareLabel(string k)=>k=="cc_mop"||k=="cc_cloth"?cleaning.ToolLabel(k):home.Label(k);
-        public void CareUse(string k){ if(k=="cc_mop"||k=="cc_cloth")cleaning.UseTool(k); else home.Use(k); }
+        public CafeThief thief; public CafeVampire vampire; public CafeGhosts ghosts;
+        public string CareLabel(string k)=>k=="cc_mop"||k=="cc_cloth"?cleaning.ToolLabel(k):k=="cc_thief"?(thief?thief.Label():""):k=="cc_vampire"?(vampire?vampire.Label():""):k=="cc_ghost"?(ghosts?ghosts.Label():""):home.Label(k);
+        public void CareUse(string k){ if(k=="cc_mop"||k=="cc_cloth")cleaning.UseTool(k); else if(k=="cc_thief"){if(thief)thief.Use();} else if(k=="cc_vampire"){if(vampire)vampire.Use();} else if(k=="cc_ghost"){if(ghosts)ghosts.Use();} else home.Use(k); }
         public void AdvanceDay() { if(expansion)expansion.EndDay(data.day); data.day++; data.dayTime=data.dayTime>=300?data.dayTime-300:0; data.earned=0; int dirty=cleaning?cleaning.Overnight():0; Tell("Yeni gün: "+data.day+(dirty>0?" · gece kafe tozlanmış, "+dirty+" yeni toz var":"")); Save(); }
         public void StoryPause(bool on)
         { if(on) { Paused=true; if(machineAudio) machineAudio.Stop(); player.Lock(false); } else { Paused=false; player.Lock(!CafeFocusedMode.CounterControls); } }
+        // Filtre kahve makinesi: bardak makineye konur, 20 sn sonra hazır olur, o sırada eller serbesttir
+        public CupWork filterCup; public float filterTime;
+        public string FilterLabel()
+        {
+            if(filterCup!=null) return filterTime>0?"Filtre kahve demleniyor · "+Mathf.CeilToInt(filterTime)+" sn":(cup==null?"Filtre kahveyi makineden al [E]":"Önce elindeki içeceği bırak");
+            if(cup==null) return "Filtre kahve makinesi · önce bardak al";
+            if(cup.coldCup) return "Filtre kahve yalnızca sıcak bardakla yapılır";
+            if(cup.filtered) return "Filtre kahve zaten eklendi";
+            return "Bardağı filtre makinesine koy · "+Mathf.RoundToInt(CafeWorld.FilterSeconds)+" sn [E]";
+        }
+        // Demleme bitti: kahve bardağa dolar, ışık yeşile döner
+        public void FilterDone()
+        {
+            if(filterCup==null)return; filterTime=0; filterCup.filtered=true; filterCup.steps.Add("filter");
+            world.SetFilterCup(filterCup); world.SetFilterReady(true); Tell("Filtre kahve hazır! Makineden bardağı al.",true);
+        }
+        void FilterAct()
+        {
+            if(filterCup!=null)
+            {
+                if(filterTime>0){ Tell("Filtre kahve demleniyor: "+Mathf.CeilToInt(filterTime)+" sn kaldı. Bu sırada başka işe bakabilirsin."); return; }
+                if(cup!=null){ Tell("Önce elindeki içeceği bırak ya da teslim et."); return; }
+                cup=filterCup; filterCup=null; world.ClearFilterCup(); UpdateHand(); Save(); Tell("Filtre kahve hazır. Sıradaki: "+NextStep(),true); return;
+            }
+            if(cup==null){ Tell("Önce bardak rafından bardak al."); return; }
+            if(cup.lidded){ Tell("Kapak takıldı. İçeceği teslim et veya çöpe at."); return; }
+            if(cup.coldCup){ Tell("Filtre kahve yalnızca sıcak (karton) bardakla yapılır."); return; }
+            if(cup.filtered){ Tell("Filtre kahve zaten eklendi."); return; }
+            if(data.beans<=0){ Tell("Çekirdek bitti. Depodan getir. Menü → Tedarik: paket al veya rafları tamamla."); return; }
+            data.beans--; filterCup=cup; cup=null; filterTime=CafeWorld.FilterSeconds; world.SetFilterCup(filterCup); UpdateHand(); Save();
+            Tell("Bardak filtre makinesine kondu. Kahve "+Mathf.RoundToInt(CafeWorld.FilterSeconds)+" saniyede hazır olur; bu sırada başka işe bakabilirsin.",true);
+        }
+        // Bir espresso shot'ı bitti: tarifteki shot sayısına ulaşılmadıysa bardak yeniden öğütme bekler
+        public void EspressoShotDone(CupWork c)
+        {
+            c.steps.Add("espresso"); int want=Mathf.Max(1,Economy.Recipes[c.recipe].shots); int done=c.steps.Count(s=>s=="espresso");
+            c.brewed=done>=want; if(!c.brewed)c.ground=false;
+        }
         public void Continue() { started=true; Paused=false; ui.ShowMenu(""); player.Lock(!CafeFocusedMode.CounterControls); }
         public void TogglePause()
         { if(CafeStory.Busy) return; if(Paused && started) Continue(); else { Paused=true; if(machineAudio) machineAudio.Stop(); player.Lock(false); ui.ShowMenu("pause"); Save(); } }
@@ -138,7 +183,7 @@ namespace CafeLife
             if(File.Exists(SavePath)) File.Copy(SavePath,SavePath+".before-new-game",true);
             foreach(var c in customers.ToArray()) if(c) Destroy(c.gameObject);
             customers.Clear(); foreach(var drink in shelf) if(drink.visual) Destroy(drink.visual); shelf.Clear();
-            data=new SaveData(); cup=null; brewTime=0; noticePinned=false;
+            data=new SaveData(); cup=null; brewTime=0; noticePinned=false; filterCup=null; filterTime=0; world.ClearFilterCup();
             if(player) { player.body.enabled=false; player.transform.position=new Vector3(0,.08f,-9.7f); player.transform.rotation=Quaternion.identity; player.body.enabled=true; }
             GetComponent<CafeHundred>()?.ResetSession();UpdateHand(); world.Refresh(); if(expansion)expansion.ResetRun(); selected=0; Save(); Continue();
         }
@@ -152,14 +197,15 @@ namespace CafeLife
             var steps=new List<string>(); if(r.cold) steps.Add("ice");
             if(r.syrup!="") steps.Add(r.syrup);
             if(r.cold){if(r.milk)steps.Add("milk");else if(r.water)steps.Add("water");}
-            steps.Add("espresso");
+            if(r.filter)steps.Add("filter");                         // filtre kahve önce dolar, shotlar üstüne eklenir
+            for(int i=0;i<r.shots;i++)steps.Add("espresso");          // her shot ayrı öğütme + demleme
             if(!r.cold){if(r.milk)steps.Add("milk");else if(r.water)steps.Add("water");} steps.Add("lid"); return steps.ToArray();
         }
         public static int RecipeForCup(int selected,bool coldCup)
         {
             selected=Mathf.Clamp(selected,0,Economy.Recipes.Length-1);
-            int hotRecipe=selected==9?0:selected>=5?selected-4:selected;
-            return coldCup?(hotRecipe==0?9:hotRecipe+4):hotRecipe;
+            int hotRecipe=selected>=10?selected:selected==9?0:selected>=5?selected-4:selected;   // 10+ yalnızca sıcak servis edilir
+            return coldCup?(hotRecipe>=10?hotRecipe:hotRecipe==0?9:hotRecipe+4):hotRecipe;
         }
         public bool IsGood(CupWork work)
         {
@@ -171,7 +217,7 @@ namespace CafeLife
         }
         public string NextStep()
         {
-            if(cup==null) return "Bardak rafı";
+            if(cup==null) return filterCup!=null?(filterTime>0?"Filtre kahve demleniyor":"Filtre makinesinden bardağı al"):"Bardak rafı";
             if(CupOnMachine) return brewTime>0?"Espresso demleniyor":"Makineden bardağı al";
             if(cup.lidded) return "Teslim tezgâhı";
             var r=Economy.Recipes[cup.recipe];
@@ -179,8 +225,11 @@ namespace CafeLife
             if(r.syrup!=""&&cup.syrup=="") return r.syrup=="caramel"?"Karamel şurubu":"Vanilya şurubu";
             if(r.milk&&!cup.hasMilk&&(r.cold||cup.brewed)) return "Süt dolabı";
             if(r.water&&!cup.hasWater&&(r.cold||cup.brewed)) return "Arıtma çeşmesi";
-            if(!cup.ground) return "Değirmen";
-            if(!cup.brewed) return brewTime>0?"Espresso demleniyor":"Espresso makinesi";
+            if(r.filter&&!cup.filtered) return "Filtre kahve makinesi";
+            if(r.shots>0){
+                if(!cup.ground) return cup.steps.Contains("espresso")?"Değirmen (sıradaki shot)":"Değirmen";
+                if(!cup.brewed) return brewTime>0?"Espresso demleniyor":"Espresso makinesi";
+            }
             var focused=GetComponent<CafeFocusedMode>();
             var customer=focused?focused.selectedOrder:null;
             if(customer&&customer.recipe==cup.recipe&&CafeService.Preference(customer)==1&&!cup.art){
@@ -192,18 +241,20 @@ namespace CafeLife
         }
         public void Act(string kind)
         {
-            if(CupOnMachine && kind!="machine" && (kind=="foam"||kind=="art"||kind=="grinder"||kind=="milk"||kind=="water"||kind=="ice"||kind=="caramel"||kind=="vanilla"||kind.StartsWith("lid")||kind=="pickup")){Tell("Önce makinedeki bardağı E ile al.");return;}
+            if(CupOnMachine && kind!="machine" && (kind=="foam"||kind=="art"||kind=="grinder"||kind=="filter"||kind=="milk"||kind=="water"||kind=="ice"||kind=="caramel"||kind=="vanilla"||kind.StartsWith("lid")||kind=="pickup")){Tell("Önce makinedeki bardağı E ile al.");return;}
             if(expansion && expansion.Action(kind))return;
             if(kind=="machine" && expansion && brewTime>0 && expansion.StopBrew())return;
             if(kind=="machine" && CupOnMachine && brewTime<=0){ClearMachineCup();UpdateHand();Tell("Bardak eline alındı. Sıradaki: "+NextStep(),true);return;}
             if(kind=="shop") { OpenShop(); return; }
             if(kind=="trash") { Discard(); return; }
             if(kind=="depot") { Restock(); return; }
+            if(kind=="filter") { FilterAct(); return; }
             var r=Economy.Recipes[selected];
             if(kind=="cup"||kind=="cup_hot"||kind=="cup_cold")
             {
                 if(cup!=null) { Tell("Önce elindeki içeceği bitir ya da çöpe at."); return; }
                 bool cold=kind=="cup_cold" || kind=="cup"&&r.cold;
+                if(cold&&selected>=10){ Tell(r.name+" yalnızca sıcak servis edilir. Karton bardak al."); return; }
                 int recipe=RecipeForCup(selected,cold);
                 r=Economy.Recipes[recipe];
                 if(cold ? data.cupsCold<=0 : data.cupsHot<=0) { Tell("Bardak bitti! Depodan bara getir. Menü → Tedarik: paket al veya rafları tamamla."); return; }
@@ -230,7 +281,7 @@ namespace CafeLife
             }
             else if(kind=="machine")
             {
-                if(!cup.ground||cup.brewed||brewTime>0) { Tell("Demlemek için önce çekirdek öğüt; espresso yalnızca bir kez eklenir."); return; }
+                if(!cup.ground||cup.brewed||brewTime>0) { Tell("Demlemek için önce çekirdek öğüt; her shot için çekirdek yeniden öğütülür."); return; }
                 brewTotal=4f/(1+(data.machine-1)*.25f); brewTime=brewTotal;playerEspresso=CafeEspressoFlow.Begin(this);UpdateHand();
                 if(expansion)expansion.BrewStarted();var craft=GetComponent<CafeHundred>();if(craft)craft.StartBrew(); Tell("Espresso demleniyor..."); Save(); return;
             }
@@ -286,6 +337,9 @@ namespace CafeLife
         }
         int IdentifyRecipe(CupWork work)
         {
+            int shots=work.steps.Count(s=>s=="espresso"); bool coldDrink=work.coldCup||work.iced;
+            if(work.filtered&&!coldDrink){ int idx=shots==0?10:shots==1?12:shots==2?13:14; work.productName=Economy.Recipes[idx].name; return idx; }        // Filtre / Red Eye / Black Eye / Dead Eye
+            if(!coldDrink&&work.hasMilk&&!work.hasWater&&work.syrup==""&&shots>=2){ work.productName=Economy.Recipes[11].name; return 11; }              // Flat White
             string baseName=work.hasMilk?(work.hasWater?"Sütlü Americano":"Latte"):(work.hasWater?"Americano":"Espresso");
             if(work.syrup=="caramel") baseName="Karamel "+baseName;
             if(work.syrup=="vanilla") baseName="Vanilyalı "+baseName;
@@ -483,12 +537,16 @@ namespace CafeLife
             yield return StaffSkillWait(1.5f); world.StaffHoldCup(work);
             if(r.cold) { world.SetStaffStatus("Buz koyuyor"); yield return world.StaffMoveTo(new Vector3(-3f,0,-4.9f)); yield return StaffSkillWait(2.2f); work.iced=true; work.steps.Add("ice"); world.StaffHoldCup(work); }
             if(r.syrup!="") { world.SetStaffStatus(r.syrup=="vanilla"?"Vanilya ekliyor":"Karamel ekliyor"); yield return world.StaffMoveTo(new Vector3(r.syrup=="vanilla"?1.7f:.75f,0,-4.9f)); yield return StaffSkillWait(2.1f); work.syrup=r.syrup; work.flavored=true; work.steps.Add(r.syrup); world.StaffHoldCup(work); }
-            if(r.cold&&r.milk) { world.SetStaffStatus("Süt ekliyor"); yield return world.StaffMoveTo(new Vector3(-4.6f,0,-4.85f)); yield return StaffSkillWait(2.4f); work.hasMilk=true; work.mixed=true; work.steps.Add("milk"); world.StaffHoldCup(work); }
-            if(r.cold&&r.water) { world.SetStaffStatus("Su ekliyor"); yield return world.StaffMoveTo(new Vector3(2.9f,0,-4.85f)); yield return StaffSkillWait(2.3f); work.hasWater=true; work.mixed=true; work.steps.Add("water"); world.StaffHoldCup(work); }
-            world.SetStaffStatus("Çekirdek öğütüyor"); yield return world.StaffMoveTo(new Vector3(-1.9f,0,-4.9f)); yield return StaffSkillWait(3f); work.ground=true;
-            world.SetStaffStatus("Espresso demleniyor"); yield return world.StaffMoveTo(new Vector3(-.55f,0,-4.9f)); world.StaffClearCup();var pouring=CafeEspressoFlow.Begin(this,true,5f/Mathf.Lerp(1f,3f,Mathf.Clamp01((data.baristaLevel-1)/4f)));yield return pouring.StaffPour(); work.brewed=true; work.steps.Add("espresso"); world.StaffHoldCup(work);
-            if(!r.cold&&r.milk) { world.SetStaffStatus("Süt ekliyor"); yield return world.StaffMoveTo(new Vector3(-4.6f,0,-4.85f)); yield return StaffSkillWait(2.4f); work.hasMilk=true; work.mixed=true; work.steps.Add("milk"); world.StaffHoldCup(work); }
-            if(!r.cold&&r.water) { world.SetStaffStatus("Su ekliyor"); yield return world.StaffMoveTo(new Vector3(2.9f,0,-4.85f)); yield return StaffSkillWait(2.3f); work.hasWater=true; work.mixed=true; work.steps.Add("water"); world.StaffHoldCup(work); }
+            if(r.cold&&r.milk) { world.SetStaffStatus("Süt ekliyor"); yield return world.StaffMoveTo(new Vector3(-.55f,0,-4.9f)); yield return StaffSkillWait(2.4f); work.hasMilk=true; work.mixed=true; work.steps.Add("milk"); world.StaffHoldCup(work); }
+            if(r.cold&&r.water) { world.SetStaffStatus("Su ekliyor"); yield return world.StaffMoveTo(new Vector3(-.9f,0,-4.05f)); yield return StaffSkillWait(2.3f); work.hasWater=true; work.mixed=true; work.steps.Add("water"); world.StaffHoldCup(work); }
+            if(r.filter) { world.SetStaffStatus("Filtre kahve dolduruyor"); yield return world.StaffMoveTo(new Vector3(.6f,0,-4.05f)); world.StaffClearCup(); yield return StaffSkillWait(CafeWorld.FilterSeconds); work.filtered=true; work.steps.Add("filter"); world.StaffHoldCup(work); }
+            for(int shot=0;shot<r.shots;shot++)
+            {
+                world.SetStaffStatus("Çekirdek öğütüyor"); yield return world.StaffMoveTo(new Vector3(-1.9f,0,-4.9f)); yield return StaffSkillWait(3f); work.ground=true;
+                world.SetStaffStatus("Espresso demleniyor"); yield return world.StaffMoveTo(new Vector3(-.55f,0,-4.9f)); world.StaffClearCup();var pouring=CafeEspressoFlow.Begin(this,true,5f/Mathf.Lerp(1f,3f,Mathf.Clamp01((data.baristaLevel-1)/4f)));yield return pouring.StaffPour(); work.brewed=true; work.steps.Add("espresso"); world.StaffHoldCup(work);
+            }
+            if(!r.cold&&r.milk) { world.SetStaffStatus("Süt ekliyor"); yield return world.StaffMoveTo(new Vector3(-.55f,0,-4.9f)); yield return StaffSkillWait(2.4f); work.hasMilk=true; work.mixed=true; work.steps.Add("milk"); world.StaffHoldCup(work); }
+            if(!r.cold&&r.water) { world.SetStaffStatus("Su ekliyor"); yield return world.StaffMoveTo(new Vector3(-.9f,0,-4.05f)); yield return StaffSkillWait(2.3f); work.hasWater=true; work.mixed=true; work.steps.Add("water"); world.StaffHoldCup(work); }
             world.SetStaffStatus("Kapak takıyor"); yield return world.StaffMoveTo(new Vector3(2.8f,0,-4.9f)); yield return StaffSkillWait(2f); work.lidded=true; work.steps.Add("lid"); world.StaffHoldCup(work);
             world.SetStaffStatus("Siparişi teslim ediyor"); yield return world.StaffMoveTo(new Vector3(4.7f,0,-4.9f));
             if(customer && customer.state==CafeCustomer.State.Waiting)
@@ -502,7 +560,8 @@ namespace CafeLife
         IEnumerator StaffWait(float seconds)
         { while(seconds>0) { if(!Paused) seconds-=Time.deltaTime; yield return null; } }
         IEnumerator StaffSkillWait(float seconds) => StaffWait(seconds/Mathf.Lerp(1f,3f,Mathf.Clamp01((data.baristaLevel-1)/4f)));
-        public void ApplyAudio(){if(!expansion)return;if(music)music.volume=.36f*expansion.Data.music;if(machineAudio)machineAudio.volume=.12f*expansion.Data.effects;if(audioSource)audioSource.volume=expansion.Data.effects;}
+        public float musicMul=1;
+        public void ApplyAudio(){if(!expansion)return;if(music)music.volume=.36f*expansion.Data.music*musicMul;if(machineAudio)machineAudio.volume=.12f*expansion.Data.effects;if(audioSource)audioSource.volume=expansion.Data.effects;}
         public void Save()
         { if(data==null)return;try{Economy.Save(data,SavePath);if(expansion){expansion.saveStatus="Kaydedildi";expansion.lastSavedFrame=Time.frameCount;}}catch(Exception e){Debug.LogError("Kayıt başarısız: "+e.Message);Tell("Kayıt yapılamadı; disk alanını kontrol et.");} }
         void OnApplicationPause(bool paused){if(paused&&!suppressSaveOnExit)Save();}

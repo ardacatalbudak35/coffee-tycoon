@@ -8,10 +8,10 @@ namespace CafeLife
 {
     // Hikaye: miras kalan kafe, gün içi görevler, geceleri üst katta uyumadan sabah olmaz; uyuyunca TV'de o günün haberleri çıkar.
     // storyStage: -1 kapalı (eski kayıt) · 0 giriş · 1 temizlik · 2 servis · 3 uyumaya hazır · 4 serbest oyun
-    public sealed class CafeStory : MonoBehaviour
+    public sealed partial class CafeStory : MonoBehaviour
     {
         public static bool Active,Busy,Free;
-        public static int Mask=1023;
+        public static int Mask=32767;
         public CafeGame game; public bool allowInTest;
 
         struct Line { public string who,text; }
@@ -31,12 +31,56 @@ namespace CafeLife
             L("Arda","Hadi bakalım. İlk gün, ilk fincan. Dükkân zamanla yine kirlenir, bezi ve paspası yerinde tutayım.")
         };
         static readonly Line[] Served={
-            L("Arda","Beş müşteri, hepsi sağ salim. Bu şehirde bu bile bir başarı."),
+            L("Arda","Üç müşteri, hepsi sağ salim. Bu şehirde bu bile bir başarı."),
             L("Arda","Bugünlük yeter. Merdivenden çıkıp odamda yatayım, yoksa sabah olmayacak. Haberleri de kaçırmayayım.")
         };
-        static readonly Page[] Day1={
-            new Page("SON DAKİKA: Kahve tüketimi rekor kırdı","Şehirde kişi başı günlük kahve tüketimi 19 fincana ulaştı. Uzmanlar, 20. fincanda insanın zamanı geriye saymaya başladığını söylüyor. Belediye \"Yarın pazartesi olmasın da ne olursa olsun\" açıklaması yaptı."),
-            new Page("Kuzey Dağları'nda karamel kokan çekirdek bulundu","Yabani karamel çekirdeği bir grup dağcı tarafından keşfedildi. Üç kişi kokuyu aldıktan sonra kahve makinesiyle evlendiğini duyurdu. Yetkililer çekirdeğin \"şifa değil ama tatlı\" olduğunu belirtti. Karamel Latte yarın menülerde.",2)
+        // Menü güne göre açılır: 1. gün Espresso/Buzlu Espresso/Filtre · 2. Americano · 3. Latte ailesi · 4. Flat White, Red Eye · 5. Black Eye, Dead Eye
+        public static int MaskForDay(int day)
+        {
+            int m=(1<<0)|(1<<9)|(1<<10);
+            if(day>=2)m|=(1<<4)|(1<<8); if(day>=3)m|=(1<<1)|(1<<2)|(1<<3)|(1<<5)|(1<<6)|(1<<7); if(day>=4)m|=(1<<11)|(1<<12); if(day>=5)m|=(1<<13)|(1<<14);
+            return m;
+        }
+        public static int UnlockDay(int recipe){ for(int d=1;d<=5;d++)if((MaskForDay(d)&(1<<recipe))!=0)return d; return 5; }
+
+        // Her gecenin haberleri: (gün N akşamı) → ertesi sabah yeni içecekler menüde
+        static readonly Page[][] NightNews={
+            new[]{
+                new Page("SON DAKİKA: Kahve tüketimi rekor kırdı","Şehirde kişi başı günlük kahve tüketimi 19 fincana ulaştı. Uzmanlar, 20. fincanda insanın zamanı geriye saymaya başladığını söylüyor. Belediye \"Yarın pazartesi olmasın da ne olursa olsun\" açıklaması yaptı."),
+                new Page("Espressoyu suyla sulandıran cesur adam: Americano doğdu","Şehre gelen yabancı bir gezgin, espressonun üstüne sıcak su ekleyince kalabalık önce sustu, sonra alkışladı. Belediye içeceği \"uzun içimli ama tehlikesiz\" ilan etti. Americano yarın menülerde.")
+            },
+            new[]{
+                new Page("Gece dükkânlarda gölge görenler artıyor","Şehirde 20. fincanı içenlerin geceleri gölge olarak geri döndüğü iddia ediliyor. Uzmanlar \"Gölgeye uzun uzun bakmayın, bakınca kayboluyorlar\" diyor. Bir muhtar, gölgelerin yalnızca bir fincan istediğini söyledi."),
+                new Page("Sütle barışan espresso: Latte geliyor","Kahve bilim insanları espressoyu sütle buluşturdu, şehirde sakinlik dalgası başladı. Vanilya ve karamel şurubu depoları da açıldı. Latte, Vanilyalı Latte ve Karamel Latte yarın menülerde.")
+            },
+            new[]{
+                new Page("Televizyonlar kendiliğinden açılıyor","Dün gece binlerce televizyon kimse dokunmadan açıldı. Ekranlarda yalnızca \"20. fincan\" yazıyordu. Yetkililer ekranı kapatmak yerine kahve içmeyi öneriyor."),
+                new Page("İki shot, sıfır uyku: Flat White ve Red Eye","Bir grup barista latteye bir shot daha ekleyince Flat White doğdu. Filtre kahveye espresso eklenince ortaya çıkan Red Eye ise gözleri kıpkırmızı yapıyor. Yetkililer \"Uyumak ne zaman moda oldu?\" diye sordu. İkisi de yarın menülerde.")
+            },
+            new[]{
+                new Page("Gölgeler artık fincan istiyor","Geceleri görülen gölgelerin \"yalnızca bir fincan\" istediği iddiası doğrulandı. Muhtarlar kapı önlerine birer fincan bırakmayı öneriyor. Fincanın boş dönmediği bildirildi."),
+                new Page("Gözlerin önce kızarıyor, sonra kararıyor: Black Eye ve Dead Eye","Filtre kahveye iki shot eklenince Black Eye, üç shot eklenince Dead Eye şehre yayıldı. Sağlık Bakanlığı Dead Eye için \"yasal ama tavsiye edilmez\" dedi. İçenlerin gözleri parlıyor, hikâyelerin sonu karanlık. İkisi de yarın menülerde.")
+            },
+            new[]{
+                new Page("Şehir sessiz: kimse 20. fincanı içmedi","İlk kez bir gece boyunca gölge görülmedi. Uzmanlar bunu \"mahallenin bir dükkândan kahve içmesine\" bağladı. Haberi okuyan sunucu, sesini alçaltıp \"Hasan Dede'yi hatırlayanlar kapıyı çalsın\" dedi."),
+                new Page("Eski bir tarif defteri aranıyor","Şehir arşivi, kayıp bir tarif defterinin izini sürdüğünü duyurdu. Sahibinin dükkânı bir torununa bıraktığı söyleniyor. Defterin altıncı çekmecede olduğu iddia ediliyor, ama kimse çekmeceyi bulamamış.")
+            },
+            new[]{
+                new Page("Fincan sayaçları kapı kapı dolaşıyor","Mahalle sakinleri yarım ağızla konuşuyor: bazıları dün gece kaç fincan içtiğini hatırlamıyor. Uzmanlar \"19'dan sonra sayı değil, hatıra sayılır\" diyor."),
+                new Page("Işıklar mavi yanıyor","Şehirde bazı dükkânların lambaları geceleri soğuk maviye dönüyor. Elektrik idaresi \"arıza yok\" açıklaması yaptı. Mavi ışığı gören, fincanı bırakıyor.")
+            },
+            new[]{
+                new Page("Boş masalar dolu çıkıyor","Esnaflar, kapandıktan sonra boş masaların başında birinin oturduğunu söylüyor. Kimse ona hesap getirmiyor, o da bir şey istemiyor. Yalnızca bekliyor."),
+                new Page("Sayma sesi: on yedi, on sekiz…","Gece yarısı sayma sesi duyanlar kapılarını kilitliyor. \"On dokuzda kesmek lazım\" diyor yaşlılar. Yirmiye gelen sayının ne olacağını kimse bilmiyor.")
+            },
+            new[]{
+                new Page("Yankılar yürüyor","Bazı vatandaşlar sokakta kendi adımlarını bir an gecikmeyle duyduğunu söylüyor. Bilim insanları \"durursanız o da durur\" diyor, ama ilk gece kimse durmaya cesaret edemiyor."),
+                new Page("Yüzsüzler mahallede","Gölgelerin bazıları artık tanıdık yüzlerle dolaşıyor, yalnızca gözleri yok. Muhtar \"onların siparişini bilen yatıştırabilir\" açıklaması yaptı.")
+            },
+            new[]{
+                new Page("Nöbetçi göründü","Işığın altında durmayan uzun bir figür gece dükkânları dolaşıyor. Tanık sayısı arttı: \"Işığa yaklaşırsan dokunamıyor\" diyorlar."),
+                new Page("Hasan'ın anlaşması konuşuluyor","Belediye arşivinde 1962'de imzalanmış bir kâğıdın varlığı iddia ediliyor. Kâğıtta tek bir cümle yazıyormuş: \"Mahalle uyumasın.\" Kâğıt hâlâ ıslakmış.")
+            }
         };
         static readonly Page[] Generic={
             new Page("Gece dükkânlarda gölge görenler artıyor","Şehirde 20. fincanı içenlerin geceleri gölge olarak geri döndüğü iddia ediliyor. Uzmanlar \"Gölgeye uzun uzun bakmayın, bakınca kayboluyorlar\" diyor. Bir muhtar, gölgelerin yalnızca bir fincan istediğini söyledi."),
@@ -90,7 +134,7 @@ namespace CafeLife
         void Sync()
         {
             var d=game?game.data:null;
-            Active=d!=null&&d.storyStage>=0&&(!game.testing||allowInTest); Free=Active&&d.storyStage>=4; Mask=Active?d.menuMask:1023;
+            Active=d!=null&&d.storyStage>=0&&(!game.testing||allowInTest); Free=false; Mask=Active?MaskForDay(d.day):(1<<Economy.Recipes.Length)-1;
         }
 
         // ---------- arayüz ----------
@@ -152,19 +196,43 @@ namespace CafeLife
             tracker.SetActive(show);
             if(!show)return;
             trackerText.text=TrackerText(d);
-            if(d.storyStage==0)StartCoroutine(Beat(Intro,1,true));
+            if(kb!=null&&kb.jKey.wasPressedThisFrame&&d.storyStage>=1){ OpenJournal(); return; }
+            if(d.storyStage==0)StartCoroutine(OpeningThenIntro());
             else if(d.storyStage==1&&game.expansion.Data.cleaned>=5)StartCoroutine(Beat(Cleaned,2,false));
-            else if(d.storyStage==2&&d.served>=5)StartCoroutine(Beat(Served,3,false));
+            else if(d.storyStage==2&&d.served>=3)StartCoroutine(Beat(Served,3,false));
+        }
+
+        // 2. ve 3. günün görevleri: o gün açılan içecekleri servis et, kafeyi temiz tut (toplamlar kayıttan okunur)
+        // Gün görevleri: (içecek tarif numaraları, gereken servis, gereken temizlik, görev adı, ipucu)
+        static readonly Dictionary<int,(int[] recipes,int need,int clean,string title,string tip)> Tasks=new Dictionary<int,(int[],int,int,string,string)>{
+            {2,(new[]{4,8},3,7,"Americano servis et","Americano: espresso, sonra arıtma çeşmesinden su")},
+            {3,(new[]{1,2,3,5,6,7},4,10,"Latte çeşitlerinden servis et","Latte: espresso, sonra süt dolabından süt")},
+            {4,(new[]{11,12},3,12,"Flat White veya Red Eye servis et","Flat White: 2 shot + süt · Red Eye: filtre kahve + 1 shot")},
+            {5,(new[]{13,14},3,14,"Black Eye veya Dead Eye servis et","Black Eye: filtre + 2 shot · Dead Eye: filtre + 3 shot")},
+            // Bölüm 2 · Borç Defteri: sakinlerin fincan sayacı (19'da reddet [X], 20. fincan gölge yapar)
+            {6,(new[]{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14},6,14,"Müşterilere servis et","Borç defteri: sakin 19. fincana gelince Reddet [X] seçeneği çıkar")},
+            {7,(new[]{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14},8,14,"Müşterilere servis et","Işık maviye dönerse bir gölge yakın: makinenin yanında güvendesin")},
+            {8,(new[]{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14},10,16,"Müşterilere servis et","Gölgeye kapaklı fincan ikram edersen huzur bulur")},
+            {9,(new[]{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14},12,16,"Müşterilere servis et","Sayan'ı 19'da kes, Yankı'ya yaklaşma, Nöbetçi'den ışığa kaç")},
+            {10,(new[]{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14},14,18,"Müşterilere servis et","Yüzsüz gölgeye sakinin siparişini hazırla")}
+        };
+        int TaskSales(SaveData d,int[] recipes){ var sales=d.hundred!=null&&d.hundred.sales!=null?d.hundred.sales:new int[15]; int n=0; foreach(int r in recipes)if(r<sales.Length)n+=sales[r]; return n; }
+        bool TasksDone(SaveData d){ if(!Tasks.TryGetValue(d.day,out var t))return true; return TaskSales(d,t.recipes)>=t.need&&game.expansion.Data.cleaned>=t.clean&&(d.day<5||d.finale)&&(d.day!=6||d.ledgerRead); }
+        string DayTasks(SaveData d)
+        {
+            if(!Tasks.TryGetValue(d.day,out var t))return null; int n=TaskSales(d,t.recipes),cleaned=game.expansion.Data.cleaned;
+            string Mark(bool ok)=>ok?"<color=#9EE0AE>[x]</color> ":"[  ] "; bool doneA=n>=t.need,doneB=cleaned>=t.clean;
+            return Mark(doneA)+t.title+" ("+Mathf.Min(t.need,n)+"/"+t.need+")\n"+Mark(doneB)+"Kafeyi temiz tut: toz temizle ("+Mathf.Min(t.clean,cleaned)+"/"+t.clean+")"+(d.day==5?"\n"+Mark(d.finale)+"Kapıdaki uzun paltolu yabancıyla konuş":"")+(d.day==6?"\n"+Mark(d.ledgerRead)+"Altıncı çekmecenin altındaki Borç Defteri'ni oku":"")+"\n<size=13>"+t.tip+"</size>"+(doneA&&doneB&&(d.day!=5||d.finale)&&(d.day!=6||d.ledgerRead)?"\n<color=#F2C76B>Görevler tamam. Hazırsan merdivenle üst kata çık.</color>":"");
         }
 
         string TrackerText(SaveData d)
         {
             string head="<color=#F2C76B><b>GÜN "+d.day+(d.storyStage>=4?"":" · MİRAS")+"</b></color>\n";
             if(d.dayTime>=300)return head+"Kafe kapandı. Merdivenle üst kata çık, odandaki yatağa yat.";
-            if(d.storyStage>=4)return head+"Gün sonunda merdivenle üst kata çık, odandaki yatakta uyu.";
+            if(d.storyStage>=4)return head+(DayTasks(d)??"Gün sonunda merdivenle üst kata çık, odandaki yatakta uyu.");
             int c=Mathf.Min(5,game.expansion.Data.cleaned);
             string Mark(bool ok)=>ok?"<color=#9EE0AE>[x]</color> ":"[  ] ";
-            return head+Mark(c>=5)+"Tozları temizle ("+c+"/5)\n<size=13>yer: paspas · masa: bez (ikisi de merdiven altında)</size>\n"+Mark(d.served>=1)+"İlk müşteriyi servis et\n"+Mark(d.served>=5)+"5 müşteriye servis yap ("+Mathf.Min(5,d.served)+"/5)"+(d.storyStage>=3?"\n<color=#F2C76B>Hazırsan yan kapıdan üst kata çık.</color>":"");
+            return head+Mark(c>=5)+"Tozları temizle ("+c+"/5)\n<size=13>yer: paspas · masa: bez (ikisi de merdiven altında)</size>\n"+Mark(d.served>=1)+"İlk müşteriyi servis et\n"+Mark(d.served>=3)+"3 müşteriye servis yap ("+Mathf.Min(3,d.served)+"/3)"+(d.storyStage>=3?"\n<color=#F2C76B>Hazırsan yan kapıdan üst kata çık.</color>":"");
         }
 
         IEnumerator Say(Line[] lines)
@@ -198,14 +266,41 @@ namespace CafeLife
             L("Hasan Dede (not)","Altıncı çekmecede tarif defterim var. Seni çok seviyorum evladım. — Dedem Hasan")
         };
         // Tek satırlık kısa konuşma (paranormal olaylardan sonra Arda'nın yorumu vb.)
+        // Çok satırlı kısa konuşma (sakinlerin tanışma/anı/dönüş diyalogları); bitince done çağrılır
+        public void Talk(System.Action done,params string[] whoText){ if(Busy||!game||game.Paused)return; StartCoroutine(TalkRoutine(whoText,done)); }
+        IEnumerator TalkRoutine(string[] whoText,System.Action done)
+        { Busy=true; game.StoryPause(true); var lines=new List<Line>(); for(int i=0;i+1<whoText.Length;i+=2)lines.Add(L(whoText[i],whoText[i+1])); yield return Say(lines.ToArray()); done?.Invoke(); game.Save(); game.StoryPause(false); Busy=false; }
         public void Remark(string who,string text){ if(!Busy&&game&&!game.Paused)StartCoroutine(RemarkRoutine(who,text)); }
         IEnumerator RemarkRoutine(string who,string text)
         { Busy=true; game.StoryPause(true); yield return Say(new[]{L(who,text)}); game.StoryPause(false); Busy=false; }
+        static readonly Line[] Book={
+            L("Arda","Altıncı çekmece… Bir tarif defteri. Kapağında dedenin el yazısı var: \"Hasan'ın Defteri\"."),
+            L("Hasan Dede (defter)","İlk sayfa: İyi kahve acele istemez. Espressoyu sıkıştır, sütü sabırla köpürt, müşteriye adıyla seslen."),
+            L("Hasan Dede (defter)","İkinci sayfa: Filtre kahveyi makineye bırak, işine bak. Dükkânın en iyi işçisi bekleyendir."),
+            L("Hasan Dede (defter)","Son sayfa: 20. fincanı kimseye ikram etme. İçeni ben geri götüremem. Arda, sen yap bunu."),
+            L("Hasan Dede (defter)","Gizli tarif: her fincana bir tutam tarçın, bir tutam sabır. Müşteri farkını anlamaz ama içer, geri gelir."),
+            L("Arda","Dedem bana bir kafe değil, bir görev bırakmış. Bu tarifi bundan sonra her fincana ekleyeceğim. (Tüm satışlarda +%10)")
+        };
+        public void ReadLedger()
+        {
+            if(Busy||!game||game.Paused)return; var pages=CafeResidents.LedgerPages(game); var args=new List<string>();
+            if(!game.data.ledgerRead){ args.AddRange(new[]{"Arda","Çekmecenin altında ikinci bir bölme… içinde kalın bir defter. Kapağında dedemin yazısı: \"Borç\".","Hasan Dede (defter)","Her sakinin adı ve yanında bir sayı yazıyor. Fincanları saymışım. 20'ye gelen bu defterden silinir, gölge olarak dükkâna döner.","Hasan Dede (defter)","19'a gelene fincan verme. Reddetmek onu kızdırır ama korur. Onları ben korudum, şimdi sıra sende."}); }
+            foreach(var p in pages){ args.Add("Borç Defteri"); args.Add(p); }
+            Talk(()=>{ AddJournal("borc","Borç Defteri","Her sakinin fincanı sayılıyor. 19'da fincan verme (Reddet [X]); 20. fincan gölgeye çevirir."); if(!game.data.ledgerRead){ game.data.ledgerRead=true; game.Tell("Borç Defteri açıldı: sakinlerin fincan sayacını artık görebilirsin.",true); } },args.ToArray());
+        }
+        public void ReadBook(){ if(!Busy&&game&&!game.Paused)StartCoroutine(BookRoutine()); }
+        IEnumerator BookRoutine()
+        {
+            Busy=true; game.StoryPause(true); yield return Say(Book);
+            AddJournal("defter","Hasan'ın tarif defteri","20. fincanı kimseye ikram etme. Gizli tarif: her fincana bir tutam tarçın, bir tutam sabır (tüm satışlarda +%10).");
+            if(!game.data.bookRead){game.data.bookRead=true;game.data.money+=150;game.data.earned+=150;game.Tell("Defterin arasından 150 coin çıktı. Gizli tarif: tüm satışlarda +%10.",true);}
+            game.Save(); game.StoryPause(false); Busy=false;
+        }
         public void ReadNote(){ if(!Busy&&game&&!game.Paused)StartCoroutine(NoteRoutine()); }
         IEnumerator NoteRoutine()
         {
             Busy=true; game.StoryPause(true); yield return Say(Note);
-            game.data.noteRead=true; game.Save(); game.StoryPause(false); Busy=false;
+            game.data.noteRead=true; AddJournal("not","Hasan Dede'nin notu","Bu odayı sen gelmeden hazırladım. Dükkânı sakın satma, kendini de kahveye satma. Gece uyumadan sabah olmaz. Altıncı çekmecede tarif defterim var."); game.Save(); game.StoryPause(false); Busy=false;
         }
 
         void PrepareFirstDay()
@@ -224,8 +319,8 @@ namespace CafeLife
             return true;
         }
 
-        public const bool SleepAnytime=true; // TEST: true iken yatağa her an yatılır. Normal oyun için false yap (gün bitmeden veya görevler bitmeden uyunmaz).
-        bool CanSleep=>Active&&game.data.storyStage>=1&&(SleepAnytime||game.data.dayTime>=300||game.data.storyStage>=3);
+        public const bool SleepAnytime=false; // TEST: true iken yatağa her an yatılır. false: gün süresi dolunca veya o günün görevleri bitince uyunur.
+        bool CanSleep=>Active&&game.data.storyStage>=1&&(SleepAnytime||game.data.dayTime>=300||game.data.storyStage==3||(game.data.storyStage>=4&&TasksDone(game.data)));
         public string BedLabel()
         {
             if(!Active)return "Yatak · dinlenebilirsin";
@@ -256,14 +351,15 @@ namespace CafeLife
         IEnumerator Sleep()
         {
             Busy=true; var d=game.data; game.StoryPause(true); nightAnnounced=false;
+            yield return DaySummary();
             yield return Fade(1);
-            var pages=d.day==1?Day1:new[]{Generic[(d.day-2)%Generic.Length],Generic[(d.day-1)%Generic.Length]};
+            var pages=d.day<=NightNews.Length?NightNews[d.day-1]:new[]{Generic[(d.day-2)%Generic.Length],Generic[(d.day-1)%Generic.Length]};
+            int oldMask=MaskForDay(d.day);
             tv.SetActive(true); tickerOn=true; ticker.anchoredPosition=Vector2.zero; tvDay.text="GÜN "+d.day+" · AKŞAM BÜLTENİ";
             yield return Fade(0);
-            int unlock=-1;
             for(int i=0;i<pages.Length;i++)
             {
-                var p=pages[i]; tvTitle.text=p.title; tvBody.text=""; tvHint.text=""; pressed=false; float t=0; int shownBefore=0;
+                var p=pages[i]; AddJournal("haber"+d.day+"_"+i,"Haber · "+p.title,p.body); tvTitle.text=p.title; tvBody.text=""; tvHint.text=""; pressed=false; float t=0; int shownBefore=0;
                 while(t<p.body.Length)
                 {
                     t+=Time.unscaledDeltaTime*45; int shown=Mathf.Min(p.body.Length,(int)t); tvBody.text=p.body.Substring(0,shown);
@@ -271,18 +367,23 @@ namespace CafeLife
                     if(pressed)break; yield return null;
                 }
                 tvBody.text=p.body; pressed=false; tvHint.text=i==pages.Length-1?"Uyu  ▸  [E]":"Sonraki haber  ▸  [E]";
-                if(p.unlock>=0)unlock=p.unlock;
                 while(!pressed)yield return null;
                 pressed=false;
             }
             yield return Fade(1);
             tv.SetActive(false); tickerOn=false;
-            if(unlock>=0)d.menuMask|=1<<unlock;
             if(d.storyStage<4)d.storyStage=4;
             game.AdvanceDay();
+            int fresh=MaskForDay(d.day)&~oldMask; var names=new List<string>(); for(int i=0;i<Economy.Recipes.Length;i++)if((fresh&(1<<i))!=0)names.Add(Economy.Recipes[i].name);
+            d.menuMask=MaskForDay(d.day); MarkDayStart();
+            if(d.day==6)yield return ChapterCard("BÖLÜM 2","Borç Defteri");
             yield return Fade(0);
-            if(unlock>=0)yield return Say(new[]{L("Arda","Sabah oldu. Haberlerdeki çekirdeği tezgâha koydum: "+Economy.Recipes[unlock].name+" artık menüde.")});
+            if(names.Count>0)yield return Say(new[]{L("Arda","Sabah oldu. Haberlerde duyurulan içecekler artık menüde: "+string.Join(", ",names)+".")});
             else yield return Say(new[]{L("Arda","Yeni bir gün. Kahve yine bizi bekliyor.")});
+            if(d.day==6&&!d.ledgerRead)yield return Say(new[]{L("Arda","Gece rüyamda sayılar vardı: on yedi, on sekiz… Dedemin odasındaki çekmecenin altında bir şey var gibi hissediyorum."),L("Arda","Sabah ilk işim oraya bakmak.")});
+            var lost=CafeResidents.LoseOne(game);
+            if(lost!=null)yield return Say(new[]{L("Arda","Bu sabah "+lost.ad+" uğramadı. Gece mahallede bir televizyonun kendiliğinden açıldığını söylediler."),L("Arda","Gölge görürsem kim olduğunu anlayacağım. Bakınca kayboluyorlarmış.")});
+            yield return Decisions();
             game.Save(); game.StoryPause(false); Busy=false;
         }
     }

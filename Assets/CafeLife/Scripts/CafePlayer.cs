@@ -98,10 +98,9 @@ namespace CafeLife
         {
             if(game.GetComponent<CafeTableBlackjack>()?.Opened??false)return;
             if(game.expansion && game.expansion.Seated){if(jump)game.expansion.ToggleSit();return;}
-            if(game.expansion){game.expansion.Stamina(sprint,input.sqrMagnitude>.01f,dt);sprint=sprint&&game.expansion.Data.stamina>0;}
             if(body.isGrounded) { if(fall<0) fall=-2; if(jump) fall=6.2f; }
             fall=Mathf.Max(-30,fall-20*dt);
-            float speed=(game.data.hundred!=null?game.data.hundred.walkSpeed:3.4f)*(sprint?1.4f:1);
+            float speed=(game.data.hundred!=null?game.data.hundred.walkSpeed:3.4f)*(sprint?1.85f:1);
             body.Move((transform.forward*input.y*speed+transform.right*input.x*speed+Vector3.up*fall)*dt);
             if(transform.position.y < -5) { body.enabled=false; transform.position=spawn; body.enabled=true; fall=0; }
         }
@@ -117,6 +116,7 @@ namespace CafeLife
         public string Label(CafeGame g)
         {
             if(dirt)return g.cleaning.DirtLabel(dirt);
+            if(kind=="filter")return g.FilterLabel();
             if(kind!=null&&kind.StartsWith("cc_"))return g.CareLabel(kind);
             if(kind!=null&&kind.StartsWith("blackjack_"))return "Blackjack · "+(kind=="blackjack_hit"?"Kart çek":kind=="blackjack_stand"?"Dur":kind=="blackjack_leave"?"Masadan ayrıl":kind.Substring(10)+" coin oyna")+" [E]";
             if(litter)return litter.table?"Masayı temizle [E]":"Sokak çöpünü topla · +2 coin [E]";
