@@ -31,3 +31,16 @@ Doğrulanmadı: paranormal gözlerin son düzeltmesi görsel olarak kontrol edil
 Karakter paketi notu: Quaternius Universal Base Characters ücretsiz sürüm iç çamaşırlı iki Superhero gövde içerir, giyimli değil; modern giysi paketi yok. Kenney karakterleri kalıyor.
 Sıradaki fikirler: hikayenin 2-5. günleri (her gün yeni haber/kahve/görev), Hasan Dede'nin altıncı çekmecesindeki tarif defteri, eve gerçek kapı kanatları ve ışıklar, müşterilere hikaye, giyimli daha iyi karakter paketi, ileride arkadaşlarla online.
 Geliştirme ipuçları: Unity arka plandayken script değişikliğini görmeyebilir; pencereyi öne getirmek gerekir. Derleme hatası olursa Unity eski kodu çalıştırır; hata Logs/Editor.log içinde "error CS" olarak görünür. Otomatik görüntü araçları: Logs/RunCafeStoryShots.flag, RunCafeClubShots.flag, RunCafeGhostShots.flag (editör açıkken). Windows derlemesi: Logs/RunCafeBuild.flag, oyun kapalıyken. Aynı bilgisayar farkı: Claude sohbetleri bilgisayarlar arasında taşınmaz; devam bilgisi bu dosya ve CLAUDE.md'dedir.
+
+
+23 Ekim 2026 — bulut oturumu: not düzeltmeleri ve yeni eklemeler (branch: claude/hikaye-gunleri-ve-denge, PR #1; hiçbiri Unity'de doğrulanmadı)
+Önceki notlardaki eskimiş bilgiler (kodda zaten yapılmış): hikaye 2-10. günler (CafeStory.cs: Tasks, NightNews, MaskForDay), Hasan'ın tarif defteri (ReadBook, +%10 satış), evde kapı kanatları ve ışıklar (CafeHome.cs), 5 başarım (CafeExpansion), barista yükseltmesi, itibar, sıralama. CafeStory.SleepAnytime=false; müzik açık (CafeGame.cs music.Play aktif). "Test için açık" kalan tek şey CafeParanormal.JumpscaresEnabled (artık Ayarlar'dan açılıp kapanıyor).
+Eklenenler:
+- Ayarlar menüsünde jumpscare aç/kapa (SaveData.noJumpscare).
+- CafeEvents.cs: günlük rastgele olaylar (kalabalık/sakin gün, gazeteci, bayat gün) ve hava durumu (açık/yağmurlu/sisli; sis RenderSettings ile). Gün numarasından sabit üretilir, kayıtta alan yok. Yalnızca 11. günden sonra ya da hikayesiz eski kayıtta çalışır. Yağmur parçacığı yok, yalnızca müşteri akışı etkisi.
+- Başarımlar 5 → 7 (100 servis, ilk şube). Hedefler ekranında satır aralığı 66 → 48 px; panel taşması elle kontrol edilmeli.
+- 11. sabah bölüm sonu (CafeStoryExtras.Decisions): Nuri/Kemal/Nermin kararlarına göre "Huzur" (+500 coin, itibar +5) ya da "Uzun gece" (+200 coin) sonu; SaveData.epilogue ile bir kez.
+- Hata düzeltme: CafeParanormal'da `tension+=...` satırı yorumun içinde kalmıştı, büyük korkular hiç tetiklenmiyordu. Ayrı satıra alındı; artık çıkacak (seviye 2+, 150 sn aralıkla). Oynayıp sıklığına bakmak gerekir.
+Denge gözlemleri (sayı değiştirilmedi, oynayarak karar verilmeli): level = 1+xp/100 ve iyi satış +25 xp, yani her 4 satışta seviye atlanıyor (hızlı görünüyor). Müşteri gelme aralığı max(5, 20-dekor+(80-itibar)*.08) sn; itibar iyi servis +2, kötü servis -5 (düşüş yükselişten hızlı). Şube geliri baristaLevel>=3 şartıyla, formül CafeEconomy.BranchIncome.
+Yapılmayanlar: gece sokak gezisi, yeni mini oyun (dart/latte-art), giyimli karakter paketi, online. Bunlar sahne/varlık ve Unity'de görsel test gerektirir.
+Bulut ortamında graphify komutu kurulu değil; graphify-out güncellenmedi, PC'de `graphify update .` çalıştırılmalı.
