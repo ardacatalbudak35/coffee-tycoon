@@ -83,7 +83,8 @@ namespace CafeLife
             if(!night){ nextEvent=8; return; }
             int level=Level;
             if(level==0){ if(!hinted&&!up){ hinted=true; Flicker(1.4f); } nextEvent=30; return; }   // ilk gün: yalnızca bir ipucu
-            nextEvent=Random.Range(20f,42f)/(1f+level*.4f)*(game.data.choice3==1?1.3f:game.data.choice3==2?.75f:1f);   // Nermin'e cevap verdiysen olaylar seyrek, odayı kilitlediysen sık tension+=.22f+.07f*level;
+            nextEvent=Random.Range(20f,42f)/(1f+level*.4f)*(game.data.choice3==1?1.3f:game.data.choice3==2?.75f:1f);   // Nermin'e cevap verdiysen olaylar seyrek, odayı kilitlediysen sık
+            tension+=.22f+.07f*level;   // her olayda gerginlik artar; 1'e ulaşınca (ve 150 sn beklemeden sonra) büyük korku çıkar
             // Büyük korku: seviye 2+ ve gerginlik dolunca, uzun bekleme süresiyle
             if(JumpscaresEnabled&&level>=2&&tension>=1f&&Time.time-lastBig>150f&&!shadow&&tvTime<=0){ tension=0; lastBig=Time.time; if(up&&Random.value<.5f)TvOn(null,true); else BehindScare(); return; }
             var pool=new List<int>{0,1,5};
