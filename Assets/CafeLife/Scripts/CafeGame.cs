@@ -89,7 +89,7 @@ namespace CafeLife
             audioSource=gameObject.AddComponent<AudioSource>(); click=Tone(560,.09f); sale=Tone(880,.2f);
             music=gameObject.AddComponent<AudioSource>(); music.clip=Music(); music.loop=true; music.volume=.18f; music.Play();
             machineAudio=gameObject.AddComponent<AudioSource>(); machineAudio.clip=Tone(95,1); machineAudio.loop=true; machineAudio.volume=.07f;
-            AudioListener.volume=data.volume; ApplyAudio(); CafeParanormal.JumpscaresEnabled=!data.noJumpscare;
+            AudioListener.volume=data.volume; ApplyAudio(); CafeParanormal.JumpscaresEnabled=!data.noJumpscare; CafeEvents.ApplyWeather(data);
             ui.ShowMenu("home");
         }
         public GameObject Model(string name,Vector3 at,float width,float rotation=0,bool solid=true) => world.Model(name,at,width,rotation,solid);
@@ -125,7 +125,7 @@ namespace CafeLife
         public CafeThief thief; public CafeVampire vampire; public CafeGhosts ghosts;
         public string CareLabel(string k)=>k=="cc_mop"||k=="cc_cloth"?cleaning.ToolLabel(k):k=="cc_thief"?(thief?thief.Label():""):k=="cc_vampire"?(vampire?vampire.Label():""):k=="cc_ghost"?(ghosts?ghosts.Label():""):home.Label(k);
         public void CareUse(string k){ if(k=="cc_mop"||k=="cc_cloth")cleaning.UseTool(k); else if(k=="cc_thief"){if(thief)thief.Use();} else if(k=="cc_vampire"){if(vampire)vampire.Use();} else if(k=="cc_ghost"){if(ghosts)ghosts.Use();} else home.Use(k); }
-        public void AdvanceDay() { if(expansion)expansion.EndDay(data.day); data.day++; data.dayTime=data.dayTime>=300?data.dayTime-300:0; data.earned=0; int dirty=cleaning?cleaning.Overnight():0; string ev=CafeEvents.Title(data); Tell("Yeni gün: "+data.day+(dirty>0?" · gece kafe tozlanmış, "+dirty+" yeni toz var":"")+(ev!=null?" · "+ev:"")); Save(); }
+        public void AdvanceDay() { if(expansion)expansion.EndDay(data.day); data.day++; data.dayTime=data.dayTime>=300?data.dayTime-300:0; data.earned=0; int dirty=cleaning?cleaning.Overnight():0; CafeEvents.ApplyWeather(data); string ev=CafeEvents.Title(data); Tell("Yeni gün: "+data.day+(dirty>0?" · gece kafe tozlanmış, "+dirty+" yeni toz var":"")+(ev!=null?" · "+ev:"")); Save(); }
         public void StoryPause(bool on)
         { if(on) { Paused=true; if(machineAudio) machineAudio.Stop(); player.Lock(false); } else { Paused=false; player.Lock(!CafeFocusedMode.CounterControls); } }
         // Filtre kahve makinesi: bardak makineye konur, 20 sn sonra hazır olur, o sırada eller serbesttir
