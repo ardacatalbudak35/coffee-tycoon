@@ -21,7 +21,8 @@ namespace CafeLife
 
         static int Hash(int day,int salt){ unchecked{ int h=day*73856093^salt; h^=h>>13; h*=0x27d4eb2d; h^=h>>15; return h&0x7fffffff; } }
         static int Pick(int day)=>Hash(day,unchecked((int)0x5bd1e995))%All.Length;
-        static int Weather(int day)=>Hash(day,0x2545f491)%WeatherName.Length;
+        // Yağmur, CafeExpansion.Rainy ile aynı kural (her 3. gün): parçacıklar ve sıcak içecek eğilimi zaten ona bağlı. Yağmursuz günlerin dörtte biri sisli.
+        static int Weather(int day)=>day%3==0?3:Hash(day,0x2545f491)%4==0?5:0;
         static bool On(SaveData d)=>d!=null&&(d.storyStage<0||d.day>10);
 
         // Yeni gün mesajına eklenecek metin (olay ve hava); yoksa null
