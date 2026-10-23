@@ -12,6 +12,7 @@ namespace CafeLife
     }
     [Serializable] public class SaveData
     {
+        public string playerName="Arda", cafeName="Arda's Coffee";   // yeni oyunda sorulur; eski kayıtta alan yoksa varsayılan kalır
         public int interiorStyle;
         public int version=3, money=160, xp, machine=1, tables=6, decor,baristaLevel,espressoLevel=1,paintLevel;
         public CafeBranchData[] branches={new CafeBranchData{name="Arda's Coffee",owned=true,capacity=12},new CafeBranchData{name="Küçük Meydan Kafesi",capacity=24},new CafeBranchData{name="Sahil Kahvecisi",capacity=38},new CafeBranchData{name="Merkez Roastery",capacity=56},new CafeBranchData{name="Grand Avenue Café",capacity=80}};

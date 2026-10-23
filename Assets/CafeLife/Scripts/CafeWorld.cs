@@ -282,7 +282,7 @@ namespace CafeLife
                 var shade=GameObject.CreatePrimitive(PrimitiveType.Cylinder); shade.name="Sarkıt lamba"; shade.transform.SetParent(transform); shade.transform.position=new Vector3(x,3.15f,0); shade.transform.localScale=new Vector3(.6f,.15f,.6f); shade.GetComponent<Renderer>().sharedMaterial=ColorMaterial(new Color(.2f,.28f,.25f));
                 var light=new GameObject("Sıcak iç ışık"); light.transform.SetParent(transform); light.transform.position=new Vector3(x,2.9f,0); var source=light.AddComponent<Light>(); source.type=LightType.Point; source.color=new Color(1,.85f,.64f); source.intensity=1.5f; source.range=6;
             }
-            Sign("ARDA'S COFFEE",new Vector3(0,3,-11.2f),.055f,new Color(1,.85f,.5f));
+            Sign(CafeNames.CafeUpper,new Vector3(0,3,-11.2f),.055f,new Color(1,.85f,.5f));
             Sign("COFFEE • FRESH BAKERY",new Vector3(0,2.7f,4.85f),.045f,wood);
             // The long customer counter is fixed beside the front entrance. Customers
             // queue on -Z; the barista and restock route stay behind it on +Z.

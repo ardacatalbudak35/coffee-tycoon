@@ -75,7 +75,7 @@ namespace CafeLife
             var hit=new GameObject("Gölge etkileşim alanı"); hit.layer=8; hit.transform.SetParent(g.go.transform,false); hit.transform.localPosition=Vector3.up*(kind==Kind.Oturan?.7f:1f);
             var col=hit.AddComponent<CapsuleCollider>(); col.isTrigger=true; col.height=2f; col.radius=.65f; hit.AddComponent<CafeTarget>().kind="cc_ghost";
             if(kind==Kind.Sayan){ var tg=new GameObject("Sayaç"); tg.transform.SetParent(g.go.transform,false); tg.transform.localPosition=Vector3.up*2.35f; g.text=tg.AddComponent<TextMesh>(); g.text.fontSize=64; g.text.characterSize=.04f; g.text.anchor=TextAnchor.MiddleCenter; g.text.color=new Color(.7f,.85f,1f); tg.AddComponent<CafeDepthLabel>().Setup(g.text,CafeTypography.Strong); }
-            ghost=g; Foam(FoamWords[Random.Range(0,FoamWords.Length)]); game.Tell(Intro(kind,g),false); return true;
+            ghost=g; Foam(CafeNames.Fix(FoamWords[Random.Range(0,FoamWords.Length)])); game.Tell(Intro(kind,g),false); return true;
         }
         // Yankı: oyuncunun 1.3 sn önceki konumunun ayna görüntüsü (x → -x), ortada duruyorsan yan tarafa kaydırılır
         static Vector3 YankiPos(Ghost g,Vector2 old){ float x=-old.x+g.countT*3.2f; return new Vector3(Mathf.Clamp(x,-9.3f,9.3f),0,old.y); }

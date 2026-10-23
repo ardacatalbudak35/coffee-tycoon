@@ -69,8 +69,8 @@ namespace CafeLife
             if(CafeFocusedMode.CounterControls){UpdateFocusedHud();return;}
             UpdateExpansionHud(); var d=game.data;
             stats.transform.parent.gameObject.SetActive(false);toast.gameObject.SetActive(!game.Paused);
-            stats.text="ARDA'S COFFEE    •    "+d.money+" coin    •    Lv."+Economy.Level(d)+"    •    Gün "+d.day+"\nMemnuniyet %"+Mathf.RoundToInt(d.reputation)+"    Çekirdek "+d.beans+" / Süt "+d.milk+" / Buz "+d.ice+"    •    Müşteri "+game.customers.Count+" / "+Mathf.Min(game.data.tables*2,24)+"    •    Teslimde "+game.shelf.Count;
-            if(game.player.transform.position.z<-11)stats.text="ARDA'S COFFEE   /   "+d.money+" COIN   /   GÜN "+d.day+"\n"+(game.player.transform.position.z<-23?(game.player.transform.position.x>3?(game.player.transform.position.y>3?"ROYAL JACKPOT · ÜST KAT":"SMOKEBANK · GECE KULÜBÜ"):game.player.transform.position.x< -22?"BASKET NOKTASI":"GECE MARKETİ"):"CADDE · E ile etkileş");
+            stats.text=CafeNames.CafeUpper+"    •    "+d.money+" coin    •    Lv."+Economy.Level(d)+"    •    Gün "+d.day+"\nMemnuniyet %"+Mathf.RoundToInt(d.reputation)+"    Çekirdek "+d.beans+" / Süt "+d.milk+" / Buz "+d.ice+"    •    Müşteri "+game.customers.Count+" / "+Mathf.Min(game.data.tables*2,24)+"    •    Teslimde "+game.shelf.Count;
+            if(game.player.transform.position.z<-11)stats.text=CafeNames.CafeUpper+"   /   "+d.money+" COIN   /   GÜN "+d.day+"\n"+(game.player.transform.position.z<-23?(game.player.transform.position.x>3?(game.player.transform.position.y>3?"ROYAL JACKPOT · ÜST KAT":"SMOKEBANK · GECE KULÜBÜ"):game.player.transform.position.x< -22?"BASKET NOKTASI":"GECE MARKETİ"):"CADDE · E ile etkileş");
             hint.text=game.player.Hint; hintCard.gameObject.SetActive(!game.Paused && !string.IsNullOrEmpty(hint.text)); toast.text=game.noticePinned||Time.unscaledTime<game.noticeUntil?game.notice:"";
             orders.transform.parent.gameObject.SetActive(false);UpdateOrderHud();
             string queue="<color=#E8C88F><b>SİPARİŞLER</b></color>\n"; int count=0;
@@ -92,7 +92,7 @@ namespace CafeLife
             menu.gameObject.SetActive(name!=""); if(name=="") return; menu.SetAsLastSibling();
             if(BuildStudioPage(name))return;
             var title=Label(menu,new Vector2(0,1),new Vector2(1,1),new Vector2(35,-80),new Vector2(-35,-20),34,TextAnchor.MiddleLeft);
-            title.text=name=="operations"?"COFFEE TYCOON · YÖNETİM":name=="district"?"MAHALLE REHBERİ · M":name=="venue"?game.activeVenue.title:name=="shop"?"KAFE YÖNETİMİ":name=="settings"?"AYARLAR":name=="casino"?"ROYAL JACKPOT • BLACKJACK":name=="branch"?game.data.branches[game.activeBranchIndex].name+" • YÖNETİM":"ARDA'S COFFEE";
+            title.text=name=="operations"?"COFFEE TYCOON · YÖNETİM":name=="district"?"MAHALLE REHBERİ · M":name=="venue"?game.activeVenue.title:name=="shop"?"KAFE YÖNETİMİ":name=="settings"?"AYARLAR":name=="casino"?"ROYAL JACKPOT • BLACKJACK":name=="branch"?game.data.branches[game.activeBranchIndex].name+" • YÖNETİM":CafeNames.CafeUpper;
             if(CafeFocusedMode.Enabled){if(name=="home"||name=="pause"){BuildFocusedHome(name);return;}if(name=="operations"){BuildFocusedMenu();return;}if(name=="confirm"){BuildFocusedConfirm();return;}}
             var note=Label(menu,new Vector2(0,0),new Vector2(1,0),new Vector2(30,10),new Vector2(-30,60),18,TextAnchor.MiddleLeft);
             if(name=="operations")note.text=game.notice;
@@ -130,7 +130,7 @@ namespace CafeLife
                 var help=Label(menu,new Vector2(.52f,.25f),new Vector2(.95f,.7f),Vector2.zero,Vector2.zero,24,TextAnchor.UpperLeft);
                 help.text="WASD • Yürü\nMouse • Etrafa bak\nSPACE • Zıpla\nSHIFT • Hafif hızlı koş\nE • Etkileşim\nESC • Duraklat\n\nKafeyi yönlendirmek için içerideki yönetim noktasına yaklaş ve E'ye bas.";
             }
-            else if(name=="confirm") { Row("YENİ OYUNU BAŞLAT (eski kayıt yedeklenir)",0,()=>game.NewGame()); Row("VAZGEÇ",1,()=>ShowMenu("home")); }
+            else if(name=="confirm") { Row("YENİ OYUNU BAŞLAT (eski kayıt yedeklenir)",0,()=>game.RequestNewGame()); Row("VAZGEÇ",1,()=>ShowMenu("home")); }
             else if(name=="settings")
             {
                 Row("Ses: "+Mathf.RoundToInt(game.data.volume*100)+"%",0,()=>{game.data.volume=game.data.volume>=.99f?0:Mathf.Min(1,game.data.volume+.25f); AudioListener.volume=game.data.volume; game.Save(); ShowMenu(page);});
@@ -151,7 +151,7 @@ namespace CafeLife
                 Row("Görev: "+game.data.served+" / "+((game.data.quest+1)*5)+" servis • ödül al",6,()=>{game.Quest();ShowMenu(page);});
                 RightRow("Espresso geliri Lv."+game.data.espressoLevel+" → yükselt",0,()=>Buy("espresso"));
                 RightRow("Duvar boyası kalite Lv."+game.data.paintLevel+" → boya",1,()=>Buy("paint"));
-                RightRow("Arda's Coffee yönetim paneli",2,()=>game.OpenBranch(0));
+                RightRow(CafeNames.Cafe+" yönetim paneli",2,()=>game.OpenBranch(0));
                 RightRow("Stok depoya gelir; arka raftan taşı",3,()=>{});
                 RightRow("Acil ücretsiz çekirdek yardımı",5,()=>{game.RescueStock();ShowMenu(page);});
                 RightRow("OYUNA DÖN",6,()=>game.Continue());

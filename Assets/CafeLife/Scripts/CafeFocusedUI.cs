@@ -21,7 +21,7 @@ namespace CafeLife {
    foreach(Transform child in safe)if(child!=menu&&child!=focusedHud)child.gameObject.SetActive(false);
   }
   void UpdateFocusedHud(){if(!focusedHud)return;var mode=game.GetComponent<CafeFocusedMode>();var pour=game.GetComponent<CafeLattePour>();focusedHud.gameObject.SetActive(!game.Paused&&!(pour&&pour.Active));
-   focusedStats.text="ARDA'S COFFEE · "+game.data.money+" coin · Gün "+game.data.day+"\nServis "+game.data.served+" · Seri "+game.data.hundred.combo+" · Çekirdek "+game.data.beans+" / Süt "+game.data.milk;
+   focusedStats.text=CafeNames.CafeUpper+" · "+game.data.money+" coin · Gün "+game.data.day+"\nServis "+game.data.served+" · Seri "+game.data.hundred.combo+" · Çekirdek "+game.data.beans+" / Süt "+game.data.milk;
    var orders=mode.Orders;for(int i=0;i<2;i++){focusedOrderButtons[i].interactable=i<orders.Length&&orders[i].state==CafeCustomer.State.Waiting;if(i>=orders.Length){focusedOrders[i].text="Yeni müşteri bekleniyor...";continue;}var c=orders[i];focusedOrders[i].text=(mode.selectedOrder==c?"✓ ":"")+CafeExpansion.Names[c.identity]+" · "+(c.state==CafeCustomer.State.Entering?"Geliyor":"Sabır %"+Mathf.CeilToInt(c.patience))+"\n"+Economy.Recipes[c.recipe].name+"\n"+CafeService.PreferenceLabel(c);}
    var cup=game.cup;focusedPrimary.GetComponentInChildren<Text>().text=mode.ActionLabel;focusedPrimary.interactable=cup!=null||orders.Any(c=>c.state==CafeCustomer.State.Waiting);
    focusedRecipe.text=cup!=null?Economy.Recipes[cup.recipe].name+"\n"+string.Join(" → ",CafeGame.IdealSteps(Economy.Recipes[cup.recipe]).Select(s=>(cup.steps.Contains(s)?"✓ ":"")+StepName(s))):"Siparişe dokun, sonra bardağı al.\nKahveyi burada hazırlayıp servis et.";
@@ -44,7 +44,7 @@ namespace CafeLife {
    FocusButton(menu,"OYUNA DÖN",new Vector2(660,-705),new Vector2(590,76),()=>game.Continue());
   }
   void BuildFocusedHome(string pageName){FocusButton(menu,"KAFEYE DEVAM ET",new Vector2(60,-265),new Vector2(570,104),()=>game.Continue());FocusButton(menu,"KAFEYİ YÖNET",new Vector2(60,-385),new Vector2(570,104),()=>game.OpenOperations());FocusButton(menu,"YENİ OYUN",new Vector2(60,-505),new Vector2(570,104),()=>ShowMenu("confirm"));BodyText("KAFENDE SERBESTÇE GEZ\n\nWASD / ok tuşları: yürü\nFare: etrafa bak\nE: baktığın müşteri veya makineyle etkileş\nShift: hızlı yürü\nTab: kafe yönetimi\nEsc: duraklat\n\nMobil: sol çubukla yürü, sağ alanda bak.",true);}
-  void BuildFocusedConfirm(){BodyText("Yeni oyun başlamadan mevcut kayıt yedeklenir.\n\nMevcut ilerlemeyle devam etmek için vazgeç.",true);FocusButton(menu,"YENİ OYUNU BAŞLAT",new Vector2(60,-330),new Vector2(570,104),()=>game.NewGame());FocusButton(menu,"VAZGEÇ",new Vector2(60,-465),new Vector2(570,104),()=>ShowMenu("home"));}
+  void BuildFocusedConfirm(){BodyText("Yeni oyun başlamadan mevcut kayıt yedeklenir.\n\nMevcut ilerlemeyle devam etmek için vazgeç.",true);FocusButton(menu,"YENİ OYUNU BAŞLAT",new Vector2(60,-330),new Vector2(570,104),()=>game.RequestNewGame());FocusButton(menu,"VAZGEÇ",new Vector2(60,-465),new Vector2(570,104),()=>ShowMenu("home"));}
  }
 }
 

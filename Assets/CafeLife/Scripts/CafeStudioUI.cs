@@ -70,7 +70,7 @@ namespace CafeLife {
    SBox(43,31,1194,664,new Color(0,0,0,.20f));
    SBox(48,26,1184,664,studioBg);
    SBox(48,26,1184,1,studioRule);SBox(48,26,1,664,studioRule);SBox(1231,26,1,664,studioRule);
-   SText("ARDA'S COFFEE",80,43,470,38,23,ink);
+   SText(CafeNames.CafeUpper,80,43,470,38,23,ink);
    SText("GÜN "+game.data.day+"   ·   SEVİYE "+Economy.Level(game.data),690,42,246,35,14,studioMuted,TextAnchor.MiddleRight);
    SText(game.data.money.ToString("N0")+" coin",948,42,252,35,20,studioGold,TextAnchor.MiddleRight);
    SRule(80,94,1120);
@@ -345,11 +345,11 @@ namespace CafeLife {
   void BuildRanking(float x,float y,float width){
    var rows=new List<KeyValuePair<string,int>>{
     new KeyValuePair<string,int>("Velvet Roastery",4200),new KeyValuePair<string,int>("Moka Atelier",3100),new KeyValuePair<string,int>("Corner & Co.",2200),
-    new KeyValuePair<string,int>("Juniper Café",1550),new KeyValuePair<string,int>("Daily Grind",950),new KeyValuePair<string,int>("Arda's Coffee",CafeStreetActivities.CafeScore(game))};
+    new KeyValuePair<string,int>("Juniper Café",1550),new KeyValuePair<string,int>("Daily Grind",950),new KeyValuePair<string,int>(CafeNames.Cafe,CafeStreetActivities.CafeScore(game))};
    rows=rows.OrderByDescending(r=>r.Value).ToList();
    SText("SIRA",x,y,width*.1f,28,13,studioMuted);SText("KAFE",x+110,y,width-410,28,13,studioMuted);SText("PUAN",x+width-230,y,230,28,13,studioMuted,TextAnchor.MiddleRight);SRule(x,y+35,width);
    for(int i=0;i<rows.Count;i++){
-    bool own=rows[i].Key=="Arda's Coffee";float py=y+47+i*49;
+    bool own=rows[i].Key==CafeNames.Cafe;float py=y+47+i*49;
     if(own){SBox(x-12,py-2,width+24,44,studioCard);SBox(x-12,py-2,2,44,studioGold);}
     SText((i+1).ToString("00"),x,py,80,36,19,own?studioGold:studioMuted);
     SText(rows[i].Key,x+110,py,width-410,36,20,own?studioGold:ink);
@@ -367,7 +367,7 @@ namespace CafeLife {
    SQuietButton("YENİ OYUN",298,465,202,43,()=>ShowMenu("confirm"));
    SRule(80,553,420);SText("WASD  Yürü    E  Etkileş    TAB  İşletme",80,573,600,34,14,studioMuted);
    DrawStudioCup(815,252,210,game.data.interiorStyle);
-   SText("ARDA'S",730,508,390,45,31,ink,TextAnchor.MiddleCenter);SText("C O F F E E",730,555,390,30,15,studioGold,TextAnchor.MiddleCenter);
+   bool defaultBrand=CafeNames.Cafe==CafeNames.DefaultCafe;SText(defaultBrand?"ARDA'S":CafeNames.CafeUpper,730,508,390,45,31,ink,TextAnchor.MiddleCenter);SText(defaultBrand?"C O F F E E":"· · ·",730,555,390,30,15,studioGold,TextAnchor.MiddleCenter);
   }
   void DrawStudioCup(float x,float y,float size,int style){
    Color ceramic=new Color(.77f,.74f,.66f),coffee=new Color(.19f,.12f,.07f),seat=CafeDecorProgression.Swatch(style,3);
@@ -385,7 +385,7 @@ namespace CafeLife {
    StudioSheet();SText("Yeni oyun",80,151,1050,55,34,ink);
    SText("Kafeye ilk günden başla.",80,236,1050,39,22,ink);
    SText("Mevcut kayıt yeni oyuna başlamadan önce yedeklenir.",80,291,1050,44,17,studioMuted);
-   SButton("YENİ OYUNU BAŞLAT",80,418,430,54,()=>game.NewGame(),true);
+   SButton("YENİ OYUNU BAŞLAT",80,418,430,54,()=>game.RequestNewGame(),true);
    SButton("VAZGEÇ",534,418,300,54,()=>ShowMenu("home"));
   }
 

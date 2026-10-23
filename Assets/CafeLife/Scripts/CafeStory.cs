@@ -246,8 +246,9 @@ namespace CafeLife
         IEnumerator Say(Line[] lines)
         {
             dialog.SetActive(true);
-            foreach(var l in lines)
+            foreach(var l0 in lines)
             {
+                var l=new Line{who=CafeNames.Fix(l0.who),text=CafeNames.Fix(l0.text)};   // isim gösterim anında uygulanır (satırlar static dizilerde tutuluyor)
                 who.text=l.who; body.text=""; pressed=false; float t=0;
                 while(t<l.text.Length){ t+=Time.unscaledDeltaTime*55; body.text=l.text.Substring(0,Mathf.Min(l.text.Length,(int)t)); if(pressed)break; yield return null; }
                 body.text=l.text; pressed=false;

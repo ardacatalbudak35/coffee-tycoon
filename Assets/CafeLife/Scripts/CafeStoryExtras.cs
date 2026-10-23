@@ -15,7 +15,7 @@ namespace CafeLife
         public void AddJournal(string id,string title,string text)
         {
             var d=game.data; if(d.journal==null)d.journal=new List<JournalEntry>(); foreach(var e in d.journal)if(e.id==id)return;
-            d.journal.Add(new JournalEntry{id=id,title=title,text=text,day=d.day}); if(!id.StartsWith("haber"))game.Tell("Günlüğe eklendi: "+title+"  [J]");
+            d.journal.Add(new JournalEntry{id=id,title=CafeNames.Fix(title),text=CafeNames.Fix(text),day=d.day}); if(!id.StartsWith("haber"))game.Tell("Günlüğe eklendi: "+title+"  [J]");
         }
         int MetCount(){ int n=0; foreach(var r in CafeResidents.All)if(CafeResidents.State(game,r).met)n++; return n; }
         void MarkDayStart(){ var d=game.data; d.dayStartServed=d.served; d.dayStartMoney=d.money; d.dayStartMet=MetCount(); }

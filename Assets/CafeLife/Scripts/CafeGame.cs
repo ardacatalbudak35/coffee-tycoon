@@ -70,7 +70,7 @@ namespace CafeLife
         void Start()
         {
             if(System.Array.IndexOf(System.Environment.GetCommandLineArgs(),"-cafe-smoke")>=0){testing=true;suppressSaveOnExit=true;}
-            data=Economy.Load(SavePath);
+            data=Economy.Load(SavePath); CafeNames.Apply(data); CafeNames.RelabelWorld(this);
             cup=null; brewTime=brewTotal=0; // Runtime drink state must not come from Unity scene serialization.
             data.branches[0].baristaLevel=data.baristaLevel; data.branches[0].espressoLevel=data.espressoLevel; data.branches[0].paintLevel=data.paintLevel;
             QualitySettings.SetQualityLevel(Mathf.Clamp(data.quality,0,QualitySettings.names.Length-1));
@@ -175,6 +175,9 @@ namespace CafeLife
         public void OpenVenue(CafeVenue venue) { activeVenue=venue; Paused=true; if(machineAudio) machineAudio.Stop(); player.Lock(false); ui.ShowMenu("venue"); }
         public void OpenShop() => OpenOperations("upgrade");
         public void Settings() => OpenOperations("settings");
+        public static string PendingPlayer,PendingCafe;   // isim giriş ekranından gelir; NewGame uygular
+        // "Yeni oyun" düğmeleri (üç ayrı arayüzde) önce isim ekranını açar; BAŞLA ile NewGame çalışır
+        public void RequestNewGame(){ var p=GetComponent<CafeNamePrompt>(); if(!p)p=gameObject.AddComponent<CafeNamePrompt>(); p.Open(this); }
         public void NewGame()
         {
             StopAllCoroutines(); staffBusy=false; staffTimer=4; branchIncomeTimer=20; orderCounter=0; activeBranchIndex=0;
@@ -183,7 +186,8 @@ namespace CafeLife
             if(File.Exists(SavePath)) File.Copy(SavePath,SavePath+".before-new-game",true);
             foreach(var c in customers.ToArray()) if(c) Destroy(c.gameObject);
             customers.Clear(); foreach(var drink in shelf) if(drink.visual) Destroy(drink.visual); shelf.Clear();
-            data=new SaveData(); cup=null; brewTime=0; noticePinned=false; filterCup=null; filterTime=0; world.ClearFilterCup();
+            data=new SaveData(); if(!string.IsNullOrWhiteSpace(PendingPlayer)){ data.playerName=PendingPlayer; data.cafeName=string.IsNullOrWhiteSpace(PendingCafe)?PendingPlayer+"'s Coffee":PendingCafe; } PendingPlayer=PendingCafe=null; CafeNames.Apply(data); CafeNames.RelabelWorld(this);
+            cup=null; brewTime=0; noticePinned=false; filterCup=null; filterTime=0; world.ClearFilterCup();
             if(player) { player.body.enabled=false; player.transform.position=new Vector3(0,.08f,-9.7f); player.transform.rotation=Quaternion.identity; player.body.enabled=true; }
             GetComponent<CafeHundred>()?.ResetSession();UpdateHand(); world.Refresh(); if(expansion)expansion.ResetRun(); selected=0; Save(); Continue();
         }
