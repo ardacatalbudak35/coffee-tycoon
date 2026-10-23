@@ -114,7 +114,7 @@ namespace CafeLife
             else if(brewTime<=0 && machineAudio.isPlaying) machineAudio.Stop();
             if(data.dayTime>=300 && story && story.NightHold()) { data.dayTime=300; return; } // Gece uyumadan sabah olmaz.
             spawnTimer-=dt;
-            if(spawnTimer<=0) { spawnTimer=CafeFocusedMode.Enabled?Mathf.Lerp(14,7,Mathf.Clamp01(data.served/30f)):Mathf.Max(5,20-data.decor+(80-data.reputation)*.08f)*(expansion?expansion.DemandMultiplier:1); Spawn(); }
+            if(spawnTimer<=0) { spawnTimer=CafeFocusedMode.Enabled?Mathf.Lerp(14,7,Mathf.Clamp01(data.served/30f)):Mathf.Max(5,20-data.decor+(80-data.reputation)*.08f)*(expansion?expansion.DemandMultiplier:1)*CafeEvents.SpawnMultiplier(data); Spawn(); }
             data.dayTime+=dt;
             if(data.dayTime>=300) AdvanceDay();
             saveTimer-=dt; if(saveTimer<=0) { Save(); saveTimer=30; }
@@ -125,7 +125,7 @@ namespace CafeLife
         public CafeThief thief; public CafeVampire vampire; public CafeGhosts ghosts;
         public string CareLabel(string k)=>k=="cc_mop"||k=="cc_cloth"?cleaning.ToolLabel(k):k=="cc_thief"?(thief?thief.Label():""):k=="cc_vampire"?(vampire?vampire.Label():""):k=="cc_ghost"?(ghosts?ghosts.Label():""):home.Label(k);
         public void CareUse(string k){ if(k=="cc_mop"||k=="cc_cloth")cleaning.UseTool(k); else if(k=="cc_thief"){if(thief)thief.Use();} else if(k=="cc_vampire"){if(vampire)vampire.Use();} else if(k=="cc_ghost"){if(ghosts)ghosts.Use();} else home.Use(k); }
-        public void AdvanceDay() { if(expansion)expansion.EndDay(data.day); data.day++; data.dayTime=data.dayTime>=300?data.dayTime-300:0; data.earned=0; int dirty=cleaning?cleaning.Overnight():0; Tell("Yeni gün: "+data.day+(dirty>0?" · gece kafe tozlanmış, "+dirty+" yeni toz var":"")); Save(); }
+        public void AdvanceDay() { if(expansion)expansion.EndDay(data.day); data.day++; data.dayTime=data.dayTime>=300?data.dayTime-300:0; data.earned=0; int dirty=cleaning?cleaning.Overnight():0; string ev=CafeEvents.Title(data); Tell("Yeni gün: "+data.day+(dirty>0?" · gece kafe tozlanmış, "+dirty+" yeni toz var":"")+(ev!=null?" · "+ev:"")); Save(); }
         public void StoryPause(bool on)
         { if(on) { Paused=true; if(machineAudio) machineAudio.Stop(); player.Lock(false); } else { Paused=false; player.Lock(!CafeFocusedMode.CounterControls); } }
         // Filtre kahve makinesi: bardak makineye konur, 20 sn sonra hazır olur, o sırada eller serbesttir
