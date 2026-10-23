@@ -55,7 +55,7 @@ var playArea=new GameObject("Blackjack masası · geniş etkileşim");playArea.t
    var floorMaterial=ColorMaterial(new Color(.25f,.045f,.4f));floorMaterial.EnableKeyword("_EMISSION");floorMaterial.SetColor("_EmissionColor",new Color(.35f,.03f,.55f));
    for(int x=0;x<5;x++)for(int z=0;z<5;z++){var tile=Block("NOIR dans pisti",new Vector3(11+x*1.1f,.025f,-28-z*1.1f),new Vector3(1,.04f,1),dark);if((x+z)%2==0)tile.GetComponent<Renderer>().sharedMaterial=floorMaterial;}
    foreach(var target in GetComponentsInChildren<CafeTarget>())if(target.kind=="boulevard_ranking"||target.kind=="boulevard_market"){var near=target.gameObject.AddComponent<CafeActivityArea>();near.target=target;near.floorY=0;near.radius=2.3f;}
-DecorateBoulevard();DecorateClub();
+DecorateBoulevard();DecorateClub();BuildStreetStory();
    var life=gameObject.AddComponent<CafeNightlife>();life.Setup(game);
    foreach(var entry in new[]{new Vector3(14,3.3f,-30),new Vector3(7,6.8f,-34),new Vector3(17,6.8f,-34)}){var lamp=new GameObject("NOIR iç aydınlatma");lamp.transform.SetParent(transform,false);lamp.transform.position=entry;var l=lamp.AddComponent<Light>();l.type=LightType.Point;l.range=10;l.intensity=10;l.color=entry.y<4?new Color(.7f,.3f,1):new Color(1,.7f,.35f);}
   }

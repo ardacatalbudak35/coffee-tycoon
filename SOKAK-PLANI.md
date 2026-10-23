@@ -1,6 +1,9 @@
 # Sokak planı: "Hasan'ın On Dokuz Fincanı" mahallesi
 
-Durum: plan. Kod yazılmadı, Unity'de denenmedi. Hazırlayan: bulut oturumu, 23 Ekim 2026.
+Durum: faz 1-3'ün ilk sürümü yazıldı (`CafeStreetStory.cs`), Unity'de denenmedi. Hazırlayan: bulut oturumu, 23 Ekim 2026.
+
+Yazılanlar: eski kahvehane (iç masa, finale öncesi/sonrası farklı konuşma), saat kulesi plaketi, fincan çeşmesi (12 sakin, durumuna göre renk değiştirir), 6. günden sonra gece mavi lambalar (5 adet). Yapılmayanlar: bakkal perdesi, müzisyen, belediye, iskele, kahvehanenin kendiliğinden açılma animasyonu, faz 4 (gece gezisi).
+PC'de ilk bakılacaklar: yerleşim (kahvehane x=-2.5 z=-28.5, saat kulesi x=28, çeşme x=2.2 z=-22) mevcut market/kulüp/dekorla çakışıyor mu; E ipucu çıkıyor mu; çeşme fincanları renk değiştiriyor mu.
 
 ## 1. Şu an sokak nasıl (koddan)
 

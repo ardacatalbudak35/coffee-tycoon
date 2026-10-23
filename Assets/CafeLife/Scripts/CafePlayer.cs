@@ -130,6 +130,7 @@ namespace CafeLife
             if(kind=="cup") return "Bardak al [E]";
             if(kind=="branch") return "Kafenin durumunu / kirayı gör [E]";
             if(kind=="branch_exit") return "Şube kapısından şehre çık [E]";
+            if(kind!=null&&kind.StartsWith("street_"))return CafeStreetStory.Prompt(kind);
             if(kind=="boulevard_ranking")return "Cadde ligi · en iyi kafeler [E]";if(kind=="boulevard_arcade")return "Topu al · Basket +50 coin [E]";if(kind=="boulevard_market")return "Gece marketi · tedarik [E]";
             if(kind=="casino") return "Blackjack masası • oyna [E]";
             if(kind=="ice") return "Buz makinesinden bardağa buz koy [E]";
@@ -146,7 +147,7 @@ namespace CafeLife
             return "Kafe yönetimi / stok / dekor [E]";
         }
         public void Use(CafeGame g)
-        { if(dirt)g.cleaning.UseDirt(dirt);else if(kind!=null&&kind.StartsWith("cc_"))g.CareUse(kind);else if(kind!=null&&kind.StartsWith("blackjack_"))g.GetComponent<CafeTableBlackjack>().Action(kind.Substring(10));else if(kind=="boulevard_ranking")g.OpenStreetPage("ranking");else if(kind=="boulevard_arcade")g.GetComponent<CafeBasketball>().Interact();else if(kind=="boulevard_market")g.OpenOperations("supply");else if(litter)litter.Clean();else if(venue) g.OpenVenue(venue); else if(customer) customer.Interact(g); else if(kind=="branch")g.OpenBranch(branchIndex); else if(kind=="branch_exit")g.ExitBranch(); else if(kind=="casino")g.OpenCasino(); else g.Act(kind); }
+        { if(dirt)g.cleaning.UseDirt(dirt);else if(kind!=null&&kind.StartsWith("cc_"))g.CareUse(kind);else if(kind!=null&&kind.StartsWith("blackjack_"))g.GetComponent<CafeTableBlackjack>().Action(kind.Substring(10));else if(kind!=null&&kind.StartsWith("street_")){var street=g.GetComponent<CafeStreetStory>();if(street)street.Use(kind);}else if(kind=="boulevard_ranking")g.OpenStreetPage("ranking");else if(kind=="boulevard_arcade")g.GetComponent<CafeBasketball>().Interact();else if(kind=="boulevard_market")g.OpenOperations("supply");else if(litter)litter.Clean();else if(venue) g.OpenVenue(venue); else if(customer) customer.Interact(g); else if(kind=="branch")g.OpenBranch(branchIndex); else if(kind=="branch_exit")g.ExitBranch(); else if(kind=="casino")g.OpenCasino(); else g.Act(kind); }
     }
 }
 
