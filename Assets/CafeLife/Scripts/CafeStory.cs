@@ -88,7 +88,15 @@ namespace CafeLife
             new Page("Arabica borsası çöktü, kuyruklar uzadı","Borsa uzmanları bu sabahki çöküşü \"fincan dibi fiyatları\" olarak adlandırdı. Muhtar, kahve içmeden karar vermeyeceğini duyurdu."),
             new Page("Kahve içmeyen adam bulundu, müzeye kaldırıldı","Şehrin son kahve içmeyen vatandaşı, kendi isteğiyle bir cam fanusa yerleştirildi. Ziyaretçiler fanusun önünde kahve içmeyi tercih ediyor."),
             new Page("Hava durumu: Yarın yağmur yerine neskafe yağabilir","Meteoroloji, sabaha karşı bulutlardan toz kahve sarkacağını öngörüyor. Şemsiye yerine fincan almanız önerildi."),
-            new Page("Çekirdek hırsızları yakalandı","Üç kişi, geçen hafta kayıp çıkan on iki kilo çekirdeği \"kendi tüketimi için\" aldığını itiraf etti. Mahkeme, cezayı \"kahve içmeden tebliğ\" şeklinde verdi.")
+            new Page("Çekirdek hırsızları yakalandı","Üç kişi, geçen hafta kayıp çıkan on iki kilo çekirdeği \"kendi tüketimi için\" aldığını itiraf etti. Mahkeme, cezayı \"kahve içmeden tebliğ\" şeklinde verdi."),
+            new Page("Şehir saati bir dakika geri kaldı","Belediye saati bu sabah bir dakika geri kaldı. Kahve içenler farkı hemen anladı, içmeyenler hâlâ dünde yaşıyor. Yetkililer saati kurmak yerine yanına bir fincan koymayı denedi."),
+            new Page("Gökten fincan biçiminde damlalar düştü","Yağmurun bir kısmı minik fincan şeklinde damladı, hepsi dolu çıktı. Meteoroloji bunu kahve bulutu olarak adlandırdı. Şemsiye satışları durdu, bardak satışları fırladı."),
+            new Page("Muhtar seçimi fincan dibine bakılarak yapıldı","Mahalle muhtarı bu kez oy sayımıyla değil, fincan dibine bakılarak seçildi. İtiraz eden çıkmadı, çünkü herkes kendi falına bakmakla meşguldü."),
+            new Page("Bekçi lambası yanmayan köşelere girmiyor","Mahalle bekçisi sokak lambası yanmayan köşeleri artık yürümüyor. Sebebini soranlara yalnızca elindeki fincanı gösteriyor."),
+            new Page("Otuz yıllık kahvehane kendiliğinden açıldı","Kepenkleri otuz yıldır inik olan eski kahvehane bu sabah açık bulundu. Masalar tozluydu ama çaydanlık hâlâ sıcaktı."),
+            new Page("Çekirdek fiyatları düştü, esnaf rahat değil","Çekirdek ucuzladı ama dükkân sahiplerinin yüzü gülmüyor. Uzmanlar ucuz kahvenin geceleri daha uzun sürdürdüğünü söylüyor."),
+            new Page("Sokak müzisyeni aynı şarkıyı on dokuzuncu kez çaldı","Meydandaki müzisyen melodiyi bitirmeden yeniden başlıyor. Dinleyenler sayıyor ve yirmide ne olacağını konuşuyor."),
+            new Page("Bakkal kahve rafına perde çekti","Mahalle bakkalı kahve rafını geceleri perdeyle kapatıyor. Sebebini soranlara fincanların gece kıpırdadığını söylüyor.")
         };
         const string Ticker="HAVA: yarın sabah 5'te kafein yoğunluğu yüksek  ·  BORSA: arabica %12 yükseldi, robusta bayram yaptı  ·  TRAFİK: kahve sırası yüzünden 4 km kuyruk  ·  SPOR: maraton, ilk mola kahvesinde bitti  ·  ";
 

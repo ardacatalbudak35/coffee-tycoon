@@ -4,7 +4,7 @@ using UnityEngine;
 namespace CafeLife
 {
     // Resources/CafeCharacters.json'daki 12 mahalle sakini: geldigi_saat'te kafeye gerçek müşteri olarak girer.
-    [System.Serializable] public class ResState{ public string id; public int visits,bond,goneDay,cups,absentUntil,refused; public bool met,memory1,memory2,returned; }
+    [System.Serializable] public class ResState{ public string id; public int visits,bond,goneDay,cups,absentUntil,refused; public bool met,memory1,memory2,returned,memory3; }
     public static class CafeResidents
     {
         [System.Serializable] public class Wrap{public Resident[] items;}
@@ -27,6 +27,21 @@ namespace CafeLife
             {"balikci_mehmet",new[]{"Dede balığa çıkmadan önce termosumu doldururdu. Bir keresinde içinden kahve yerine harita çıktı.","Harita denizi değil, bu mahalleyi gösteriyordu. Dükkânın altında bir şey var."}},
             {"komsu_zeynep",new[]{"Ben kahve içmem. Ama Hasan hâlâ camdan el sallar. Öldüğünü biliyorum, yine de sallar.","Her gece camın önünde uzun paltolu bir adam duruyor. Dedeyi bekliyor gibi."}}
         };
+        // Üçüncü anı: bağ puanı 10'a ulaşınca açılır (+75 coin); eski kayıtta memory3=false olduğundan sorun çıkarmaz
+        static readonly Dictionary<string,string> Memories3=new Dictionary<string,string>{
+            {"ayse_ogretmen","Dede son resmini bitiremedi. Yarım kalan portre senin, Arda. Gözleri henüz çizilmemişti, çünkü sen gelince çizeceğini söylemişti."},
+            {"can_tasarimci","Logodaki 20'nin altında çok küçük bir not var: 'Bunu silme.' Hasan silmeyi birkaç kez denedi, her seferinde fırça elinden kaydı."},
+            {"elif_anne","Bebek ilk kelimesini söyledi: 'kahve'. Hasan bunu duysa bir fincan yapardı, içmez, kapının yanına bırakırdı."},
+            {"mehmet_insaat","Tezgâhın altına küçük bir gizli bölme yaptım, dede istedi. İçinde bir anahtar var ama kilidin nerede olduğunu o da söylemedi."},
+            {"elif","Sınav sabahı dede bana bir fincan verdi, 'bunu en son içersin' dedi. Hâlâ içmedim. Saklıyorum, kimse öğrenmesin."},
+            {"ahmet","Kırk yıl önce bu masaya oturduğumda duvarda tek bir saat vardı. Şimdi iki var ama biri geriye doğru işliyor."},
+            {"zeynep","Gece vardiyasında bir hasta bana dedenin adını söyledi. Dedeyi hiç görmemişti. Sadece 'fincanı boş bırakma' dedi."},
+            {"mehmet","Arka bahçeye gömdüğü şey bir fincan seti. On dokuz tane, tek tek sarılı. Yirmincisini hiç yapmamış."},
+            {"elena","Dede bir gün bana 'kahve' kelimesinin eski bir dilde 'bekle' demek olduğunu söyledi. Şimdi anlıyorum, neden hep beklerdi."},
+            {"memur_ahmet","Silinen adın altında kurşun kalemle çok eski bir yazı kalmış: 'Nuri'. Sanırım ilk sahip o. Senin dediğin uzun paltolu adam."},
+            {"balikci_mehmet","Haritanın köşesinde küçük bir çarpı var, tam dükkânın tezgâhının altında. Dede kazmamı istemedi, 'zamanı gelince' dedi."},
+            {"komsu_zeynep","Bu gece el sallamadı. İlk kez camda kimse yoktu. Sanırım artık dinleniyor. Teşekkür ederim, Arda."}
+        };
         public static ResState State(CafeGame g,Resident r){ if(g.data.residents==null)g.data.residents=new List<ResState>(); foreach(var s in g.data.residents)if(s.id==r.id)return s; var n=new ResState{id=r.id}; g.data.residents.Add(n); return n; }
         // Sipariş alınınca çağrılır: tanışma, anı veya dönüş konuşması
         public static void OnMeet(CafeGame g,Resident r)
@@ -35,7 +50,8 @@ namespace CafeLife
             if(!s.met){ s.met=true; g.story.Talk(null,r.ad,r.replikler!=null&&r.replikler.Length>0?r.replikler[0]:"Merhaba.","Arda","Tanışmış olduk: "+r.ad+", "+r.meslek+". "+r.huy); return; }
             if(s.absentUntil>0&&s.absentUntil<g.data.day&&!s.returned){ s.returned=true; s.cups=0; g.data.money+=30; g.data.earned+=30; g.story.Talk(null,r.ad,"Dün gece 20. fincanı içmişim… "+(string.IsNullOrEmpty(r.gece_gizemi)||r.gece_gizemi.ToLowerInvariant()=="yok"?"Gölge gibi biri beni izledi.":r.gece_gizemi),"Arda","İyi ki döndün. Bu sefer kahve benden, hatta bu 30 coin sana teşekkür."); return; }
             if(mem!=null&&s.bond>=3&&!s.memory1){ s.memory1=true; g.data.money+=25; g.data.earned+=25; g.story.Talk(null,r.ad,mem[0],"Arda","Bunu bilmiyordum. Anlattığın için sağ ol."); g.story.AddJournal("anı_"+r.id+"1",r.ad+" · anı",mem[0]); g.Tell(r.ad+" bir anı paylaştı · +25 coin",true); return; }
-            if(mem!=null&&mem.Length>1&&s.bond>=6&&!s.memory2){ s.memory2=true; g.data.money+=50; g.data.earned+=50; g.story.Talk(null,r.ad,mem[1],"Arda","Dedem herkese bir şey bırakmış. Bana da en çok sizi bırakmış."); g.story.AddJournal("anı_"+r.id+"2",r.ad+" · sır",mem[1]); g.Tell(r.ad+" derin bir sırrı paylaştı · +50 coin",true); }
+            if(mem!=null&&mem.Length>1&&s.bond>=6&&!s.memory2){ s.memory2=true; g.data.money+=50; g.data.earned+=50; g.story.Talk(null,r.ad,mem[1],"Arda","Dedem herkese bir şey bırakmış. Bana da en çok sizi bırakmış."); g.story.AddJournal("anı_"+r.id+"2",r.ad+" · sır",mem[1]); g.Tell(r.ad+" derin bir sırrı paylaştı · +50 coin",true); return; }
+            if(Memories3.TryGetValue(r.id,out var m3)&&s.bond>=10&&s.memory2&&!s.memory3){ s.memory3=true; g.data.money+=75; g.data.earned+=75; g.story.Talk(null,r.ad,m3,"Arda","Dedem sizi bana emanet etmiş. Ben de sizi hiç yalnız bırakmayacağım."); g.story.AddJournal("anı_"+r.id+"3",r.ad+" · son söz",m3); g.Tell(r.ad+" en derin sırrını paylaştı · +75 coin",true); }
         }
         public static void Bond(CafeGame g,Resident r,bool good){ var s=State(g,r); s.visits++; s.cups++; if(good)s.bond++; }
         // Borç defteri: 19 fincanda uyarı, 20. fincan gölgeye çevirir; reddetmek sayacı düşürür ama bağı zedeler

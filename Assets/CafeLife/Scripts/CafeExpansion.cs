@@ -111,9 +111,9 @@ namespace CafeLife
             if(Data.dayServed<8){game.Tell("Günlük hedef: "+Data.dayServed+" / 8 servis.");return;}
             Data.dailyRewardDay=game.data.day;game.data.money+=100;Data.dayIncome+=100;game.Tell("Günlük servis ödülü +100 coin!",true);game.Save();
         }
-        public bool AchievementReady(int i)=>i==0?game.data.served>=10:i==1?Data.cleaned>=5:i==2?Data.visits>=25:i==3?game.data.money>=1000:i==4?Data.loyalty.Any(n=>n>=5):i==5?game.data.served>=100:game.data.branches!=null&&game.data.branches.Length>1&&game.data.branches[1]!=null&&game.data.branches[1].owned;
+        public bool AchievementReady(int i)=>i==0?game.data.served>=10:i==1?Data.cleaned>=5:i==2?Data.visits>=25:i==3?game.data.money>=1000:i==4?Data.loyalty.Any(n=>n>=5):i==5?game.data.served>=100:i==6?game.data.branches!=null&&game.data.branches.Length>1&&game.data.branches[1]!=null&&game.data.branches[1].owned:i==7?game.data.day>=10:game.data.epilogue;
         public void ClaimAchievement(int i)
-        {if(i<0||i>=7)return;int bit=1<<i;if((Data.achievements&bit)!=0||!AchievementReady(i)){game.Tell("Başarım henüz hazır değil veya ödülü alındı.");return;}Data.achievements|=bit;game.data.money+=75;Data.dayIncome+=75;game.Tell("Başarım ödülü +75 coin!",true);game.Save();}
+        {if(i<0||i>=9)return;int bit=1<<i;if((Data.achievements&bit)!=0||!AchievementReady(i)){game.Tell("Başarım henüz hazır değil veya ödülü alındı.");return;}Data.achievements|=bit;game.data.money+=75;Data.dayIncome+=75;game.Tell("Başarım ödülü +75 coin!",true);game.Save();}
         public bool Action(string action)
         {
             switch(action)

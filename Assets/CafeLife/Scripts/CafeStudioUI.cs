@@ -272,12 +272,12 @@ namespace CafeLife {
   void BuildStudioGoals(){
    var x=game.expansion;var e=x.Data;var c=game.GetComponent<CafeHundred>();
    SText("KAFE HEDEFLERİ",80,223,650,28,13,studioGold);
-   string[] names={"10 servis tamamla","5 kez temizlik yap","25 müşteri ağırla","1.000 coin biriktir","Bir müdavime 5 servis yap","100 servis tamamla","İlk şubeni aç"};
+   string[] names={"10 servis tamamla","5 kez temizlik yap","25 müşteri ağırla","1.000 coin biriktir","Bir müdavime 5 servis yap","100 servis tamamla","İlk şubeni aç","10. güne ulaş","Bölüm 1'i bitir"};
    for(int i=0;i<names.Length;i++){
-    int index=i;bool claimed=(e.achievements&(1<<i))!=0,ready=x.AchievementReady(i);float y=267+i*48;
+    int index=i;bool claimed=(e.achievements&(1<<i))!=0,ready=x.AchievementReady(i);float y=267+i*38;
     SText(names[i],80,y,440,34,17,claimed?studioMuted:ink);
     SButton(claimed?"ALINDI":ready?"+75 coin":"DEVAM EDİYOR",530,y,202,36,()=>RefreshStudio(()=>x.ClaimAchievement(index)),ready&&!claimed).interactable=ready&&!claimed;
-    SRule(80,y+42,652);
+    SRule(80,y+37,652);
    }
    SBox(774,224,1,393,studioRule);SText("GÜNLÜK USTALIK",814,223,386,28,13,studioGold);
    SText("120 coin",814,266,386,50,34,ink);
