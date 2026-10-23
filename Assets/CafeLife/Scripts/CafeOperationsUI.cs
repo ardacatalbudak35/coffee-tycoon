@@ -95,7 +95,7 @@ namespace CafeLife
             }
             else if(operationSection=="achievements")
             {
-                string[] titles={"10 servis tamamla","5 kez temizlik yap","25 müşteri ağırla","1000 coin biriktir","Bir müdavime 5 servis yap"};
+                string[] titles={"10 servis tamamla","5 kez temizlik yap","25 müşteri ağırla","1000 coin biriktir","Bir müdavime 5 servis yap","100 servis tamamla","İlk şubeni aç"};
                 for(int i=0;i<titles.Length;i++){int index=i;Op(titles[i]+" · "+((d.achievements&(1<<i))!=0?"ALINDI":x.AchievementReady(i)?"ÖDÜLÜ AL +75":"DEVAM EDİYOR"),i,false,()=>x.ClaimAchievement(index));}
                 OperationInfo("Her başarım ödülü bir kez alınabilir ve kayıtla korunur. Müdavimler üçüncü ziyaretten sonra iyi kahveye +4 coin verir.");
             }
