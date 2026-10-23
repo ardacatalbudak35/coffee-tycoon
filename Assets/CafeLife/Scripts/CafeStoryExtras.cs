@@ -140,6 +140,25 @@ namespace CafeLife
                     else { d.money+=100; d.earned+=100; AddJournal("karar3","Karar: Nermin'in odasını kilitledim","Kapıyı kapattım. Sessizlik uzun sürmeyecek; gölgeler daha sık gelecek. Dolapta 100 coin buldum."); game.Tell("Olaylar sıklaşacak. +100 coin.",true); }
                 });
             }
+            else if(d.day==11&&!d.epilogue)
+            {
+                // Bölüm sonu: üç kararın (Nuri, Kemal, Nermin) sonucuna göre değişen kapanış; skor yüksekse "huzur", düşükse "uzun gece" sonu
+                d.epilogue=true; int score=(d.choice1==1?1:0)+(d.choice2==1?1:0)+(d.choice3==1?1:0);
+                string nuri=d.choice1==1?"Nuri'ye güvenmiştim. Makinenin ışığı artık yalnızca yakındakileri değil, sokağın ucunu bile ısıtıyor.":"Nuri'ye güvenmedim. Sayan yavaş sayıyor ama bu savaşı yalnız veriyorum.";
+                string kemal=d.choice2==1?"Kemal'e dükkânın satılık olmadığını söyledim. Mahalle bu cümleyi ezberledi.":d.choice2==2?"Kemal'le pazarlık ettim. Verdiğim bilgi yüzünden hâlâ arkamı kolluyorum.":"Kemal'e zaman istedim. İki kapı da hâlâ açık.";
+                string nermin=d.choice3==1?"Nermin Nine'ye cevap verdim. Odası artık yalnız değil.":"Nermin'in odasını kilitledim. Sessizlik bir borç gibi duruyor.";
+                yield return Say(new[]{L("Arda","On gün geçti. Bu şehirde bir gece, fincanlar sayılmadan ilk kez huzur içinde sabaha çıktı."),L("Arda",nuri),L("Arda",kemal),L("Arda",nermin)});
+                if(score>=2)
+                {
+                    yield return Say(new[]{L("Hasan Dede (not)","Evladım, dükkânı bir miras sanmıştım. Meğer bir mahalleymiş. Aferin sana."),L("Arda","Dedemin anlaşması hâlâ ıslak olabilir ama kimse bu sabah kapıyı yalnız çalmadı. Bölüm 1 burada biter.")});
+                    d.money+=500; d.earned+=500; d.reputation=Mathf.Min(100,d.reputation+5); AddJournal("bolum1","Bölüm 1 sonu: Huzur","Üç kararın çoğunda halkın ve gölgelerin yanında durdum. Kafe artık bir miras değil, bir mahalle. (+500 coin, itibar +5)"); game.Tell("Bölüm 1 sonu: Huzur · +500 coin, itibar +5",true);
+                }
+                else
+                {
+                    yield return Say(new[]{L("Hasan Dede (not)","Her şeyi yalnız taşımak zorunda değilsin evladım. Ama taşıyorsan da düşürme."),L("Arda","Dükkân ayakta ama gece uzun sürüyor ve sayma bitmedi. Yarın yine bir fincanla başlıyoruz. Bölüm 1 burada biter.")});
+                    d.money+=200; d.earned+=200; AddJournal("bolum1","Bölüm 1 sonu: Uzun gece","Kararlarımın çoğunda kendi yolumu seçtim. Kafe ayakta ama gece hâlâ uzun. (+200 coin)"); game.Tell("Bölüm 1 sonu: Uzun gece · +200 coin",true);
+                }
+            }
         }
 
         // ---------- Nermin'in odası ----------

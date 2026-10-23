@@ -19,7 +19,7 @@ namespace CafeLife
         public int caramel=10, vanilla=10, depotBeans=30, depotMilk=20, depotIce=20;
         public int depotCupsHot=20, depotCupsCold=20, depotLidsHot=20, depotLidsCold=20, depotCaramel=15, depotVanilla=15;
         public int unlocked=32767, served, missed, day=1, earned, tutorial, quest, staff, outfit;
-        public bool noteRead,shadowSeen,jumpSeen,bookRead,finale,ledgerRead,noJumpscare; public int nermin,choice1,choice2,choice3,dayStartServed,dayStartMoney,dayStartMet; public System.Collections.Generic.List<JournalEntry> journal=new System.Collections.Generic.List<JournalEntry>(); public System.Collections.Generic.List<ResState> residents=new System.Collections.Generic.List<ResState>();
+        public bool noteRead,shadowSeen,jumpSeen,bookRead,finale,ledgerRead,noJumpscare,epilogue; public int nermin,choice1,choice2,choice3,dayStartServed,dayStartMoney,dayStartMet; public System.Collections.Generic.List<JournalEntry> journal=new System.Collections.Generic.List<JournalEntry>(); public System.Collections.Generic.List<ResState> residents=new System.Collections.Generic.List<ResState>();
         public int storyStage, menuMask=1537; // storyStage -1: eski kayıt, hikaye kapalı; menuMask: eski alan (menü artık güne göre CafeStory.MaskForDay ile belirlenir)
         public float reputation=80, dayTime, volume=.55f, sensitivity=.10f;
         public CafeHundredData hundred=new CafeHundredData();
